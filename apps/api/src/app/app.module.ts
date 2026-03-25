@@ -11,7 +11,7 @@ import { TenantMiddleware } from './core/middleware/tenant.middleware';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,  // NUNCA true — schema gerenciado pelo Supabase dashboard
       ssl: { rejectUnauthorized: false },
     }),
   ],

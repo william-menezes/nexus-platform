@@ -21,11 +21,11 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Token ausente ou formato inválido');
     }
 
-    const tokern = authHeader.replace('Bearer ', '');
+    const token = authHeader.replace('Bearer ', '');
     const {
       data: { user },
       error,
-    } = await this.supabase.auth.getUser(tokern);
+    } = await this.supabase.auth.getUser(token);
 
     if (error || !user) {
       throw new UnauthorizedException(
