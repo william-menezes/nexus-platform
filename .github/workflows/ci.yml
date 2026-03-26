@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, homolog, master]
+  pull_request:
+    branches: [develop, homolog, master]
+
+jobs:
+  # ── Job 1: Lint + Test ────────────────────────────────────────────────────
+  # Roda em: qualquer PR e push para develop, homolog ou master
+  lint-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # obrigatório para nx affected
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Lint (projetos afetados)
+        run: npx nx affected --target=lint --parallel=3 --base=origin/${{ github.base_ref || 'develop' }}
+
+      - name: Test (projetos afetados)
+        run: npx nx affected --target=test --parallel=3 --ci --base=origin/${{ github.base_ref || 'develop' }}
+
+  # ── Job 2: Build ──────────────────────────────────────────────────────────
+  # Roda em: push para homolog e master (não em feature/*)
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint-test
+    if: github.ref == 'refs/heads/homolog' || github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build (todos os projetos)
+        run: npx nx run-many --target=build --projects=web,api --parallel=2
+
+  # ── Job 3: Docker Build + Health Check ───────────────────────────────────
+  # Roda em: push para master (pré-deploy produção)
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -f apps/api/Dockerfile -t nexus-api:test .
+
+      - name: Health check do container
+        run: |
+          docker run -d -p 3000:3000 \
+            -e DATABASE_URL="postgresql://test" \
+            -e SUPABASE_URL="http://test" \
+            -e SUPABASE_SERVICE_KEY="test" \
+            -e NODE_ENV="test" \
+            --name nexus-test nexus-api:test
+          sleep 8
+          curl -f http://localhost:3000/api/health || exit 1
+          docker stop nexus-test
