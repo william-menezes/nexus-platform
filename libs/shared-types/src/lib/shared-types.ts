@@ -1,3 +1,2 @@
-export function sharedTypes(): string {
-  return 'shared-types';
-}
+export * from './tenant.types';
+export * from './service-order.types';
