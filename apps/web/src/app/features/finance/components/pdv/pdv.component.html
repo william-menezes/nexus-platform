@@ -1,0 +1,217 @@
+<div class="nx-page" style="max-width:800px;">
+
+  <div class="nx-page-header">
+    <h1 class="nx-page-title">PDV — Nova Venda</h1>
+    <a routerLink="/app/financeiro/vendas">
+      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" />
+    </a>
+  </div>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
+
+    <!-- OS Vinculada -->
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="serviceOrderId">OS vinculada (opcional)</label>
+      <input
+        pInputText
+        id="serviceOrderId"
+        formControlName="serviceOrderId"
+        type="text"
+        placeholder="ID da ordem de serviço"
+        class="w-full"
+      />
+    </div>
+
+    <p-divider />
+
+    <!-- Itens -->
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+        <h2 style="font-size:1rem; font-weight:600; margin:0;">Itens</h2>
+        <p-button
+          type="button"
+          label="Adicionar item"
+          icon="pi pi-plus"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          (click)="addItem()"
+        />
+      </div>
+
+      <div formArrayName="items">
+        @for (item of items.controls; track $index) {
+          <div [formGroupName]="$index" style="display:grid; grid-template-columns:2fr 3fr 80px 140px 40px; gap:0.75rem; align-items:end; margin-bottom:0.75rem;">
+
+            <div class="nx-form-group" style="margin-bottom:0;">
+              <label class="nx-form-label">Produto</label>
+              <p-select
+                [options]="productOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="— Serviço livre —"
+                styleClass="w-full"
+                [showClear]="true"
+                (onChange)="onProductSelect($index, $event.value)"
+              />
+            </div>
+
+            <div class="nx-form-group" style="margin-bottom:0;">
+              <label class="nx-form-label">Descrição *</label>
+              <input pInputText formControlName="description" type="text" class="w-full" />
+            </div>
+
+            <div class="nx-form-group" style="margin-bottom:0;">
+              <label class="nx-form-label">Qtd</label>
+              <p-inputnumber formControlName="quantity" [min]="1" inputStyleClass="w-full" styleClass="w-full" />
+            </div>
+
+            <div class="nx-form-group" style="margin-bottom:0;">
+              <label class="nx-form-label">Valor unit.</label>
+              <p-inputnumber
+                formControlName="unitPrice"
+                mode="currency"
+                currency="BRL"
+                locale="pt-BR"
+                [minFractionDigits]="2"
+                inputStyleClass="w-full"
+                styleClass="w-full"
+              />
+            </div>
+
+            <div style="display:flex; align-items:flex-end; padding-bottom:2px;">
+              <p-button
+                type="button"
+                icon="pi pi-trash"
+                severity="danger"
+                [outlined]="true"
+                size="small"
+                [disabled]="items.length === 1"
+                (click)="removeItem($index)"
+              />
+            </div>
+
+          </div>
+        }
+      </div>
+    </div>
+
+    <p-divider />
+
+    <!-- Desconto e totais -->
+    <div style="display:flex; gap:2rem; align-items:center; flex-wrap:wrap;">
+      <div class="nx-form-group" style="flex:0 0 200px; margin-bottom:0;">
+        <label class="nx-form-label" for="discountAmount">Desconto (R$)</label>
+        <p-inputnumber
+          inputId="discountAmount"
+          formControlName="discountAmount"
+          mode="currency"
+          currency="BRL"
+          locale="pt-BR"
+          [minFractionDigits]="2"
+          [min]="0"
+          inputStyleClass="w-full"
+          styleClass="w-full"
+        />
+      </div>
+
+      <div style="flex:1; text-align:right;">
+        <p style="margin:0; color:var(--p-text-muted-color); font-size:0.9rem;">
+          Subtotal: {{ subtotal | currency:'BRL' }}
+        </p>
+        <p style="margin:0.25rem 0 0; font-size:1.5rem; font-weight:700; color:var(--nx-primary);">
+          Total: {{ total | currency:'BRL' }}
+        </p>
+      </div>
+    </div>
+
+    <p-divider />
+
+    <!-- Pagamentos -->
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+        <h2 style="font-size:1rem; font-weight:600; margin:0;">Pagamentos</h2>
+        <p-button
+          type="button"
+          label="Adicionar pagamento"
+          icon="pi pi-plus"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          (click)="addPayment()"
+        />
+      </div>
+
+      <div formArrayName="payments">
+        @for (pay of payments.controls; track $index) {
+          <div [formGroupName]="$index" style="display:grid; grid-template-columns:1fr 1fr 40px; gap:0.75rem; align-items:end; margin-bottom:0.75rem;">
+
+            <div class="nx-form-group" style="margin-bottom:0;">
+              <label class="nx-form-label">Forma de pagamento</label>
+              <p-select
+                formControlName="method"
+                [options]="methodOptions"
+                optionLabel="label"
+                optionValue="value"
+                styleClass="w-full"
+              />
+            </div>
+
+            <div class="nx-form-group" style="margin-bottom:0;">
+              <label class="nx-form-label">Valor (R$)</label>
+              <p-inputnumber
+                formControlName="amount"
+                mode="currency"
+                currency="BRL"
+                locale="pt-BR"
+                [minFractionDigits]="2"
+                [min]="0.01"
+                inputStyleClass="w-full"
+                styleClass="w-full"
+              />
+            </div>
+
+            <div style="display:flex; align-items:flex-end; padding-bottom:2px;">
+              <p-button
+                type="button"
+                icon="pi pi-trash"
+                severity="danger"
+                [outlined]="true"
+                size="small"
+                [disabled]="payments.length === 1"
+                (click)="removePayment($index)"
+              />
+            </div>
+
+          </div>
+        }
+      </div>
+
+      <div style="margin-top:0.75rem; padding:0.75rem 1rem; border-radius:12px;"
+           [style.background]="remaining > 0 ? '#fef2f2' : '#f0fdf4'">
+        <p style="margin:0; font-weight:600;"
+           [style.color]="remaining > 0 ? '#dc2626' : '#16a34a'">
+          {{ remaining > 0.01
+            ? 'Restante: ' + (remaining | currency:'BRL')
+            : 'Pagamento completo ✓' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="nx-form-actions">
+      <p-button
+        type="submit"
+        label="Finalizar Venda"
+        icon="pi pi-check"
+        [loading]="loading"
+        [disabled]="form.invalid || remaining > 0.01"
+      />
+    </div>
+
+  </form>
+
+</div>

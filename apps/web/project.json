@@ -24,7 +24,8 @@
           }
         ],
         "styles": [
-          "apps/web/src/styles.css"
+          "apps/web/src/styles.css",
+          "node_modules/primeicons/primeicons.css"
         ],
         "server": "apps/web/src/main.server.ts",
         "ssr": {

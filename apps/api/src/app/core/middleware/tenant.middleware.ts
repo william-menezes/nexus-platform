@@ -12,8 +12,8 @@ export class TenantMiddleware implements NestMiddleware {
 
     if (!user) return next();
 
-    const rows = await this.dataSource.query<{ tenant_id: string }[]>(
-      `SELECT tenant_id FROM public.tenant_users WHERE user_id = $1 LIMIT 1`,
+    const rows = await this.dataSource.query<{ tenant_id: string; role: string }[]>(
+      `SELECT tenant_id, role FROM public.tenant_users WHERE user_id = $1 LIMIT 1`,
       [user.id],
     );
 
@@ -21,7 +21,7 @@ export class TenantMiddleware implements NestMiddleware {
       throw new ForbiddenException('Usuário não pertence a nenhum tenant');
     }
 
-    const tenantId = rows[0].tenant_id;
+    const { tenant_id: tenantId, role } = rows[0];
 
     await this.dataSource.query(
       `SELECT set_config('app.tenant_id', $1, true)`,
@@ -29,6 +29,7 @@ export class TenantMiddleware implements NestMiddleware {
     );
 
     (req as any)['tenantId'] = tenantId;
+    (req as any)['userRole'] = role;
     next();
   }
 }

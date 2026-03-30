@@ -1,0 +1,130 @@
+<div class="nx-page">
+
+  <div class="nx-page-header">
+    <h1 class="nx-page-title">DRE — Demonstração de Resultado</h1>
+    <a routerLink="../vendas">
+      <p-button label="Vendas" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+    </a>
+  </div>
+
+  <!-- Filtro de período -->
+  <p-card styleClass="mb-6">
+    <form [formGroup]="form" (ngSubmit)="search()" style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+      <div class="nx-form-group" style="flex:1; min-width:160px; margin-bottom:0;">
+        <label class="nx-form-label">De</label>
+        <p-datepicker
+          formControlName="from"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          placeholder="Data inicial"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
+      <div class="nx-form-group" style="flex:1; min-width:160px; margin-bottom:0;">
+        <label class="nx-form-label">Até</label>
+        <p-datepicker
+          formControlName="to"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          placeholder="Data final"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
+      <p-button
+        type="submit"
+        label="Buscar"
+        icon="pi pi-search"
+        [loading]="loading"
+        [disabled]="form.invalid"
+      />
+    </form>
+  </p-card>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  }
+
+  @if (entries.length > 0) {
+
+    <!-- Totalizadores -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:1.5rem; margin-bottom:2rem;">
+
+      <div class="nx-stat">
+        <i class="pi pi-dollar" style="color:var(--nx-primary);"></i>
+        <div class="nx-stat-value">{{ totalRevenue | currency:'BRL' }}</div>
+        <div class="nx-stat-label">Receita Total</div>
+      </div>
+
+      <div class="nx-stat">
+        <i class="pi pi-minus-circle" style="color:#ef4444;"></i>
+        <div class="nx-stat-value" style="color:#ef4444;">{{ totalCost | currency:'BRL' }}</div>
+        <div class="nx-stat-label">Custo de Mercadoria</div>
+      </div>
+
+      <div class="nx-stat">
+        <i class="pi pi-chart-line" style="color:#22c55e;"></i>
+        <div class="nx-stat-value" [style.color]="totalProfit >= 0 ? '#22c55e' : '#ef4444'">
+          {{ totalProfit | currency:'BRL' }}
+        </div>
+        <div class="nx-stat-label">Lucro Bruto</div>
+      </div>
+
+      <div class="nx-stat">
+        <i class="pi pi-percentage" style="color:#f59e0b;"></i>
+        <div class="nx-stat-value" [style.color]="avgMargin >= 0.3 ? '#22c55e' : '#f59e0b'">
+          {{ avgMargin | percent:'1.1-1' }}
+        </div>
+        <div class="nx-stat-label">Margem Bruta Média</div>
+      </div>
+
+    </div>
+
+    <!-- Tabela mensal -->
+    <p-table
+      [value]="entries"
+      [rowHover]="true"
+      styleClass="p-datatable-sm"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Mês</th>
+          <th style="text-align:right;">Receita</th>
+          <th style="text-align:right;">CMV</th>
+          <th style="text-align:right;">Lucro Bruto</th>
+          <th style="text-align:right;">Margem</th>
+          <th>Receita (visual)</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-e>
+        <tr>
+          <td style="font-weight:600;">{{ e.month }}</td>
+          <td style="text-align:right;">{{ e.revenue | currency:'BRL' }}</td>
+          <td style="text-align:right; color:#ef4444;">{{ e.costOfGoods | currency:'BRL' }}</td>
+          <td style="text-align:right; font-weight:600;"
+              [style.color]="e.grossProfit >= 0 ? '#22c55e' : '#ef4444'">
+            {{ e.grossProfit | currency:'BRL' }}
+          </td>
+          <td style="text-align:right;">{{ e.grossMargin | percent:'1.1-1' }}</td>
+          <td>
+            <div style="background:#f3f4f6; border-radius:99px; height:8px; overflow:hidden;">
+              <div
+                style="height:8px; border-radius:99px; background:var(--nx-gradient); transition:width 0.4s ease;"
+                [style.width]="barWidth(e.revenue)"
+              ></div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  } @else if (!loading) {
+    <div style="text-align:center; padding:3rem; color:var(--p-text-muted-color);">
+      <i class="pi pi-chart-bar" style="font-size:3rem; display:block; margin-bottom:0.75rem; color:var(--p-surface-300);"></i>
+      Selecione um período e clique em Buscar para visualizar o DRE.
+    </div>
+  }
+
+</div>

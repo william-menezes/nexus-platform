@@ -1,0 +1,92 @@
+<div class="nx-page" style="max-width:640px;">
+
+  <div class="nx-page-header">
+    <h1 class="nx-page-title">{{ isEdit ? 'Editar Produto' : 'Novo Produto' }}</h1>
+    <a routerLink="/app/estoque">
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+    </a>
+  </div>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
+
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="name">Nome *</label>
+      <input pInputText id="name" formControlName="name" type="text" placeholder="Nome do produto" class="w-full" />
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <small class="p-error">Campo obrigatório.</small>
+      }
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="sku">SKU</label>
+        <input pInputText id="sku" formControlName="sku" type="text" placeholder="Opcional" class="w-full" />
+      </div>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="category">Categoria</label>
+        <input pInputText id="category" formControlName="category" type="text" placeholder="Ex: Peças" class="w-full" />
+      </div>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="costPrice">Custo (R$)</label>
+        <p-inputnumber
+          inputId="costPrice"
+          formControlName="costPrice"
+          mode="currency"
+          currency="BRL"
+          locale="pt-BR"
+          [minFractionDigits]="2"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="salePrice">Preço de venda (R$)</label>
+        <p-inputnumber
+          inputId="salePrice"
+          formControlName="salePrice"
+          mode="currency"
+          currency="BRL"
+          locale="pt-BR"
+          [minFractionDigits]="2"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="minStock">Estoque mínimo</label>
+        <p-inputnumber
+          inputId="minStock"
+          formControlName="minStock"
+          [min]="0"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
+
+    </div>
+
+    <div class="nx-form-actions">
+      <p-button
+        type="submit"
+        [label]="isEdit ? 'Salvar alterações' : 'Cadastrar produto'"
+        icon="pi pi-check"
+        [loading]="loading"
+        [disabled]="form.invalid"
+      />
+      <a routerLink="/app/estoque">
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" />
+      </a>
+    </div>
+
+  </form>
+
+</div>

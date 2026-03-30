@@ -1,0 +1,87 @@
+<div class="nx-page" style="max-width:560px;">
+
+  <div class="nx-page-header">
+    <h1 class="nx-page-title">Importar NF-e</h1>
+    <a routerLink="/app/estoque">
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+    </a>
+  </div>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  }
+
+  @if (result) {
+    <p-message
+      severity="success"
+      [text]="result.imported + ' produto(s) importado(s) com sucesso.'"
+      styleClass="w-full mb-4"
+    />
+    <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+      <p-button
+        label="Importar outra NF-e"
+        icon="pi pi-upload"
+        (click)="result = null; file = null; fileName = ''"
+      />
+      <p-button
+        label="Ver estoque"
+        icon="pi pi-box"
+        severity="secondary"
+        [outlined]="true"
+        (click)="goBack()"
+      />
+    </div>
+  } @else {
+
+    <p-card>
+      <div style="text-align:center; padding:1.5rem;">
+
+        <i class="pi pi-file-import" style="font-size:3rem; color:var(--nx-primary); display:block; margin-bottom:1rem;"></i>
+
+        <p style="color:var(--p-text-muted-color); margin-bottom:1.5rem; line-height:1.6;">
+          Selecione um arquivo XML de NF-e para importar os produtos automaticamente.
+          Produtos não cadastrados serão criados.
+        </p>
+
+        <label
+          for="nfe-file"
+          style="display:inline-flex; align-items:center; gap:0.5rem; cursor:pointer;
+                 padding:0.75rem 1.5rem; border-radius:16px;
+                 border:2px dashed var(--nx-primary);
+                 color:var(--nx-primary); font-weight:600;
+                 transition:background 0.2s; margin-bottom:1.5rem;"
+        >
+          <i class="pi pi-upload"></i>
+          {{ fileName || 'Selecionar arquivo XML' }}
+        </label>
+        <input
+          id="nfe-file"
+          type="file"
+          accept=".xml"
+          style="display:none;"
+          (change)="onFileChange($event)"
+        />
+
+        @if (file && !loading) {
+          <div>
+            <p-button
+              label="Importar NF-e"
+              icon="pi pi-cloud-upload"
+              (click)="import()"
+            />
+          </div>
+        }
+
+        @if (loading) {
+          <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem;">
+            <p-progressspinner styleClass="w-12 h-12" />
+            <p style="color:var(--p-text-muted-color);">Processando XML...</p>
+          </div>
+        }
+
+      </div>
+    </p-card>
+
+  }
+
+</div>

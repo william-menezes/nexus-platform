@@ -1,0 +1,127 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-brand">
+      <span class="auth-logo">N</span>
+      <h1>Nexus Platform</h1>
+      <p>Crie sua conta</p>
+    </div>
+
+    @if (success) {
+      <div style="text-align:center; padding: 1rem 0;">
+        <i class="pi pi-envelope" style="font-size: 3rem; color: var(--nx-primary);"></i>
+        <h2 style="margin: 1rem 0 0.5rem;">Verifique seu e-mail</h2>
+        <p style="color: var(--p-text-muted-color); font-size: 0.875rem; margin-bottom: 1.5rem;">
+          Enviamos um link de confirmação para
+          <strong>{{ form.value.email }}</strong>.
+        </p>
+        <a routerLink="/login" style="color: var(--nx-primary); font-weight: 600;">
+          ← Voltar para o login
+        </a>
+      </div>
+    } @else {
+
+      @if (error) {
+        <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="fullName">Nome completo</label>
+          <input
+            pInputText
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            autocomplete="name"
+            placeholder="João Silva"
+            class="w-full"
+          />
+          @if (form.get('fullName')?.invalid && form.get('fullName')?.touched) {
+            <small class="p-error">Informe seu nome completo.</small>
+          }
+        </div>
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="email">E-mail</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="seu@email.com"
+            class="w-full"
+          />
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <small class="p-error">E-mail inválido.</small>
+          }
+        </div>
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="password">Senha</label>
+          <p-password
+            formControlName="password"
+            inputId="password"
+            [feedback]="false"
+            [toggleMask]="true"
+            autocomplete="new-password"
+            placeholder="Mínimo 8 caracteres"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          />
+          @if (form.get('password')?.value) {
+            <div style="margin-top: 0.5rem;">
+              <div style="display:flex; gap:4px;">
+                @for (i of [0,1,2,3]; track i) {
+                  <div style="height:4px; flex:1; border-radius:2px;"
+                       [class]="getStrengthColor(i)"></div>
+                }
+              </div>
+              <small style="color: var(--p-text-muted-color);">{{ getStrengthLabel() }}</small>
+            </div>
+          }
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <small class="p-error">Senha deve ter pelo menos 8 caracteres.</small>
+          }
+        </div>
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="confirmPassword">Confirmar senha</label>
+          <p-password
+            formControlName="confirmPassword"
+            inputId="confirmPassword"
+            [feedback]="false"
+            [toggleMask]="true"
+            autocomplete="new-password"
+            placeholder="Repita a senha"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          />
+          @if (mismatch) {
+            <small class="p-error">As senhas não coincidem.</small>
+          }
+        </div>
+
+        <div class="nx-form-actions">
+          <p-button
+            type="submit"
+            label="Criar conta"
+            [loading]="loading"
+            [disabled]="form.invalid"
+            styleClass="w-full"
+          />
+        </div>
+
+      </form>
+
+      <div class="auth-footer">
+        Já tem conta?
+        <a routerLink="/login">Entrar</a>
+      </div>
+
+    }
+
+  </div>
+</div>

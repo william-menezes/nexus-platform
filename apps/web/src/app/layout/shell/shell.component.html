@@ -1,0 +1,60 @@
+<div class="nx-shell">
+
+  <!-- Sidebar -->
+  <aside class="nx-sidebar" [class.collapsed]="!sidebarOpen()">
+
+    <!-- Brand -->
+    <div class="nx-brand">
+      <span class="nx-brand-icon">N</span>
+      @if (sidebarOpen()) {
+        <span class="nx-brand-name">Nexus</span>
+      }
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nx-nav">
+      @for (item of nav; track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="nx-nav-item"
+          [title]="item.label"
+        >
+          <i [class]="item.icon"></i>
+          @if (sidebarOpen()) {
+            <span>{{ item.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <!-- User area -->
+    <div class="nx-user-area">
+      <div class="nx-avatar">{{ userInitial }}</div>
+      @if (sidebarOpen()) {
+        <div class="nx-user-info">
+          <p class="nx-user-email">{{ userEmail }}</p>
+        </div>
+      }
+      <button class="nx-logout-btn" (click)="logout()" title="Sair">
+        <i class="pi pi-sign-out"></i>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- Main content -->
+  <main class="nx-main">
+    <!-- Top bar -->
+    <div class="nx-topbar">
+      <button class="nx-menu-toggle" (click)="toggleSidebar()">
+        <i class="pi pi-bars"></i>
+      </button>
+    </div>
+
+    <div class="nx-content">
+      <router-outlet />
+    </div>
+  </main>
+
+</div>

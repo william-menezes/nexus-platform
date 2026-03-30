@@ -1,0 +1,87 @@
+<div class="nx-page" style="max-width: 640px;">
+
+  <div class="nx-page-header">
+    <h1 class="nx-page-title">{{ isEdit ? 'Editar OS' : 'Nova OS' }}</h1>
+    <a routerLink="/app/os">
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+    </a>
+  </div>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
+
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="clientName">Cliente *</label>
+      <input
+        pInputText
+        id="clientName"
+        formControlName="clientName"
+        type="text"
+        placeholder="Nome do cliente"
+        class="w-full"
+      />
+      @if (form.get('clientName')?.invalid && form.get('clientName')?.touched) {
+        <small class="p-error">Campo obrigatório.</small>
+      }
+    </div>
+
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="clientPhone">Telefone</label>
+      <input
+        pInputText
+        id="clientPhone"
+        formControlName="clientPhone"
+        type="tel"
+        placeholder="(11) 99999-9999"
+        class="w-full"
+      />
+    </div>
+
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="description">Descrição do problema *</label>
+      <textarea
+        pTextarea
+        id="description"
+        formControlName="description"
+        rows="4"
+        placeholder="Descreva o defeito ou serviço solicitado"
+        class="w-full"
+      ></textarea>
+      @if (form.get('description')?.invalid && form.get('description')?.touched) {
+        <small class="p-error">Campo obrigatório.</small>
+      }
+    </div>
+
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="priceIdeal">Preço estimado (R$)</label>
+      <p-inputnumber
+        inputId="priceIdeal"
+        formControlName="priceIdeal"
+        mode="currency"
+        currency="BRL"
+        locale="pt-BR"
+        [minFractionDigits]="2"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+      />
+    </div>
+
+    <div class="nx-form-actions">
+      <p-button
+        type="submit"
+        [label]="submitting ? 'Salvando...' : 'Salvar'"
+        icon="pi pi-check"
+        [loading]="submitting"
+        [disabled]="form.invalid"
+      />
+      <a routerLink="/app/os">
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" />
+      </a>
+    </div>
+
+  </form>
+
+</div>

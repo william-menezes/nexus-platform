@@ -1,0 +1,77 @@
+<div class="nx-page">
+
+  <p-toast />
+  <p-confirmdialog />
+
+  <div class="nx-page-header">
+    <h1 class="nx-page-title">Estoque</h1>
+    <div style="display:flex; gap:0.75rem;">
+      <a routerLink="nfe-import">
+        <p-button label="Importar NF-e" icon="pi pi-upload" severity="secondary" [outlined]="true" />
+      </a>
+      <a routerLink="novo">
+        <p-button label="Novo produto" icon="pi pi-plus" />
+      </a>
+    </div>
+  </div>
+
+  <p-table
+    [value]="products"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="15"
+    [rowHover]="true"
+    styleClass="p-datatable-sm"
+    [tableStyle]="{'min-width':'700px'}"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Nome</th>
+        <th>SKU</th>
+        <th>Categoria</th>
+        <th style="text-align:right;">Custo</th>
+        <th style="text-align:right;">Venda</th>
+        <th style="text-align:right;">Estoque</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-p>
+      <tr>
+        <td style="font-weight:600;">{{ p.name }}</td>
+        <td style="color:var(--p-text-muted-color); font-size:0.85em; font-family:monospace;">{{ p.sku || '—' }}</td>
+        <td>{{ p.category || '—' }}</td>
+        <td style="text-align:right;">{{ p.costPrice | currency:'BRL' }}</td>
+        <td style="text-align:right;">{{ p.salePrice | currency:'BRL' }}</td>
+        <td style="text-align:right;">
+          @if (p.currentStock <= p.minStock) {
+            <span style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
+              <p-tag [value]="'' + p.currentStock" severity="danger" />
+              <i class="pi pi-exclamation-triangle" style="color:#ef4444; font-size:0.75rem;" [title]="'Mín: ' + p.minStock"></i>
+            </span>
+          } @else {
+            <span style="font-weight:600;">{{ p.currentStock }}</span>
+          }
+        </td>
+        <td>
+          <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+            <a [routerLink]="[p.id, 'editar']">
+              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" />
+            </a>
+            <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" (click)="remove(p.id)" />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" style="text-align:center; color:var(--p-text-muted-color); padding:3rem;">
+          <i class="pi pi-box" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
+          Nenhum produto cadastrado.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>

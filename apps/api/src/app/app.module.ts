@@ -3,6 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { TenantMiddleware } from './core/middleware/tenant.middleware';
+import { SnakeNamingStrategy } from './core/database/snake-naming.strategy';
+import { ServiceOrdersModule } from './modules/service-orders/service-orders.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { FinanceModule } from './modules/finance/finance.module';
+import { ClientsModule } from './modules/clients/clients.module';
+import { SettingsModule } from './modules/settings/settings.module';
 
 @Module({
   imports: [
@@ -11,9 +17,15 @@ import { TenantMiddleware } from './core/middleware/tenant.middleware';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      synchronize: false,  // NUNCA true — schema gerenciado pelo Supabase dashboard
+      synchronize: false,
       ssl: { rejectUnauthorized: false },
+      namingStrategy: new SnakeNamingStrategy(),
     }),
+    ServiceOrdersModule,
+    InventoryModule,
+    FinanceModule,
+    ClientsModule,
+    SettingsModule,
   ],
   controllers: [AppController],
 })
@@ -21,6 +33,6 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(TenantMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*path', method: RequestMethod.ALL });
   }
 }

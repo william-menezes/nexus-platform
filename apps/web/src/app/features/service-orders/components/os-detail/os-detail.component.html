@@ -1,0 +1,93 @@
+<div class="nx-page" style="max-width:720px;">
+
+  <p-toast />
+  <p-confirmdialog />
+
+  @if (loading) {
+    <p-skeleton height="40px" styleClass="mb-4" />
+    <p-skeleton height="200px" borderRadius="24px" />
+  } @else if (error || !os) {
+    <p-message severity="error" [text]="error || 'OS não encontrada.'" />
+  } @else {
+
+    <div class="nx-page-header">
+      <div>
+        <h1 class="nx-page-title">{{ os.code }}</h1>
+        <p-tag
+          [value]="statusLabel[os.status]"
+          [severity]="statusSeverity[os.status]"
+          styleClass="mt-1"
+        />
+      </div>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        @if (nextStatus) {
+          <p-button
+            [label]="'Avançar: ' + nextStatusLabel[nextStatus]"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            (click)="advance()"
+          />
+        }
+        @if (os.status !== 'cancelled' && os.status !== 'done') {
+          <p-button
+            label="Cancelar OS"
+            icon="pi pi-times"
+            severity="danger"
+            [outlined]="true"
+            (click)="cancelOs()"
+          />
+        }
+        <a [routerLink]="[os.id, 'editar']">
+          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" />
+        </a>
+        <a routerLink="/app/os">
+          <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+        </a>
+      </div>
+    </div>
+
+    <p-card styleClass="mt-4">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+        <div>
+          <p style="font-size:0.8rem; color:var(--p-text-muted-color); margin:0 0 4px;">Cliente</p>
+          <p style="font-weight:600; margin:0;">{{ os.clientName }}</p>
+        </div>
+
+        @if (os.clientPhone) {
+          <div>
+            <p style="font-size:0.8rem; color:var(--p-text-muted-color); margin:0 0 4px;">Telefone</p>
+            <p style="margin:0;">{{ os.clientPhone }}</p>
+          </div>
+        }
+
+        @if (os.priceIdeal) {
+          <div>
+            <p style="font-size:0.8rem; color:var(--p-text-muted-color); margin:0 0 4px;">Preço estimado</p>
+            <p style="margin:0;">{{ os.priceIdeal | currency:'BRL' }}</p>
+          </div>
+        }
+
+        @if (os.priceEffective) {
+          <div>
+            <p style="font-size:0.8rem; color:var(--p-text-muted-color); margin:0 0 4px;">Preço cobrado</p>
+            <p style="margin:0; font-weight:600; color:var(--nx-primary);">{{ os.priceEffective | currency:'BRL' }}</p>
+          </div>
+        }
+
+        <div>
+          <p style="font-size:0.8rem; color:var(--p-text-muted-color); margin:0 0 4px;">Criado em</p>
+          <p style="margin:0;">{{ os.createdAt | date:'dd/MM/yyyy' }}</p>
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <p style="font-size:0.8rem; color:var(--p-text-muted-color); margin:0 0 4px;">Descrição</p>
+          <p style="margin:0; line-height:1.6;">{{ os.description }}</p>
+        </div>
+
+      </div>
+    </p-card>
+
+  }
+
+</div>

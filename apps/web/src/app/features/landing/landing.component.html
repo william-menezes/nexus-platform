@@ -1,0 +1,56 @@
+<div class="landing-hero">
+
+  <nav class="landing-nav">
+    <div class="nx-brand" style="position:static; display:flex; align-items:center; gap:0.75rem;">
+      <span class="nx-brand-icon">N</span>
+      <span class="nx-brand-name">Nexus Platform</span>
+    </div>
+    <div style="display:flex; gap:1rem; align-items:center;">
+      <a routerLink="/login">
+        <p-button label="Entrar" severity="secondary" [outlined]="true" />
+      </a>
+      <a routerLink="/cadastro">
+        <p-button label="Começar grátis" />
+      </a>
+    </div>
+  </nav>
+
+  <div class="landing-hero-center">
+    <h1>Gestão inteligente<br/>para sua empresa</h1>
+    <p>
+      Ordens de serviço, estoque e financeiro em um só lugar.
+      Simples, rápido e poderoso.
+    </p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <a routerLink="/cadastro">
+        <p-button label="Criar conta gratuita" size="large" />
+      </a>
+      <a routerLink="/login">
+        <p-button label="Já tenho conta" severity="secondary" [outlined]="true" size="large" />
+      </a>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1.5rem; max-width:960px; margin:4rem auto 0; padding:0 1.5rem;">
+
+    <div class="landing-feature-card">
+      <i class="pi pi-wrench" style="font-size:2rem; color:var(--nx-primary);"></i>
+      <h3>Ordens de Serviço</h3>
+      <p>Gerencie OS do início ao fim. Acompanhe status, clientes e histórico em tempo real.</p>
+    </div>
+
+    <div class="landing-feature-card">
+      <i class="pi pi-box" style="font-size:2rem; color:var(--nx-primary);"></i>
+      <h3>Controle de Estoque</h3>
+      <p>Produtos, entradas, saídas e importação de NF-e. Nunca fique sem peças no momento certo.</p>
+    </div>
+
+    <div class="landing-feature-card">
+      <i class="pi pi-chart-bar" style="font-size:2rem; color:var(--nx-primary);"></i>
+      <h3>PDV &amp; Financeiro</h3>
+      <p>Ponto de venda completo, DRE mensal e integração com Asaas para boletos e PIX.</p>
+    </div>
+
+  </div>
+
+</div>

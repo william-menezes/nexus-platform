@@ -1438,3 +1438,1132 @@ export function calcMarginDelta(ideal: number, effective: number): number {
 ---
 
 *Nexus Service Platform · Guia Técnico v3.1 · Março 2026 · Supabase 100% via dashboard web*
+
+---
+
+## Seção 15
+
+## Status Final — Semana 1
+
+### 15.1 O que foi implementado
+
+| Arquivo / Recurso | Status | Observações |
+|---|---|---|
+| Monorepo Nx (`apps/web`, `apps/api`, `libs/`) | ✅ | Nx 22.6, Angular 20 SSR, NestJS |
+| `apps/api/src/app/app.module.ts` | ✅ | TypeORM + ConfigModule + TenantMiddleware |
+| `apps/api/src/app/core/guards/auth.guard.ts` | ✅ | Valida JWT via `supabase.auth.getUser()` |
+| `apps/api/src/app/core/middleware/tenant.middleware.ts` | ✅ | Injeta `app.tenant_id` na sessão PostgreSQL |
+| `apps/api/src/app/core/decorators/tenant.decorator.ts` | ✅ | `@CurrentTenant()` e `@CurrentUser()` |
+| `apps/api/src/app/core/interceptors/audit.interceptor.ts` | ✅ | Gerado (stub — implementar em Semana 2) |
+| `apps/api/src/app/modules/*.module.ts` | ✅ | Módulos vazios: tenants, service-orders, inventory, finance |
+| `apps/web/src/app/core/auth/auth.service.ts` | ✅ | BehaviorSubject, signIn, signOut, getAccessToken |
+| `apps/web/src/app/core/interceptors/auth-interceptor.ts` | ✅ | Injeta `Authorization: Bearer <token>` |
+| `apps/web/src/app/core/guards/auth-guard.ts` | ✅ | Redireciona para `/login` se não autenticado |
+| `apps/web/src/app/app.config.ts` | ✅ | `provideHttpClient(withInterceptors([...]))` |
+| `apps/web/src/app/app.routes.ts` | ✅ | Rotas lazy-load com `authGuard` |
+| `apps/web/src/app/features/*/` | ⚠️ | Stubs — UI real a implementar nas Semanas 2-4 |
+| `libs/shared-types` | ✅ | `Tenant`, `TenantUser`, `ServiceOrder`, `OsStatus` |
+| `libs/shared-utils` | ⚠️ | Vazio — `margin.utils.ts` a criar (RN03) |
+| `supabase/migrations/001_init_tenants.sql` | ✅ | Executar no Supabase Dashboard |
+| `supabase/migrations/002_init_rls.sql` | ✅ | Executar no Supabase Dashboard |
+| `supabase/migrations/003_seed_dev.sql` | ✅ | Executar no Supabase Dashboard |
+| `apps/api/Dockerfile` | ✅ | Build testado localmente; health check OK |
+| `vercel.json` | ✅ | `outputDirectory: dist/apps/web/browser` |
+| `.github/workflows/ci.yml` | ✅ | 3 jobs: lint-test / build / docker — por branch |
+| `.env.example` | ❌ | A criar (AC-13) |
+| `libs/shared-utils/src/lib/margin.utils.ts` | ❌ | A criar (RN03) |
+
+### 15.2 Itens pendentes da Semana 1
+
+**`.env.example`** — deve estar na raiz e commitado (AC-13):
+
+```bash
+# .env.example — copiar para .env e preencher com valores reais
+# .env está no .gitignore e NUNCA deve ser commitado
+
+# API
+PORT=3000
+NODE_ENV=development
+
+# Supabase (Settings → API no dashboard)
+SUPABASE_URL=https://SEU-PROJETO.supabase.co
+SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_KEY=eyJ...   # ⚠️ apenas no backend
+
+# PostgreSQL (Settings → Database → Connection string → Transaction)
+DATABASE_URL=postgresql://postgres.SEU-PROJETO:SENHA@aws-0-REGIAO.pooler.supabase.com:6543/postgres
+
+# CORS
+FRONTEND_URL=http://localhost:4200
+
+# Angular (prefixo público para Vercel)
+NEXT_PUBLIC_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+```
+
+**`libs/shared-utils/src/lib/margin.utils.ts`** — utilitário de cálculo de margem (RN03):
+
+```typescript
+export interface PriceComponents {
+  priceEffective: number;
+  productCost: number;
+  taxRate: number;      // ex: 0.15 = 15%
+  cardFeeRate: number;  // ex: 0.03 = 3%
+  otherCosts?: number;
+}
+
+export function calcProfit(c: PriceComponents): number {
+  const taxes   = c.priceEffective * c.taxRate;
+  const cardFee = c.priceEffective * c.cardFeeRate;
+  return c.priceEffective - c.productCost - taxes - cardFee - (c.otherCosts ?? 0);
+}
+
+export function calcIdealPrice(cost: number, targetMarginPct: number): number {
+  return cost / (1 - targetMarginPct / 100);
+}
+
+export function calcMarginDelta(ideal: number, effective: number): number {
+  return ((effective - ideal) / ideal) * 100;
+}
+```
+
+Exportar em `libs/shared-utils/src/index.ts`:
+
+```typescript
+export * from './lib/margin.utils';
+```
+
+### 15.3 Critérios de Aceite da Semana 1 — Checklist Final
+
+| ID | Critério | Status |
+|---|---|---|
+| AC-01 | `nx run-many --target=build` sem erros | ✅ |
+| AC-02 | Pipeline CI no GitHub Actions | ✅ |
+| AC-03 | Projeto Supabase criado (São Paulo) | ✅ manual |
+| AC-04 | Migrations 001 e 002 executadas | ✅ manual |
+| AC-05 | RLS testado no SQL Editor | ✅ manual |
+| AC-06 | `GET /api/health` retorna 200 | ✅ testado via Docker |
+| AC-07 | `AuthGuard` rejeita sem token (401) | ⚠️ testar via Postman |
+| AC-08 | `TenantMiddleware` injeta `tenant_id` | ⚠️ testar via Postman |
+| AC-09 | `nx serve web` sem erros no browser | ⚠️ verificar |
+| AC-10 | SSR: HTML com conteúdo sem JS | ⚠️ verificar após UI real |
+| AC-11 | Lighthouse PWA Score > 90 | ⚠️ verificar após UI real |
+| AC-12 | Docker build sem erros | ✅ |
+| AC-13 | `.env` não commitado; `.env.example` documentado | ❌ criar `.env.example` |
+| AC-14 | Vercel deploy preview funciona | ⚠️ corrigir Node 20 + outputDir no dashboard |
+
+---
+
+## Seção 16
+
+## Semana 2 — Módulo de Ordens de Serviço
+
+### 16.1 Decisões técnicas resolvidas
+
+**JSONB `custom_fields` por nicho:**
+
+O campo `custom_fields` da tabela `service_orders` segue um schema diferente por tipo de negócio. O frontend envia o objeto, o backend salva sem validação de estrutura — flexibilidade total.
+
+| Nicho | Campos típicos no JSONB |
+|---|---|
+| Eletrônicos / celulares | `{ "device": "iPhone 13", "imei": "...", "accessories": ["cabo"], "unlock_code": "1234" }` |
+| Climatização (AC) | `{ "equipment": "Split 12000 BTU", "brand": "Springer", "defect": "não gela", "gas_type": "R410A" }` |
+| Informática | `{ "device": "Notebook Dell", "serial": "...", "defect": "não liga", "password": "1234" }` |
+| Genérico | `{}` — campos livres sem schema fixo |
+
+> 💡 O tenant pode configurar seu schema via settings (Semana 4). Por ora, o frontend envia o que quiser e o backend persiste.
+
+### 16.2 Gerar estrutura NestJS
+
+```bash
+# Na raiz do monorepo
+nx generate @nx/nest:resource modules/service-orders \
+    --project=api --type=rest --crud=true --no-interactive
+```
+
+Isso cria em `apps/api/src/app/modules/service-orders/`:
+- `service-orders.controller.ts`
+- `service-orders.service.ts`
+- `service-orders.module.ts`
+- `dto/create-service-order.dto.ts`
+- `dto/update-service-order.dto.ts`
+- `entities/service-order.entity.ts`
+
+### 16.3 Migration SQL — executar no Supabase Dashboard
+
+Salvar como `supabase/migrations/004_add_service_orders.sql` e executar no SQL Editor:
+
+```sql
+-- 004_add_service_orders.sql
+CREATE TABLE public.service_orders (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id       UUID NOT NULL REFERENCES public.tenants(id),
+  code            TEXT NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'open'
+                   CHECK (status IN ('open','in_progress','awaiting_parts','done','cancelled')),
+  client_name     TEXT NOT NULL,
+  client_phone    TEXT,
+  description     TEXT NOT NULL,
+  custom_fields   JSONB NOT NULL DEFAULT '{}',
+  price_ideal     NUMERIC(10,2),
+  price_effective NUMERIC(10,2),
+  delivered_at    TIMESTAMPTZ,
+  warranty_until  TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at      TIMESTAMPTZ
+);
+
+ALTER TABLE public.service_orders ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "tenant_isolation" ON public.service_orders
+  FOR ALL USING (tenant_id = current_tenant_id());
+
+CREATE INDEX idx_service_orders_tenant    ON public.service_orders(tenant_id);
+CREATE INDEX idx_service_orders_status    ON public.service_orders(tenant_id, status);
+CREATE INDEX idx_service_orders_deleted   ON public.service_orders(tenant_id, deleted_at);
+
+CREATE TRIGGER trg_service_orders_updated_at
+  BEFORE UPDATE ON public.service_orders
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+```
+
+### 16.4 TypeORM Entity — `service-order.entity.ts`
+
+```typescript
+// apps/api/src/app/modules/service-orders/entities/service-order.entity.ts
+import {
+  Entity, PrimaryGeneratedColumn, Column,
+  CreateDateColumn, UpdateDateColumn, DeleteDateColumn
+} from 'typeorm';
+
+@Entity('service_orders')
+export class ServiceOrderEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column('uuid')
+  tenantId: string;
+
+  @Column()
+  code: string;
+
+  @Column({ default: 'open' })
+  status: 'open' | 'in_progress' | 'awaiting_parts' | 'done' | 'cancelled';
+
+  @Column()
+  clientName: string;
+
+  @Column({ nullable: true })
+  clientPhone?: string;
+
+  @Column('text')
+  description: string;
+
+  @Column('jsonb', { default: {} })
+  customFields: Record<string, unknown>;
+
+  @Column('numeric', { nullable: true, precision: 10, scale: 2 })
+  priceIdeal?: number;
+
+  @Column('numeric', { nullable: true, precision: 10, scale: 2 })
+  priceEffective?: number;
+
+  @Column('timestamptz', { nullable: true })
+  deliveredAt?: Date;
+
+  @Column('timestamptz', { nullable: true })
+  warrantyUntil?: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;  // RN01 — soft delete
+}
+```
+
+### 16.5 DTOs com validação
+
+```typescript
+// dto/create-service-order.dto.ts
+import { IsString, IsNotEmpty, IsOptional, IsObject, IsNumber, Min } from 'class-validator';
+
+export class CreateServiceOrderDto {
+  @IsString() @IsNotEmpty()
+  clientName: string;
+
+  @IsString() @IsOptional()
+  clientPhone?: string;
+
+  @IsString() @IsNotEmpty()
+  description: string;
+
+  @IsObject() @IsOptional()
+  customFields?: Record<string, unknown>;
+
+  @IsNumber() @Min(0) @IsOptional()
+  priceIdeal?: number;
+}
+```
+
+```typescript
+// dto/update-service-order.dto.ts
+import { PartialType } from '@nestjs/mapped-types';
+import { IsString, IsOptional, IsIn } from 'class-validator';
+import { CreateServiceOrderDto } from './create-service-order.dto';
+
+export class UpdateServiceOrderDto extends PartialType(CreateServiceOrderDto) {
+  @IsString()
+  @IsIn(['open', 'in_progress', 'awaiting_parts', 'done', 'cancelled'])
+  @IsOptional()
+  status?: string;
+
+  @IsString() @IsOptional()
+  warrantyUntil?: string;  // ISO 8601
+
+  @IsString() @IsOptional()
+  deliveredAt?: string;    // ISO 8601
+}
+```
+
+### 16.6 Service com RN01 (soft delete) e RN02 (limite de plano)
+
+```typescript
+// service-orders.service.ts
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, IsNull } from 'typeorm';
+import { ServiceOrderEntity } from './entities/service-order.entity';
+import { CreateServiceOrderDto } from './dto/create-service-order.dto';
+import { UpdateServiceOrderDto } from './dto/update-service-order.dto';
+
+@Injectable()
+export class ServiceOrdersService {
+  constructor(
+    @InjectRepository(ServiceOrderEntity)
+    private readonly repo: Repository<ServiceOrderEntity>,
+  ) {}
+
+  async findAll(tenantId: string) {
+    return this.repo.find({
+      where: { tenantId, deletedAt: IsNull() },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findOne(tenantId: string, id: string) {
+    return this.repo.findOneOrFail({ where: { tenantId, id, deletedAt: IsNull() } });
+  }
+
+  async create(tenantId: string, dto: CreateServiceOrderDto) {
+    // RN02 — verificar limite de plano
+    const count = await this.repo.count({ where: { tenantId, deletedAt: IsNull() } });
+    // limite hard-coded por enquanto; virá do tenant.plan_limits no futuro
+    if (count >= 100) {
+      throw new HttpException(
+        { message: 'Limite de 100 OS atingido no plano starter.', upgradeUrl: '/pricing' },
+        HttpStatus.PAYMENT_REQUIRED,
+      );
+    }
+    const code = `OS-${Date.now().toString(36).toUpperCase()}`;
+    return this.repo.save({ ...dto, tenantId, code });
+  }
+
+  async update(tenantId: string, id: string, dto: UpdateServiceOrderDto) {
+    await this.findOne(tenantId, id);
+    await this.repo.update({ id, tenantId }, dto as any);
+    return this.findOne(tenantId, id);
+  }
+
+  async remove(tenantId: string, id: string) {
+    await this.findOne(tenantId, id);
+    await this.repo.softDelete({ id, tenantId });  // RN01
+  }
+}
+```
+
+### 16.7 Controller
+
+```typescript
+// service-orders.controller.ts
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { ServiceOrdersService } from './service-orders.service';
+import { CreateServiceOrderDto } from './dto/create-service-order.dto';
+import { UpdateServiceOrderDto } from './dto/update-service-order.dto';
+import { AuthGuard } from '../../core/guards/auth.guard';
+import { CurrentTenant } from '../../core/decorators/tenant.decorator';
+
+@UseGuards(AuthGuard)
+@Controller('service-orders')
+export class ServiceOrdersController {
+  constructor(private readonly service: ServiceOrdersService) {}
+
+  @Get()
+  findAll(@CurrentTenant() tenantId: string) {
+    return this.service.findAll(tenantId);
+  }
+
+  @Get(':id')
+  findOne(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.service.findOne(tenantId, id);
+  }
+
+  @Post()
+  create(@CurrentTenant() tenantId: string, @Body() dto: CreateServiceOrderDto) {
+    return this.service.create(tenantId, dto);
+  }
+
+  @Patch(':id')
+  update(@CurrentTenant() tenantId: string, @Param('id') id: string, @Body() dto: UpdateServiceOrderDto) {
+    return this.service.update(tenantId, id, dto);
+  }
+
+  @Delete(':id')
+  remove(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.service.remove(tenantId, id);
+  }
+}
+```
+
+### 16.8 Registrar no módulo e no AppModule
+
+```typescript
+// service-orders.module.ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServiceOrdersController } from './service-orders.controller';
+import { ServiceOrdersService } from './service-orders.service';
+import { ServiceOrderEntity } from './entities/service-order.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([ServiceOrderEntity])],
+  controllers: [ServiceOrdersController],
+  providers: [ServiceOrdersService],
+})
+export class ServiceOrdersModule {}
+```
+
+Adicionar ao `app.module.ts`:
+
+```typescript
+import { ServiceOrdersModule } from './modules/service-orders/service-orders.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot({ ... }),
+    ServiceOrdersModule,  // ← adicionar
+  ],
+  ...
+})
+```
+
+### 16.9 Angular — Feature de Ordens de Serviço
+
+Estrutura de arquivos a criar em `apps/web/src/app/features/service-orders/`:
+
+```
+service-orders/
+├── service-orders.routes.ts       ← já existe (stub) — atualizar
+├── service-orders.service.ts      ← serviço HTTP
+├── components/
+│   ├── os-list/
+│   │   ├── os-list.component.ts
+│   │   └── os-list.component.html
+│   ├── os-form/
+│   │   ├── os-form.component.ts
+│   │   └── os-form.component.html
+│   └── os-detail/
+│       ├── os-detail.component.ts
+│       └── os-detail.component.html
+```
+
+**`service-orders.service.ts`** (Angular):
+
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ServiceOrder } from '@nexus-platform/shared-types';
+import { environment } from '../../../../environments/environment';
+
+@Injectable({ providedIn: 'root' })
+export class ServiceOrdersService {
+  private http = inject(HttpClient);
+  private base = `${environment.apiUrl}/service-orders`;
+
+  getAll()               { return this.http.get<ServiceOrder[]>(this.base); }
+  getOne(id: string)     { return this.http.get<ServiceOrder>(`${this.base}/${id}`); }
+  create(dto: Partial<ServiceOrder>) { return this.http.post<ServiceOrder>(this.base, dto); }
+  update(id: string, dto: Partial<ServiceOrder>) { return this.http.patch<ServiceOrder>(`${this.base}/${id}`, dto); }
+  remove(id: string)     { return this.http.delete(`${this.base}/${id}`); }
+}
+```
+
+**`service-orders.routes.ts`** (atualizar stub):
+
+```typescript
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./components/os-list/os-list.component').then(m => m.OsListComponent)
+  },
+  {
+    path: 'nova',
+    loadComponent: () => import('./components/os-form/os-form.component').then(m => m.OsFormComponent)
+  },
+  {
+    path: ':id',
+    loadComponent: () => import('./components/os-detail/os-detail.component').then(m => m.OsDetailComponent)
+  },
+  {
+    path: ':id/editar',
+    loadComponent: () => import('./components/os-form/os-form.component').then(m => m.OsFormComponent)
+  },
+];
+```
+
+### 16.10 Critérios de Aceite — Semana 2
+
+| ID | Critério | Como Verificar |
+|---|---|---|
+| AC-2-01 | `POST /api/service-orders` cria OS com `code` gerado | Postman: body com `clientName` e `description` → 201 |
+| AC-2-02 | `GET /api/service-orders` retorna apenas OS do tenant logado | Token do Tenant A não deve retornar OS do Tenant B |
+| AC-2-03 | `PATCH /api/service-orders/:id` atualiza status | Status `open` → `in_progress` → `done` |
+| AC-2-04 | `DELETE /api/service-orders/:id` faz soft delete | `deleted_at` preenchido; OS some do `GET` |
+| AC-2-05 | Limite de plano retorna 402 ao exceder 100 OS | Criar 101ª OS → `402 Payment Required` |
+| AC-2-06 | Angular lista OS em `/app/os` | Tabela com OS do tenant logado |
+| AC-2-07 | Formulário de nova OS funciona | Preencher e salvar → OS aparece na lista |
+
+---
+
+## Seção 17
+
+## Semana 3 — Módulo de Estoque
+
+### 17.1 Decisão técnica: NF-e
+
+**Opção escolhida: `nfe-parser` (npm) — somente leitura/importação**
+
+| | `nfe-parser` ✅ | Implementação manual ❌ |
+|---|---|---|
+| Complexidade | Baixa — 1 dependência | Alta — SEFAZ XML, assinatura digital |
+| Escopo | Importar XML de NF de fornecedor | Emitir NF (requer certificado A1/A3) |
+| Adequado para | Entrada de estoque via XML | Faturamento completo (Semana 4+) |
+
+> ⚠️ **Emissão de NF-e está fora do escopo da Semana 3.** A emissão requer certificado digital e integração com SEFAZ estadual — tratar como módulo separado em sprint futuro.
+
+```bash
+npm install nfe-parser
+```
+
+### 17.2 Migration SQL — executar no Supabase Dashboard
+
+Salvar como `supabase/migrations/005_add_inventory.sql`:
+
+```sql
+-- 005_add_inventory.sql
+CREATE TABLE public.products (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id   UUID NOT NULL REFERENCES public.tenants(id),
+  name        TEXT NOT NULL,
+  sku         TEXT,
+  description TEXT,
+  unit        TEXT NOT NULL DEFAULT 'un',
+  cost_price  NUMERIC(10,2) NOT NULL DEFAULT 0,
+  sale_price  NUMERIC(10,2) NOT NULL DEFAULT 0,
+  min_stock   INTEGER NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at  TIMESTAMPTZ
+);
+
+CREATE TABLE public.stock_entries (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id    UUID NOT NULL REFERENCES public.tenants(id),
+  product_id   UUID NOT NULL REFERENCES public.products(id),
+  type         TEXT NOT NULL CHECK (type IN ('in','out','adjustment')),
+  quantity     INTEGER NOT NULL,
+  unit_cost    NUMERIC(10,2),
+  reference    TEXT,     -- número da NF, código da OS, etc.
+  notes        TEXT,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- View: saldo atual por produto
+CREATE VIEW public.stock_balance AS
+  SELECT
+    product_id,
+    tenant_id,
+    SUM(CASE WHEN type = 'in' THEN quantity
+             WHEN type = 'out' THEN -quantity
+             ELSE quantity END) AS balance
+  FROM public.stock_entries
+  GROUP BY product_id, tenant_id;
+
+-- RLS
+ALTER TABLE public.products     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.stock_entries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "tenant_isolation" ON public.products
+  FOR ALL USING (tenant_id = current_tenant_id());
+CREATE POLICY "tenant_isolation" ON public.stock_entries
+  FOR ALL USING (tenant_id = current_tenant_id());
+
+-- Índices
+CREATE INDEX idx_products_tenant        ON public.products(tenant_id);
+CREATE INDEX idx_stock_entries_tenant   ON public.stock_entries(tenant_id);
+CREATE INDEX idx_stock_entries_product  ON public.stock_entries(product_id);
+
+CREATE TRIGGER trg_products_updated_at
+  BEFORE UPDATE ON public.products
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+```
+
+### 17.3 Gerar estrutura NestJS
+
+```bash
+nx generate @nx/nest:resource modules/inventory \
+    --project=api --type=rest --crud=true --no-interactive
+```
+
+### 17.4 Entidades TypeORM
+
+```typescript
+// entities/product.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+
+@Entity('products')
+export class ProductEntity {
+  @PrimaryGeneratedColumn('uuid') id: string;
+  @Column('uuid') tenantId: string;
+  @Column() name: string;
+  @Column({ nullable: true }) sku?: string;
+  @Column({ nullable: true }) description?: string;
+  @Column({ default: 'un' }) unit: string;
+  @Column('numeric', { precision: 10, scale: 2, default: 0 }) costPrice: number;
+  @Column('numeric', { precision: 10, scale: 2, default: 0 }) salePrice: number;
+  @Column('int', { default: 0 }) minStock: number;
+  @CreateDateColumn() createdAt: Date;
+  @UpdateDateColumn() updatedAt: Date;
+  @DeleteDateColumn() deletedAt?: Date;
+}
+```
+
+```typescript
+// entities/stock-entry.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+
+@Entity('stock_entries')
+export class StockEntryEntity {
+  @PrimaryGeneratedColumn('uuid') id: string;
+  @Column('uuid') tenantId: string;
+  @Column('uuid') productId: string;
+  @Column() type: 'in' | 'out' | 'adjustment';
+  @Column('int') quantity: number;
+  @Column('numeric', { nullable: true, precision: 10, scale: 2 }) unitCost?: number;
+  @Column({ nullable: true }) reference?: string;
+  @Column({ nullable: true }) notes?: string;
+  @CreateDateColumn() createdAt: Date;
+}
+```
+
+### 17.5 Importação de NF-e XML
+
+```typescript
+// apps/api/src/app/modules/inventory/nfe-import.service.ts
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { readNFe } from 'nfe-parser';
+import { StockEntryEntity } from './entities/stock-entry.entity';
+import { ProductEntity } from './entities/product.entity';
+
+@Injectable()
+export class NfeImportService {
+  constructor(
+    @InjectRepository(ProductEntity) private products: Repository<ProductEntity>,
+    @InjectRepository(StockEntryEntity) private entries: Repository<StockEntryEntity>,
+  ) {}
+
+  async importXml(tenantId: string, xmlContent: string) {
+    const nfe = readNFe(xmlContent);
+    const results: string[] = [];
+
+    for (const item of nfe.NFe.infNFe.det) {
+      const prod = item.prod;
+      let product = await this.products.findOne({
+        where: { tenantId, sku: prod.cProd },
+      });
+
+      if (!product) {
+        product = await this.products.save({
+          tenantId,
+          name: prod.xProd,
+          sku: prod.cProd,
+          unit: prod.uCom,
+          costPrice: parseFloat(prod.vUnCom),
+        });
+      }
+
+      await this.entries.save({
+        tenantId,
+        productId: product.id,
+        type: 'in',
+        quantity: Math.floor(parseFloat(prod.qCom)),
+        unitCost: parseFloat(prod.vUnCom),
+        reference: nfe.NFe.infNFe.ide.nNF,
+      });
+
+      results.push(product.name);
+    }
+
+    return { imported: results.length, products: results };
+  }
+}
+```
+
+### 17.6 Tipos compartilhados — adicionar a `shared-types`
+
+```typescript
+// libs/shared-types/src/lib/inventory.types.ts
+export interface Product {
+  id: string;
+  tenantId: string;
+  name: string;
+  sku?: string;
+  unit: string;
+  costPrice: number;
+  salePrice: number;
+  minStock: number;
+  currentStock?: number; // calculado via view stock_balance
+}
+
+export interface StockEntry {
+  id: string;
+  tenantId: string;
+  productId: string;
+  type: 'in' | 'out' | 'adjustment';
+  quantity: number;
+  unitCost?: number;
+  reference?: string;
+  createdAt: string;
+}
+```
+
+Exportar em `libs/shared-types/src/lib/shared-types.ts`:
+```typescript
+export * from './tenant.types';
+export * from './service-order.types';
+export * from './inventory.types';  // ← adicionar
+```
+
+### 17.7 Critérios de Aceite — Semana 3
+
+| ID | Critério | Como Verificar |
+|---|---|---|
+| AC-3-01 | `POST /api/inventory/products` cria produto | Postman: body com `name`, `costPrice`, `salePrice` |
+| AC-3-02 | `GET /api/inventory/products` retorna estoque do tenant | Isolamento RLS ativo |
+| AC-3-03 | `POST /api/inventory/nfe-import` processa XML | Upload de XML de NF de teste; produtos criados |
+| AC-3-04 | Entrada manual de estoque registra `StockEntry` | `POST /api/inventory/entries` com `type: 'in'` |
+| AC-3-05 | Angular lista produtos com saldo atual | Coluna "Estoque" calculada via `stock_balance` |
+| AC-3-06 | Alerta visual para produto abaixo do `minStock` | Item em vermelho na listagem |
+
+---
+
+## Seção 18
+
+## Semana 4 — PDV, WhatsApp e Financeiro
+
+### 18.1 Decisão técnica: WhatsApp
+
+**Opção escolhida: Evolution API (self-hosted no Railway)**
+
+| | Evolution API ✅ | WppConnect ❌ |
+|---|---|---|
+| Custo | Grátis (Railway free tier) | Pago após trial |
+| Hospedagem | Railway (1 serviço Docker) | Cloud proprietário |
+| Funcionalidades | Envio, recebimento, webhooks | Similar |
+| Controle | Total (self-hosted) | Limitado |
+| Documentação | boa, REST API | boa |
+
+**Deploy da Evolution API no Railway:**
+1. Criar novo projeto no [railway.app](https://railway.app)
+2. Deploy via Docker: `atendai/evolution-api:latest`
+3. Adicionar variável `AUTHENTICATION_API_KEY=sua-chave-secreta`
+4. URL gerada: `https://evolution-api-xxx.railway.app`
+
+Adicionar ao `.env`:
+```bash
+EVOLUTION_API_URL=https://evolution-api-xxx.railway.app
+EVOLUTION_API_KEY=sua-chave-secreta
+WHATSAPP_INSTANCE=nexus-tenant  # nome da instância
+```
+
+### 18.2 Migration SQL — executar no Supabase Dashboard
+
+Salvar como `supabase/migrations/006_add_finance_pdv.sql`:
+
+```sql
+-- 006_add_finance_pdv.sql
+
+-- Vendas (PDV)
+CREATE TABLE public.sales (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id       UUID NOT NULL REFERENCES public.tenants(id),
+  service_order_id UUID REFERENCES public.service_orders(id),
+  total           NUMERIC(10,2) NOT NULL,
+  discount        NUMERIC(10,2) NOT NULL DEFAULT 0,
+  status          TEXT NOT NULL DEFAULT 'open'
+                   CHECK (status IN ('open','paid','cancelled')),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at      TIMESTAMPTZ
+);
+
+-- Itens da venda
+CREATE TABLE public.sale_items (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sale_id     UUID NOT NULL REFERENCES public.sales(id) ON DELETE CASCADE,
+  product_id  UUID REFERENCES public.products(id),
+  description TEXT NOT NULL,
+  quantity    INTEGER NOT NULL DEFAULT 1,
+  unit_price  NUMERIC(10,2) NOT NULL,
+  total       NUMERIC(10,2) NOT NULL
+);
+
+-- Pagamentos (multi-payment)
+CREATE TABLE public.payments (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sale_id    UUID NOT NULL REFERENCES public.sales(id) ON DELETE CASCADE,
+  method     TEXT NOT NULL CHECK (method IN ('cash','credit','debit','pix','boleto')),
+  amount     NUMERIC(10,2) NOT NULL,
+  paid_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  reference  TEXT  -- ID externo (Asaas, etc.)
+);
+
+-- RLS
+ALTER TABLE public.sales      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sale_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payments   ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "tenant_isolation" ON public.sales
+  FOR ALL USING (tenant_id = current_tenant_id());
+CREATE POLICY "tenant_isolation" ON public.sale_items
+  FOR ALL USING (
+    sale_id IN (SELECT id FROM public.sales WHERE tenant_id = current_tenant_id())
+  );
+CREATE POLICY "tenant_isolation" ON public.payments
+  FOR ALL USING (
+    sale_id IN (SELECT id FROM public.sales WHERE tenant_id = current_tenant_id())
+  );
+
+CREATE INDEX idx_sales_tenant ON public.sales(tenant_id);
+CREATE INDEX idx_sales_status ON public.sales(tenant_id, status);
+
+CREATE TRIGGER trg_sales_updated_at
+  BEFORE UPDATE ON public.sales
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+```
+
+### 18.3 Integração Asaas (Boleto / PIX)
+
+```bash
+npm install axios  # já vem com NestJS, mas garantir
+```
+
+Adicionar ao `.env`:
+```bash
+ASAAS_API_KEY=seu-token-sandbox
+ASAAS_BASE_URL=https://sandbox.asaas.com/api/v3
+```
+
+```typescript
+// apps/api/src/app/modules/finance/asaas.service.ts
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import axios from 'axios';
+
+@Injectable()
+export class AsaasService {
+  private readonly client = axios.create({
+    baseURL: process.env.ASAAS_BASE_URL,
+    headers: { access_token: process.env.ASAAS_API_KEY },
+  });
+
+  async createCharge(data: {
+    customer: string;  // ID do customer no Asaas
+    billingType: 'BOLETO' | 'PIX';
+    value: number;
+    dueDate: string;   // YYYY-MM-DD
+    description: string;
+  }) {
+    const { data: response } = await this.client.post('/payments', data);
+    return response;
+  }
+
+  async getCharge(chargeId: string) {
+    const { data } = await this.client.get(`/payments/${chargeId}`);
+    return data;
+  }
+}
+```
+
+### 18.4 Serviço WhatsApp
+
+```typescript
+// apps/api/src/app/modules/finance/whatsapp.service.ts
+import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
+
+@Injectable()
+export class WhatsAppService {
+  private readonly logger = new Logger(WhatsAppService.name);
+  private readonly client = axios.create({
+    baseURL: process.env.EVOLUTION_API_URL,
+    headers: { apikey: process.env.EVOLUTION_API_KEY },
+  });
+
+  async sendText(phone: string, message: string) {
+    try {
+      await this.client.post(
+        `/message/sendText/${process.env.WHATSAPP_INSTANCE}`,
+        { number: `55${phone.replace(/\D/g, '')}@s.whatsapp.net`, text: message },
+      );
+    } catch (err) {
+      this.logger.error(`WhatsApp send failed: ${err.message}`);
+      // não lançar — falha no WhatsApp não deve derrubar a operação principal
+    }
+  }
+
+  async sendOsReady(phone: string, osCode: string, tenantName: string) {
+    const msg = `✅ Olá! Seu equipamento está pronto para retirada.\n\n` +
+                `*OS:* ${osCode}\n*Empresa:* ${tenantName}\n\n` +
+                `Entre em contato para combinar a retirada.`;
+    return this.sendText(phone, msg);
+  }
+}
+```
+
+### 18.5 Tipos compartilhados — adicionar a `shared-types`
+
+```typescript
+// libs/shared-types/src/lib/finance.types.ts
+export type PaymentMethod = 'cash' | 'credit' | 'debit' | 'pix' | 'boleto';
+export type SaleStatus = 'open' | 'paid' | 'cancelled';
+
+export interface Sale {
+  id: string;
+  tenantId: string;
+  serviceOrderId?: string;
+  total: number;
+  discount: number;
+  status: SaleStatus;
+  items: SaleItem[];
+  payments: Payment[];
+  createdAt: string;
+}
+
+export interface SaleItem {
+  id: string;
+  saleId: string;
+  productId?: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface Payment {
+  id: string;
+  saleId: string;
+  method: PaymentMethod;
+  amount: number;
+  paidAt: string;
+  reference?: string;
+}
+```
+
+Exportar em `libs/shared-types/src/lib/shared-types.ts`:
+```typescript
+export * from './tenant.types';
+export * from './service-order.types';
+export * from './inventory.types';
+export * from './finance.types';  // ← adicionar
+```
+
+### 18.6 DRE (Demonstrativo de Resultado) — Query SQL
+
+A query abaixo é executada pelo NestJS via `DataSource.query()` e retorna o DRE mensal:
+
+```sql
+-- Chamada: SELECT * FROM fn_dre($1, $2, $3)
+-- Parâmetros: tenant_id, data_inicio, data_fim
+SELECT
+  DATE_TRUNC('month', s.created_at)           AS mes,
+  SUM(s.total - s.discount)                    AS receita_bruta,
+  SUM(
+    COALESCE((
+      SELECT SUM(se.quantity * se.unit_cost)
+      FROM sale_items si2
+      JOIN stock_entries se ON se.product_id = si2.product_id
+      WHERE si2.sale_id = s.id AND se.type = 'out'
+    ), 0)
+  )                                             AS custo_produtos,
+  SUM(s.total - s.discount) - SUM(
+    COALESCE((
+      SELECT SUM(se.quantity * se.unit_cost)
+      FROM sale_items si2
+      JOIN stock_entries se ON se.product_id = si2.product_id
+      WHERE si2.sale_id = s.id AND se.type = 'out'
+    ), 0)
+  )                                             AS lucro_bruto
+FROM public.sales s
+WHERE s.tenant_id = $1
+  AND s.status = 'paid'
+  AND s.created_at BETWEEN $2 AND $3
+  AND s.deleted_at IS NULL
+GROUP BY DATE_TRUNC('month', s.created_at)
+ORDER BY mes;
+```
+
+### 18.7 Gerar estrutura NestJS
+
+```bash
+nx generate @nx/nest:resource modules/finance \
+    --project=api --type=rest --crud=true --no-interactive
+```
+
+### 18.8 Angular — Estrutura das features restantes
+
+```
+apps/web/src/app/features/
+├── auth/
+│   └── login.component.ts          ← stub — implementar formulário
+├── landing/
+│   └── landing.component.ts        ← stub — implementar página inicial
+├── dashboard/
+│   └── dashboard.component.ts      ← stub — implementar KPIs
+├── service-orders/                 ← Semana 2
+│   ├── service-orders.routes.ts
+│   ├── service-orders.service.ts
+│   └── components/
+│       ├── os-list/
+│       ├── os-form/
+│       └── os-detail/
+├── inventory/                      ← Semana 3
+│   ├── inventory.routes.ts
+│   ├── inventory.service.ts
+│   └── components/
+│       ├── product-list/
+│       ├── product-form/
+│       └── nfe-import/
+└── finance/                        ← Semana 4
+    ├── finance.routes.ts
+    ├── pdv/
+    │   └── pdv.component.ts        ← tela de venda
+    └── reports/
+        └── dre.component.ts        ← DRE mensal
+```
+
+Atualizar `app.routes.ts` para incluir inventory e finance:
+
+```typescript
+{
+  path: 'app',
+  canActivate: [authGuard],
+  children: [
+    { path: 'dashboard',   loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+    { path: 'os',          loadChildren: () => import('./features/service-orders/service-orders.routes').then(m => m.routes) },
+    { path: 'estoque',     loadChildren: () => import('./features/inventory/inventory.routes').then(m => m.routes) },
+    { path: 'financeiro',  loadChildren: () => import('./features/finance/finance.routes').then(m => m.routes) },
+    { path: '',            redirectTo: 'dashboard', pathMatch: 'full' },
+  ]
+}
+```
+
+### 18.9 Critérios de Aceite — Semana 4
+
+| ID | Critério | Como Verificar |
+|---|---|---|
+| AC-4-01 | PDV fecha venda com multi-pagamento | Venda com 50% crédito + 50% PIX |
+| AC-4-02 | WhatsApp envia mensagem ao fechar OS | Mudar status para `done` → mensagem enviada |
+| AC-4-03 | Boleto gerado via Asaas | `POST /api/finance/charge` → link do boleto |
+| AC-4-04 | DRE mensal retorna receita e lucro bruto | `GET /api/finance/dre?from=2026-01-01&to=2026-03-31` |
+| AC-4-05 | Saída de estoque registrada ao fechar venda | `StockEntry` do tipo `out` criada para cada produto |
+| AC-4-06 | Angular PDV lista OS e produtos para seleção | Tela `/app/financeiro/pdv` |
+| AC-4-07 | DRE renderizado em gráfico no Angular | `Chart.js` ou similar |
+
+---
+
+## Seção 19
+
+## Dependências adicionais — Semanas 2, 3 e 4
+
+```bash
+# Semana 2
+npm install @nestjs/mapped-types
+
+# Semana 3
+npm install nfe-parser
+
+# Semana 4
+npm install axios
+# Angular charts (DRE)
+npm install chart.js ng2-charts
+```
+
+---
+
+## Seção 20
+
+## Estratégia de Branches e Banco de Dados
+
+### 20.1 Fluxo de desenvolvimento
+
+```
+feature/nova-feature
+        │
+        ▼ PR + CI (lint + test)
+    develop ──────────────────► Supabase DEV
+        │                        (nexus-platform-dev)
+        ▼ PR + CI (lint + test + build)
+    homolog ──────────────────► Supabase DEV
+        │                        (mesmo projeto)
+        ▼ PR + CI (lint + test + build + docker)
+    master  ──────────────────► Supabase PROD
+                                 (nexus-platform-prod)
+```
+
+### 20.2 Dois projetos Supabase
+
+| Projeto | Usado por | Dados |
+|---|---|---|
+| `nexus-platform-dev` | `develop`, `homolog`, local | Dados de teste |
+| `nexus-platform-prod` | `master` | Dados reais |
+
+### 20.3 Processo de migration por branch
+
+Toda migration deve ser aplicada em dois momentos:
+
+1. **Merge em `homolog`** → executar SQL no `nexus-platform-dev`
+2. **Merge em `master`** → executar SQL no `nexus-platform-prod`
+
+Os arquivos em `supabase/migrations/` são o registro versionado. Nunca editar um arquivo já commitado — criar novo arquivo com número sequencial.
+
+### 20.4 CI por branch
+
+| Branch | Job executado | Gatilho |
+|---|---|---|
+| `feature/*` | lint-test (via PR) | Pull Request → develop |
+| `develop` | lint-test | push |
+| `homolog` | lint-test + build | push |
+| `master` | lint-test + build + docker | push |
+
+---
+
+*Nexus Service Platform · Guia Técnico v4.0 · Março 2026 · Supabase 100% via dashboard web*
