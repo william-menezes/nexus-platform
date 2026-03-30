@@ -1,0 +1,76 @@
+<p-confirmDialog />
+
+<div class="nx-page">
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  }
+
+  @if (loading) {
+    <p style="color:var(--p-text-muted-color);">Carregando...</p>
+  } @else if (client) {
+
+    <div class="nx-page-header">
+      <h1 class="nx-page-title">{{ client.name }}</h1>
+      <div style="display:flex; gap:0.5rem;">
+        <a [routerLink]="['editar']">
+          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" />
+        </a>
+        <p-button label="Excluir" icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="delete()" />
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1rem; margin-top:1rem;">
+
+      <div class="nx-card">
+        <p class="nx-card-label">Tipo</p>
+        <p-tag
+          [value]="client.type === 'individual' ? 'Pessoa Física' : 'Pessoa Jurídica'"
+          [severity]="client.type === 'individual' ? 'info' : 'secondary'"
+        />
+      </div>
+
+      @if (client.cpfCnpj) {
+        <div class="nx-card">
+          <p class="nx-card-label">CPF / CNPJ</p>
+          <p>{{ client.cpfCnpj }}</p>
+        </div>
+      }
+
+      @if (client.phone) {
+        <div class="nx-card">
+          <p class="nx-card-label">Telefone</p>
+          <p>{{ client.phone }}{{ client.phone2 ? ' · ' + client.phone2 : '' }}</p>
+        </div>
+      }
+
+      @if (client.email) {
+        <div class="nx-card">
+          <p class="nx-card-label">Email</p>
+          <p>{{ client.email }}</p>
+        </div>
+      }
+
+      <div class="nx-card">
+        <p class="nx-card-label">Cadastrado em</p>
+        <p>{{ client.createdAt | date:'dd/MM/yyyy' }}</p>
+      </div>
+
+    </div>
+
+    @if (client.notes) {
+      <div style="margin-top:1.5rem;">
+        <p class="nx-card-label">Observações</p>
+        <p>{{ client.notes }}</p>
+      </div>
+    }
+
+    <div style="margin-top:2rem;">
+      <a routerLink="/app/clientes">
+        <p-button label="Voltar para lista" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+      </a>
+    </div>
+
+  }
+
+</div>

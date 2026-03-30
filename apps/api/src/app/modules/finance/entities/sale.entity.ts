@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
 import { SaleItemEntity } from './sale-item.entity';
@@ -17,8 +18,26 @@ export class SaleEntity {
   @Column('uuid')
   tenantId: string;
 
+  @Column({ nullable: true })
+  code?: string;
+
   @Column('uuid', { nullable: true })
   serviceOrderId?: string;
+
+  // Phase 1 refactor: FK to clients
+  @Column('uuid', { nullable: true })
+  clientId?: string;
+
+  // Phase 1 refactor: FK to custom_statuses
+  @Column('uuid', { nullable: true })
+  statusId?: string;
+
+  // Phase 1 refactor: FK to employees
+  @Column('uuid', { nullable: true })
+  employeeId?: string;
+
+  @Column({ nullable: true })
+  notes?: string;
 
   @Column('numeric', { precision: 10, scale: 2, default: 0 })
   total: number;
@@ -29,6 +48,7 @@ export class SaleEntity {
   @Column('numeric', { precision: 10, scale: 2, default: 0 })
   paidAmount: number;
 
+  // Legacy string status (kept for backward compat)
   @Column({ default: 'open' })
   status: 'open' | 'paid' | 'cancelled';
 
@@ -43,4 +63,7 @@ export class SaleEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

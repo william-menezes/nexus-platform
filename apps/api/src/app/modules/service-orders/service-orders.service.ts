@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { ServiceOrderEntity } from './entities/service-order.entity';
 import { CreateServiceOrderDto } from './dto/create-service-order.dto';
-import { UpdateServiceOrderDto } from './dto/update-service-order.dto';
+import { UpdateServiceOrderDto, ChangeStatusDto } from './dto/update-service-order.dto';
 
 const PLAN_LIMITS: Record<string, number> = {
   starter: 100,
@@ -59,6 +59,15 @@ export class ServiceOrdersService {
   async update(tenantId: string, id: string, dto: UpdateServiceOrderDto) {
     await this.findOne(tenantId, id);
     await this.repo.update({ id, tenantId }, dto as unknown as Partial<ServiceOrderEntity>);
+    return this.findOne(tenantId, id);
+  }
+
+  async changeStatus(tenantId: string, id: string, dto: ChangeStatusDto) {
+    await this.findOne(tenantId, id);
+    const patch: Partial<ServiceOrderEntity> = {};
+    if (dto.statusId) patch.statusId = dto.statusId;
+    if (dto.status)   patch.status   = dto.status as ServiceOrderEntity['status'];
+    await this.repo.update({ id, tenantId }, patch);
     return this.findOne(tenantId, id);
   }
 

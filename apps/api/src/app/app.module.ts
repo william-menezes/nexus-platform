@@ -1,8 +1,10 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { TenantMiddleware } from './core/middleware/tenant.middleware';
+import { AuditInterceptor } from './core/interceptors/audit.interceptor';
 import { SnakeNamingStrategy } from './core/database/snake-naming.strategy';
 import { ServiceOrdersModule } from './modules/service-orders/service-orders.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
@@ -28,6 +30,9 @@ import { SettingsModule } from './modules/settings/settings.module';
     SettingsModule,
   ],
   controllers: [AppController],
+  providers: [
+    { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

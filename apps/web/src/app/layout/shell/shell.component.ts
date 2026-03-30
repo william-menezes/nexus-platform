@@ -25,10 +25,11 @@ export class ShellComponent {
   sidebarOpen = signal(true);
 
   readonly nav: NavItem[] = [
-    { label: 'Dashboard',   icon: 'pi pi-home',         route: '/app/dashboard' },
-    { label: 'Ordens de Serviço', icon: 'pi pi-wrench',  route: '/app/os' },
-    { label: 'Estoque',     icon: 'pi pi-box',           route: '/app/estoque' },
-    { label: 'Financeiro',  icon: 'pi pi-chart-bar',     route: '/app/financeiro' },
+    { label: 'Dashboard',        icon: 'pi pi-home',       route: '/app/dashboard' },
+    { label: 'Clientes',         icon: 'pi pi-users',      route: '/app/clientes' },
+    { label: 'Ordens de Serviço', icon: 'pi pi-wrench',    route: '/app/os' },
+    { label: 'Estoque',          icon: 'pi pi-box',        route: '/app/estoque' },
+    { label: 'Financeiro',       icon: 'pi pi-chart-bar',  route: '/app/financeiro' },
   ];
 
   get userEmail() {

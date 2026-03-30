@@ -18,11 +18,25 @@ export class ServiceOrderEntity {
   @Column()
   code: string;
 
+  // Legacy string status (kept for backward compat — migrate to status_id)
   @Column({ default: 'open' })
   status: 'open' | 'in_progress' | 'awaiting_parts' | 'done' | 'cancelled';
 
-  @Column()
-  clientName: string;
+  // Phase 1 refactor: FK to custom_statuses
+  @Column('uuid', { nullable: true })
+  statusId?: string;
+
+  // Phase 1 refactor: FK to clients
+  @Column('uuid', { nullable: true })
+  clientId?: string;
+
+  // Phase 1 refactor: FK to employees
+  @Column('uuid', { nullable: true })
+  employeeId?: string;
+
+  // Legacy client fields (kept for backward compat)
+  @Column({ nullable: true })
+  clientName?: string;
 
   @Column({ nullable: true })
   clientPhone?: string;

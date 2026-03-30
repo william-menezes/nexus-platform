@@ -4,13 +4,30 @@ import {
   IsOptional,
   IsObject,
   IsNumber,
+  IsUUID,
   Min,
 } from 'class-validator';
 
 export class CreateServiceOrderDto {
+  // Phase 1: FK to clients table (preferred)
+  @IsUUID()
+  @IsOptional()
+  clientId?: string;
+
+  // Phase 1: FK to custom_statuses
+  @IsUUID()
+  @IsOptional()
+  statusId?: string;
+
+  // Phase 1: FK to employees
+  @IsUUID()
+  @IsOptional()
+  employeeId?: string;
+
+  // Legacy: kept for backward compat
   @IsString()
-  @IsNotEmpty()
-  clientName: string;
+  @IsOptional()
+  clientName?: string;
 
   @IsString()
   @IsOptional()

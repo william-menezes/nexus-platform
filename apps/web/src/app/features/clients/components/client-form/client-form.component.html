@@ -1,0 +1,72 @@
+<div class="nx-page">
+
+  <div class="nx-page-header">
+    <h1 class="nx-page-title">{{ isEdit ? 'Editar Cliente' : 'Novo Cliente' }}</h1>
+    <a routerLink="/app/clientes">
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+    </a>
+  </div>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  }
+
+  <form [formGroup]="form" (ngSubmit)="save()" style="max-width:640px;">
+
+    <div style="margin-bottom:1.25rem;">
+      <label class="nx-label">Tipo de Pessoa *</label>
+      <p-selectButton
+        [options]="typeOptions"
+        formControlName="type"
+        optionLabel="label"
+        optionValue="value"
+      />
+    </div>
+
+    <div style="margin-bottom:1.25rem;">
+      <label class="nx-label" for="name">Nome *</label>
+      <input pInputText id="name" formControlName="name" style="width:100%;" />
+    </div>
+
+    <div style="margin-bottom:1.25rem;">
+      <label class="nx-label" for="cpfCnpj">CPF / CNPJ</label>
+      <input pInputText id="cpfCnpj" formControlName="cpfCnpj" style="width:100%;" />
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+      <div>
+        <label class="nx-label" for="phone">Telefone</label>
+        <input pInputText id="phone" formControlName="phone" style="width:100%;" />
+      </div>
+      <div>
+        <label class="nx-label" for="phone2">Telefone 2</label>
+        <input pInputText id="phone2" formControlName="phone2" style="width:100%;" />
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.25rem;">
+      <label class="nx-label" for="email">Email</label>
+      <input pInputText id="email" formControlName="email" type="email" style="width:100%;" />
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+      <label class="nx-label" for="notes">Observações</label>
+      <input pInputText id="notes" formControlName="notes" style="width:100%;" />
+    </div>
+
+    <div style="display:flex; gap:0.75rem;">
+      <p-button
+        type="submit"
+        [label]="isEdit ? 'Salvar alterações' : 'Criar cliente'"
+        icon="pi pi-check"
+        [loading]="saving"
+        [disabled]="form.invalid"
+      />
+      <a routerLink="/app/clientes">
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" />
+      </a>
+    </div>
+
+  </form>
+
+</div>

@@ -45,6 +45,18 @@ export class CreateSaleDto {
   serviceOrderId?: string;
 
   @IsOptional()
+  @IsUUID()
+  clientId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  employeeId?: string;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
+
+  @IsOptional()
   @IsNumber()
   @Min(0)
   discountAmount?: number;

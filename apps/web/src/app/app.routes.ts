@@ -34,6 +34,11 @@ export const appRoutes: Routes = [
           import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
       },
       {
+        path: 'clientes',
+        loadChildren: () =>
+          import('./features/clients/clients.routes').then(m => m.routes),
+      },
+      {
         path: 'os',
         loadChildren: () =>
           import('./features/service-orders/service-orders.routes').then(m => m.routes),

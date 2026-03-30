@@ -5,8 +5,13 @@ export interface ServiceOrder {
   id: string;
   tenantId: string;
   code: string;
+  // Phase 1: FK refs
+  clientId?: string;
+  statusId?: string;
+  employeeId?: string;
+  // Legacy fields (kept for backward compat)
   status: OsStatus;
-  clientName: string;
+  clientName?: string;
   clientPhone?: string;
   description: string;
   customFields: Record<string, unknown>;
