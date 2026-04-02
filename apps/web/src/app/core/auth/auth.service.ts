@@ -11,11 +11,13 @@ export class AuthService {
     environment.supabaseAnonKey
   );
 
-  private _user$ = new BehaviorSubject<User | null>(null);
+  private _user$    = new BehaviorSubject<User | null>(null);
   private _session$ = new BehaviorSubject<Session | null>(null);
+  private _ready$   = new BehaviorSubject<boolean>(false);
 
-  readonly user$: Observable<User | null> = this._user$.asObservable();
-  readonly isLoggedIn$ = this.user$.pipe(map(u => !!u));
+  readonly user$:         Observable<User | null> = this._user$.asObservable();
+  readonly isLoggedIn$  = this.user$.pipe(map(u => !!u));
+  readonly sessionReady$: Observable<boolean>     = this._ready$.asObservable();
 
   constructor() {
     this.supabase.auth.onAuthStateChange((_event, session) => {
@@ -26,6 +28,7 @@ export class AuthService {
     this.supabase.auth.getSession().then(({ data: { session } }) => {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
+      this._ready$.next(true);
     });
   }
 

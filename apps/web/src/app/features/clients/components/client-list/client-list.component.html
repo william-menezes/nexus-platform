@@ -1,85 +1,137 @@
 <div class="nx-page">
 
-  <div class="nx-page-header">
-    <h1 class="nx-page-title">Clientes</h1>
-    <a routerLink="novo">
-      <p-button label="Novo Cliente" icon="pi pi-plus" />
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-display text-xl font-semibold text-text">Clientes</h1>
+      <p class="text-sm text-text-secondary mt-0.5">Gerencie os clientes da sua empresa</p>
+    </div>
+    <a
+      routerLink="novo"
+      class="inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-medium text-white
+             hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
+             focus-visible:ring-offset-2 transition-colors"
+    >
+      <i class="pi pi-plus text-xs"></i>
+      Novo Cliente
     </a>
   </div>
 
-  <div style="margin-bottom:1rem;">
-    <span class="p-input-icon-left" style="width:100%; max-width:360px;">
-      <i class="pi pi-search"></i>
+  <!-- Search -->
+  <div class="mb-4">
+    <div class="relative max-w-sm">
+      <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm pointer-events-none"></i>
       <input
-        pInputText
         type="text"
-        placeholder="Buscar por nome ou CPF/CNPJ..."
+        placeholder="Buscar por nome ou CPF/CNPJ…"
         [(ngModel)]="search"
         (keyup.enter)="onSearch()"
-        style="width:100%;"
+        class="block w-full rounded-lg border border-surface-border bg-white pl-9 pr-3 py-2.5 text-sm text-text
+               placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500
+               focus:outline-none transition-colors"
+        aria-label="Buscar clientes"
       />
-    </span>
+    </div>
   </div>
 
-  @if (error) {
-    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  <!-- Error -->
+  @if (error()) {
+    <div role="alert" class="mb-4 flex items-center gap-3 rounded-lg border border-danger-500 bg-danger-50 px-4 py-3 text-sm text-danger-700">
+      <i class="pi pi-exclamation-circle shrink-0"></i>
+      {{ error() }}
+    </div>
   }
 
-  <p-table
-    [value]="clients"
-    [loading]="loading"
-    [paginator]="true"
-    [rows]="15"
-    [rowHover]="true"
-    styleClass="p-datatable-sm"
-    [tableStyle]="{'min-width':'600px'}"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Nome</th>
-        <th>Tipo</th>
-        <th>CPF/CNPJ</th>
-        <th>Telefone</th>
-        <th>Email</th>
-        <th>Cadastro</th>
-        <th></th>
-      </tr>
-    </ng-template>
+  <!-- Table card -->
+  <div class="rounded-xl border border-surface-border bg-white overflow-hidden shadow-sm">
 
-    <ng-template pTemplate="body" let-client>
-      <tr>
-        <td><strong>{{ client.name }}</strong></td>
-        <td>
-          <p-tag
-            [value]="client.type === 'individual' ? 'Pessoa Física' : 'Pessoa Jurídica'"
-            [severity]="client.type === 'individual' ? 'info' : 'secondary'"
-          />
-        </td>
-        <td>{{ client.cpfCnpj || '—' }}</td>
-        <td>{{ client.phone || '—' }}</td>
-        <td>{{ client.email || '—' }}</td>
-        <td>{{ client.createdAt | date:'dd/MM/yyyy' }}</td>
-        <td>
-          <div style="display:flex; gap:0.5rem;">
-            <a [routerLink]="client.id">
-              <p-button icon="pi pi-eye" severity="secondary" [outlined]="true" size="small" pTooltip="Ver detalhes" />
-            </a>
-            <a [routerLink]="[client.id, 'editar']">
-              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" pTooltip="Editar" />
-            </a>
+    <!-- Loading skeleton -->
+    @if (loading()) {
+      <div class="divide-y divide-surface-border animate-pulse">
+        @for (_ of [1,2,3,4,5]; track $index) {
+          <div class="flex items-center gap-4 px-6 py-4">
+            <div class="h-4 bg-surface-muted rounded w-1/4"></div>
+            <div class="h-4 bg-surface-muted rounded w-16"></div>
+            <div class="h-4 bg-surface-muted rounded w-1/5"></div>
+            <div class="h-4 bg-surface-muted rounded w-1/6"></div>
+            <div class="h-4 bg-surface-muted rounded w-1/5"></div>
           </div>
-        </td>
-      </tr>
-    </ng-template>
+        }
+      </div>
+    } @else if (clients().length === 0) {
+      <!-- Empty state -->
+      <div class="flex flex-col items-center justify-center py-16 text-center px-4">
+        <div class="w-12 h-12 rounded-full bg-surface-muted flex items-center justify-center mb-4">
+          <i class="pi pi-users text-text-muted text-xl"></i>
+        </div>
+        <p class="text-base font-medium text-text">Nenhum cliente encontrado</p>
+        <p class="mt-1 text-sm text-text-secondary">Cadastre seu primeiro cliente para começar.</p>
+        <a
+          routerLink="novo"
+          class="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-medium text-white
+                 hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
+                 focus-visible:ring-offset-2 transition-colors"
+        >
+          <i class="pi pi-plus text-xs"></i>
+          Novo Cliente
+        </a>
+      </div>
+    } @else {
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-surface-border bg-surface-muted/50">
+              <th class="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Nome</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Tipo</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">CPF/CNPJ</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Telefone</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide hidden md:table-cell">Email</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide hidden lg:table-cell">Cadastro</th>
+              <th class="px-4 py-3"><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-border">
+            @for (client of clients(); track client.id) {
+              <tr class="hover:bg-surface-muted/50 transition-colors">
+                <td class="px-6 py-4 font-medium text-text">{{ client.name }}</td>
+                <td class="px-4 py-4">
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
+                               {{ client.type === 'individual' ? 'bg-primary-50 text-primary-700' : 'bg-secondary-50 text-secondary-700' }}">
+                    {{ client.type === 'individual' ? 'Pessoa Física' : 'Pessoa Jurídica' }}
+                  </span>
+                </td>
+                <td class="px-4 py-4 font-mono text-text-secondary">{{ client.cpfCnpj || '—' }}</td>
+                <td class="px-4 py-4 text-text-secondary">{{ client.phone || '—' }}</td>
+                <td class="px-4 py-4 text-text-secondary hidden md:table-cell">{{ client.email || '—' }}</td>
+                <td class="px-4 py-4 text-text-secondary hidden lg:table-cell">{{ client.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td class="px-4 py-4">
+                  <div class="flex items-center justify-end gap-1">
+                    <a
+                      [routerLink]="client.id"
+                      class="p-1.5 rounded-md text-text-secondary hover:bg-surface-muted hover:text-text transition-colors
+                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                      aria-label="Ver detalhes do cliente"
+                    >
+                      <i class="pi pi-eye text-sm"></i>
+                    </a>
+                    <a
+                      [routerLink]="[client.id, 'editar']"
+                      class="p-1.5 rounded-md text-text-secondary hover:bg-surface-muted hover:text-text transition-colors
+                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                      aria-label="Editar cliente"
+                    >
+                      <i class="pi pi-pencil text-sm"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
 
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="7" style="text-align:center; color:var(--p-text-muted-color); padding:3rem;">
-          <i class="pi pi-users" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
-          Nenhum cliente encontrado.
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+  </div>
 
 </div>

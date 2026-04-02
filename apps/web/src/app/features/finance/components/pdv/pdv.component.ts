@@ -113,7 +113,7 @@ export class PdvComponent implements OnInit {
       payments: val.payments ?? [],
     };
     this.svc.createSale(dto as never).subscribe({
-      next: () => { void this.router.navigate(['/app/financeiro/vendas']); },
+      next: () => { void this.router.navigate(['/app/vendas/vendas']); },
       error: (err) => {
         this.error = err?.error?.message ?? 'Erro ao finalizar venda.';
         this.loading = false;

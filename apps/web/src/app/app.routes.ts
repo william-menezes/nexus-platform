@@ -49,9 +49,49 @@ export const appRoutes: Routes = [
           import('./features/inventory/inventory.routes').then(m => m.routes),
       },
       {
-        path: 'financeiro',
+        path: 'vendas',
         loadChildren: () =>
           import('./features/finance/finance.routes').then(m => m.routes),
+      },
+      {
+        path: 'funcionarios',
+        loadChildren: () =>
+          import('./features/employees/employees.routes').then(m => m.routes),
+      },
+      {
+        path: 'servicos',
+        loadChildren: () =>
+          import('./features/services-catalog/services-catalog.routes').then(m => m.routes),
+      },
+      {
+        path: 'equipamentos',
+        loadChildren: () =>
+          import('./features/equipments/equipments.routes').then(m => m.routes),
+      },
+      {
+        path: 'orcamentos',
+        loadChildren: () =>
+          import('./features/quotes/quotes.routes').then(m => m.routes),
+      },
+      {
+        path: 'financeiro',
+        loadChildren: () =>
+          import('./features/financial/financial.routes').then(m => m.routes),
+      },
+      {
+        path: 'fornecedores',
+        loadChildren: () =>
+          import('./features/suppliers/suppliers.routes').then(m => m.routes),
+      },
+      {
+        path: 'configuracoes',
+        loadChildren: () =>
+          import('./features/settings/settings.routes').then(m => m.routes),
+      },
+      {
+        path: 'logs',
+        loadComponent: () =>
+          import('./features/audit-logs/audit-logs.component').then(m => m.AuditLogsComponent),
       },
     ],
   },

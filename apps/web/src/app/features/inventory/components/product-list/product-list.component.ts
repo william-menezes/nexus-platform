@@ -1,10 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
+import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -14,37 +13,41 @@ import { InventoryService } from '../../inventory.service';
 @Component({
   standalone: true,
   selector: 'app-product-list',
-  imports: [CurrencyPipe, RouterLink, TableModule, TagModule, ButtonModule, SkeletonModule, ConfirmDialogModule, ToastModule],
+  imports: [
+    CurrencyPipe, RouterLink, TableModule, ButtonModule, TagModule, ConfirmDialogModule, ToastModule,
+  ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './product-list.component.html',
 })
 export class ProductListComponent implements OnInit {
-  private readonly svc     = inject(InventoryService);
+  private readonly svc = inject(InventoryService);
   private readonly confirm = inject(ConfirmationService);
-  private readonly toast   = inject(MessageService);
+  private readonly msg = inject(MessageService);
 
-  products: Product[] = [];
-  loading = true;
+  products    = signal<Product[]>([]);
+  loading     = signal(false);
 
   ngOnInit() {
+    this.loading.set(true);
     this.svc.getProducts().subscribe({
-      next: (data) => { this.products = data; this.loading = false; },
-      error: ()     => { this.loading = false; },
+      next: (data) => { this.products.set(data); this.loading.set(false); },
+      error: ()     => { this.loading.set(false); },
     });
   }
 
   remove(id: string) {
+    const product = this.products().find(p => p.id === id);
     this.confirm.confirm({
-      message: 'Deseja excluir este produto?',
+      message: `Excluir produto "${product?.name ?? '—'}"?`,
       header: 'Confirmar exclusão',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sim, excluir',
-      rejectLabel: 'Cancelar',
-      acceptButtonStyleClass: 'p-button-danger',
+      icon: 'pi pi-trash',
       accept: () => {
-        this.svc.removeProduct(id).subscribe(() => {
-          this.products = this.products.filter(p => p.id !== id);
-          this.toast.add({ severity: 'success', summary: 'Produto excluído', life: 3000 });
+        this.svc.removeProduct(id).subscribe({
+          next: () => {
+            this.products.update(list => list.filter(p => p.id !== id));
+            this.msg.add({ severity: 'success', summary: 'Excluído', detail: product?.name ?? 'Produto removido' });
+          },
+          error: () => this.msg.add({ severity: 'error', summary: 'Erro ao excluir' }),
         });
       },
     });

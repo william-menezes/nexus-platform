@@ -21,11 +21,16 @@
           {
             "glob": "**/*",
             "input": "apps/web/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/primeicons/fonts",
+            "output": "assets/primeicons/fonts"
           }
         ],
         "styles": [
-          "apps/web/src/styles.css",
-          "node_modules/primeicons/primeicons.css"
+          "node_modules/primeicons/primeicons.css",
+          "apps/web/src/styles.css"
         ],
         "server": "apps/web/src/main.server.ts",
         "ssr": {

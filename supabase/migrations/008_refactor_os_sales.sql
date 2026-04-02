@@ -20,7 +20,8 @@ ALTER TABLE public.sales
   ADD COLUMN IF NOT EXISTS status_id   UUID REFERENCES public.custom_statuses(id),
   ADD COLUMN IF NOT EXISTS employee_id UUID,
   ADD COLUMN IF NOT EXISTS code        TEXT,
-  ADD COLUMN IF NOT EXISTS notes       TEXT;
+  ADD COLUMN IF NOT EXISTS notes       TEXT,
+  ADD COLUMN IF NOT EXISTS deleted_at  TIMESTAMPTZ;
 
 CREATE INDEX IF NOT EXISTS idx_sales_client   ON public.sales(tenant_id, client_id)  WHERE client_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_sales_status   ON public.sales(tenant_id, status_id)  WHERE status_id IS NOT NULL;

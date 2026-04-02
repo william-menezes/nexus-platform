@@ -1,3 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'primeicons';
+  font-display: block;
+  src:
+    url('/assets/primeicons/fonts/primeicons.woff2') format('woff2'),
+    url('/assets/primeicons/fonts/primeicons.woff') format('woff'),
+    url('/assets/primeicons/fonts/primeicons.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* ============================================================
    Nexus Platform — Design System
    Based on: Architectural Minimalism (DESIGN.md)
@@ -254,7 +269,7 @@ textarea[pTextarea]:focus {
 }
 
 /* ── Layout utilities ── */
-.nx-page { padding: 2rem; }
+.nx-page { width: 100%; padding: 0; }
 .nx-page-header {
   display: flex;
   align-items: flex-start;

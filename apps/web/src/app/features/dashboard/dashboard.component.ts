@@ -1,41 +1,36 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
 import { ServiceOrdersService } from '../service-orders/service-orders.service';
-import { FinanceService } from '../finance/finance.service';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink, CardModule, ButtonModule, SkeletonModule],
+  imports: [RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  private readonly osSvc      = inject(ServiceOrdersService);
-  private readonly financeSvc = inject(FinanceService);
+  private readonly osSvc = inject(ServiceOrdersService);
 
-  loading = true;
-
-  stats = {
-    openOrders:     0,
-    inProgressOrders: 0,
-    doneToday:      0,
-    revenueMonth:   0,
-  };
+  loading          = signal(false);
+  openOrders       = signal(0);
+  inProgressOrders = signal(0);
+  doneToday        = signal(0);
 
   ngOnInit() {
+    this.loading.set(true);
     this.osSvc.getAll().subscribe({
       next: (orders) => {
-        this.stats.openOrders       = orders.filter(o => o.status === 'open').length;
-        this.stats.inProgressOrders = orders.filter(o => o.status === 'in_progress' || o.status === 'awaiting_parts').length;
+        this.openOrders.set(orders.filter(o => o.status === 'open').length);
+        this.inProgressOrders.set(
+          orders.filter(o => o.status === 'in_progress' || o.status === 'awaiting_parts').length,
+        );
         const today = new Date().toISOString().slice(0, 10);
-        this.stats.doneToday        = orders.filter(o => o.status === 'done' && o.updatedAt?.startsWith(today)).length;
-        this.loading = false;
+        this.doneToday.set(
+          orders.filter(o => o.status === 'done' && o.updatedAt?.startsWith(today)).length,
+        );
+        this.loading.set(false);
       },
-      error: () => { this.loading = false; },
+      error: () => this.loading.set(false),
     });
   }
 }

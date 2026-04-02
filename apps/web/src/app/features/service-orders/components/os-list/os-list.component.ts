@@ -1,47 +1,56 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
-import { MessageModule } from 'primeng/message';
+import { TooltipModule } from 'primeng/tooltip';
 import { ServiceOrder } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
 
 @Component({
   standalone: true,
   selector: 'app-os-list',
-  imports: [DatePipe, RouterLink, TableModule, TagModule, ButtonModule, SkeletonModule, MessageModule],
+  imports: [DatePipe, RouterLink, ButtonModule, MessageModule, TableModule, TagModule, TooltipModule],
   templateUrl: './os-list.component.html',
 })
 export class OsListComponent implements OnInit {
   private readonly svc = inject(ServiceOrdersService);
 
-  orders: ServiceOrder[] = [];
-  loading = true;
-  error = '';
+  orders  = signal<ServiceOrder[]>([]);
+  loading = signal(false);
+  error   = signal('');
 
   readonly statusLabel: Record<string, string> = {
-    open:            'Aberta',
-    in_progress:     'Em andamento',
-    awaiting_parts:  'Aguardando peças',
-    done:            'Concluída',
-    cancelled:       'Cancelada',
+    open:           'Aberta',
+    in_progress:    'Em andamento',
+    awaiting_parts: 'Aguardando peças',
+    done:           'Concluída',
+    cancelled:      'Cancelada',
+  };
+
+  readonly statusClass: Record<string, string> = {
+    open:           'bg-primary-50 text-primary-700',
+    in_progress:    'bg-warning-50 text-warning-700',
+    awaiting_parts: 'bg-secondary-50 text-secondary-700',
+    done:           'bg-success-50 text-success-700',
+    cancelled:      'bg-danger-50 text-danger-700',
   };
 
   readonly statusSeverity: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary'> = {
-    open:            'info',
-    in_progress:     'warn',
-    awaiting_parts:  'warn',
-    done:            'success',
-    cancelled:       'danger',
+    open:           'info',
+    in_progress:    'warn',
+    awaiting_parts: 'secondary',
+    done:           'success',
+    cancelled:      'danger',
   };
 
   ngOnInit() {
+    this.loading.set(true);
     this.svc.getAll().subscribe({
-      next: (data) => { this.orders = data; this.loading = false; },
-      error: () => { this.error = 'Erro ao carregar ordens.'; this.loading = false; },
+      next: (data) => { this.orders.set(data); this.loading.set(false); },
+      error: () => { this.error.set('Erro ao carregar ordens.'); this.loading.set(false); },
     });
   }
 }

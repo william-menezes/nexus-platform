@@ -11,6 +11,12 @@ import { InventoryModule } from './modules/inventory/inventory.module';
 import { FinanceModule } from './modules/finance/finance.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { EmployeesModule } from './modules/employees/employees.module';
+import { ServicesCatalogModule } from './modules/services-catalog/services-catalog.module';
+import { EquipmentsModule } from './modules/equipments/equipments.module';
+import { QuotesModule } from './modules/quotes/quotes.module';
+import { FinancialModule } from './modules/financial/financial.module';
+import { SuppliersModule } from './modules/suppliers/suppliers.module';
 
 @Module({
   imports: [
@@ -28,6 +34,12 @@ import { SettingsModule } from './modules/settings/settings.module';
     FinanceModule,
     ClientsModule,
     SettingsModule,
+    EmployeesModule,
+    ServicesCatalogModule,
+    EquipmentsModule,
+    QuotesModule,
+    FinancialModule,
+    SuppliersModule,
   ],
   controllers: [AppController],
   providers: [

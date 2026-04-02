@@ -7,13 +7,13 @@
     </a>
   </div>
 
-  @if (error) {
-    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  @if (error()) {
+    <p-message severity="error" [text]="error()" styleClass="w-full mb-4" />
   }
 
   <p-table
-    [value]="orders"
-    [loading]="loading"
+    [value]="orders()"
+    [loading]="loading()"
     [paginator]="true"
     [rows]="15"
     [rowHover]="true"

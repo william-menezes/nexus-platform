@@ -1,77 +1,113 @@
 <div class="nx-page">
 
+  <!-- Page header -->
   <div class="nx-page-header">
-    <h1 class="nx-page-title">Dashboard</h1>
+    <div>
+      <h1 class="nx-page-title">Dashboard</h1>
+      <p class="nx-page-subtitle">Visão geral da operação</p>
+    </div>
   </div>
 
-  @if (loading) {
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem;">
-      <p-skeleton height="120px" borderRadius="24px" />
-      <p-skeleton height="120px" borderRadius="24px" />
-      <p-skeleton height="120px" borderRadius="24px" />
+  <!-- KPI cards -->
+  @if (loading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      @for (_ of [1,2,3]; track $index) {
+        <div class="rounded-xl border border-surface-border bg-white p-6 animate-pulse">
+          <div class="h-3 bg-surface-muted rounded w-1/2 mb-3"></div>
+          <div class="h-8 bg-surface-muted rounded w-1/3 mb-2"></div>
+          <div class="h-3 bg-surface-muted rounded w-2/3"></div>
+        </div>
+      }
     </div>
   } @else {
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem; margin-bottom:2rem;">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 
-      <div class="nx-stat">
-        <i class="pi pi-clock" style="color:var(--nx-primary);"></i>
-        <div class="nx-stat-value">{{ stats.openOrders }}</div>
-        <div class="nx-stat-label">OS Abertas</div>
+      <div class="rounded-xl border border-surface-border bg-white p-6">
+        <p class="text-sm text-text-secondary">OS Abertas</p>
+        <p class="mt-1 font-display text-2xl font-bold text-text">{{ openOrders() }}</p>
+        <p class="mt-1 text-xs text-text-muted">Aguardando atendimento</p>
       </div>
 
-      <div class="nx-stat">
-        <i class="pi pi-wrench" style="color:#0ea5e9;"></i>
-        <div class="nx-stat-value">{{ stats.inProgressOrders }}</div>
-        <div class="nx-stat-label">Em andamento</div>
+      <div class="rounded-xl border border-surface-border bg-white p-6">
+        <p class="text-sm text-text-secondary">Em andamento</p>
+        <p class="mt-1 font-display text-2xl font-bold text-text">{{ inProgressOrders() }}</p>
+        <p class="mt-1 text-xs text-text-muted">Em execução ou aguardando peças</p>
       </div>
 
-      <div class="nx-stat">
-        <i class="pi pi-check-circle" style="color:#22c55e;"></i>
-        <div class="nx-stat-value">{{ stats.doneToday }}</div>
-        <div class="nx-stat-label">Concluídas hoje</div>
+      <div class="rounded-xl border border-surface-border bg-white p-6">
+        <p class="text-sm text-text-secondary">Concluídas hoje</p>
+        <p class="mt-1 font-display text-2xl font-bold text-success-600">{{ doneToday() }}</p>
+        <p class="mt-1 text-xs text-text-muted">Finalizadas no dia</p>
       </div>
-
-    </div>
-
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:1.5rem;">
-
-      <p-card>
-        <ng-template pTemplate="title">Ordens de Serviço</ng-template>
-        <ng-template pTemplate="content">
-          <p style="color:var(--p-text-muted-color); margin-bottom:1rem;">
-            Gerencie as ordens de serviço dos seus clientes.
-          </p>
-          <a routerLink="/app/os">
-            <p-button label="Ver OS" icon="pi pi-arrow-right" iconPos="right" severity="secondary" [outlined]="true" />
-          </a>
-        </ng-template>
-      </p-card>
-
-      <p-card>
-        <ng-template pTemplate="title">Estoque</ng-template>
-        <ng-template pTemplate="content">
-          <p style="color:var(--p-text-muted-color); margin-bottom:1rem;">
-            Controle entradas, saídas e importe NF-e.
-          </p>
-          <a routerLink="/app/estoque">
-            <p-button label="Ver Estoque" icon="pi pi-arrow-right" iconPos="right" severity="secondary" [outlined]="true" />
-          </a>
-        </ng-template>
-      </p-card>
-
-      <p-card>
-        <ng-template pTemplate="title">Financeiro</ng-template>
-        <ng-template pTemplate="content">
-          <p style="color:var(--p-text-muted-color); margin-bottom:1rem;">
-            PDV, relatórios e DRE mensal.
-          </p>
-          <a routerLink="/app/financeiro">
-            <p-button label="Ver Financeiro" icon="pi pi-arrow-right" iconPos="right" severity="secondary" [outlined]="true" />
-          </a>
-        </ng-template>
-      </p-card>
 
     </div>
   }
 
+  <!-- Quick actions -->
+  <h2 class="text-base font-medium text-text mb-4">Acesso rápido</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    <div class="rounded-xl border border-surface-border bg-white p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+          <i class="pi pi-wrench text-blue-600"></i>
+        </div>
+        <h3 class="font-medium text-text">Ordens de Serviço</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-4">
+        Gerencie as ordens de serviço dos seus clientes.
+      </p>
+      <a
+        routerLink="/app/os"
+        class="inline-flex items-center gap-2 text-sm font-medium text-primary-600
+               hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-primary-500 rounded"
+      >
+        Ver OS <i class="pi pi-arrow-right text-xs"></i>
+      </a>
+    </div>
+
+    <div class="rounded-xl border border-surface-border bg-white p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+          <i class="pi pi-box text-green-600"></i>
+        </div>
+        <h3 class="font-medium text-text">Estoque</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-4">
+        Controle entradas, saídas e importe NF-e.
+      </p>
+      <a
+        routerLink="/app/estoque"
+        class="inline-flex items-center gap-2 text-sm font-medium text-primary-600
+               hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-primary-500 rounded"
+      >
+        Ver Estoque <i class="pi pi-arrow-right text-xs"></i>
+      </a>
+    </div>
+
+    <div class="rounded-xl border border-surface-border bg-white p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-lg bg-violet-50 flex items-center justify-center">
+          <i class="pi pi-wallet text-violet-600"></i>
+        </div>
+        <h3 class="font-medium text-text">Financeiro</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-4">
+        PDV, relatórios e DRE mensal.
+      </p>
+      <a
+        routerLink="/app/financeiro"
+        class="inline-flex items-center gap-2 text-sm font-medium text-primary-600
+               hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-primary-500 rounded"
+      >
+        Ver Financeiro <i class="pi pi-arrow-right text-xs"></i>
+      </a>
+    </div>
+
+  </div>
+
 </div>
+
