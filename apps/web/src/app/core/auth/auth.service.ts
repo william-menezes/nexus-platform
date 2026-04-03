@@ -1,11 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly http = inject(HttpClient);
   private supabase: SupabaseClient = createClient(
     environment.supabaseUrl,
     environment.supabaseAnonKey
@@ -54,5 +56,14 @@ export class AuthService {
 
   getAccessToken(): string | null {
     return this._session$.getValue()?.access_token ?? null;
+  }
+
+  createTenant(dto: { companyName: string; segment?: string; cnpj?: string; phone?: string }) {
+    return firstValueFrom(
+      this.http.post<{ tenantId: string; trialEndsAt: string }>(
+        `${environment.apiUrl}/auth/onboarding`,
+        dto,
+      ),
+    );
   }
 }

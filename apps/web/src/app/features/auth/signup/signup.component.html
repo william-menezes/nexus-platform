@@ -104,6 +104,57 @@
           }
         </div>
 
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="companyName">Nome da empresa</label>
+          <input
+            pInputText
+            id="companyName"
+            type="text"
+            formControlName="companyName"
+            placeholder="Assistência Técnica Silva"
+            class="w-full"
+          />
+          @if (form.get('companyName')?.invalid && form.get('companyName')?.touched) {
+            <small class="p-error">Informe o nome da empresa.</small>
+          }
+        </div>
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="segment">Segmento</label>
+          <p-select
+            id="segment"
+            formControlName="segment"
+            [options]="segments"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="phone">Telefone (opcional)</label>
+          <input
+            pInputText
+            id="phone"
+            type="tel"
+            formControlName="phone"
+            placeholder="(11) 99999-9999"
+            class="w-full"
+          />
+        </div>
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="cnpj">CNPJ (opcional)</label>
+          <input
+            pInputText
+            id="cnpj"
+            type="text"
+            formControlName="cnpj"
+            placeholder="00.000.000/0001-00"
+            class="w-full"
+          />
+        </div>
+
         <div class="nx-form-actions">
           <p-button
             type="submit"

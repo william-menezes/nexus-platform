@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, IsNull } from 'typeorm';
 import { SaleEntity } from './entities/sale.entity';
 import { SaleItemEntity } from './entities/sale-item.entity';
 import { PaymentEntity } from './entities/payment.entity';
@@ -26,7 +26,7 @@ export class FinanceService {
 
   findAll(tenantId: string) {
     return this.sales.find({
-      where: { tenantId },
+      where: { tenantId, deletedAt: IsNull() },
       relations: ['items', 'payments'],
       order: { createdAt: 'DESC' },
     });
@@ -34,7 +34,7 @@ export class FinanceService {
 
   async findOne(tenantId: string, id: string) {
     const sale = await this.sales.findOne({
-      where: { tenantId, id },
+      where: { tenantId, id, deletedAt: IsNull() },
       relations: ['items', 'payments'],
     });
     if (!sale) throw new NotFoundException(`Venda ${id} não encontrada`);
@@ -157,8 +157,8 @@ export class FinanceService {
     );
 
     return rows.map((r) => {
-      const revenue = parseFloat(r.revenue);
-      const cost = parseFloat(r.cost_of_goods);
+      const revenue = Number.parseFloat(r.revenue);
+      const cost = Number.parseFloat(r.cost_of_goods);
       const grossProfit = revenue - cost;
       return {
         month: r.month,

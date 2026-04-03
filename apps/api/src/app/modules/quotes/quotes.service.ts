@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, IsNull, DataSource } from 'typeorm';
 import { QuoteEntity } from './entities/quote.entity';
 import { QuoteItemEntity } from './entities/quote-item.entity';
@@ -41,8 +40,25 @@ export class QuotesService {
     const discountAmount = dto.discountAmount ?? 0;
     const total = subtotal - discountAmount;
 
+    // Resolve statusId: use provided or fall back to the default quote status (Rascunho)
+    let statusId = dto.statusId;
+    if (!statusId) {
+      const [defaultStatus] = await this.dataSource.query<{ id: string }[]>(
+        `SELECT id FROM public.custom_statuses
+         WHERE tenant_id = $1 AND entity_type = 'quote' AND is_default = true AND deleted_at IS NULL
+         LIMIT 1`,
+        [tenantId],
+      );
+      if (defaultStatus) {
+        statusId = defaultStatus.id;
+      } else {
+        throw new BadRequestException('Nenhum status padrão encontrado para orçamentos. Configure os status em Configurações.');
+      }
+    }
+
     const quote = this.repo.create({
       ...dto,
+      statusId,
       tenantId,
       code,
       subtotal,

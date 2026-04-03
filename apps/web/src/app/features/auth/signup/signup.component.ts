@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
+import { PasswordModule } from 'primeng/password';
+import { SelectModule } from 'primeng/select';
+import { AuthService } from '../../../core/auth/auth.service';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password        = control.get('password')?.value;
@@ -18,7 +19,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 @Component({
   standalone: true,
   selector: 'app-signup',
-  imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule, MessageModule],
+  imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule, MessageModule, SelectModule],
   templateUrl: './signup.component.html',
 })
 export class SignupComponent {
@@ -30,12 +31,24 @@ export class SignupComponent {
   error     = '';
   success   = false;
 
+  segments = [
+    { label: 'Eletrônicos', value: 'electronics' },
+    { label: 'Climatização (HVAC)', value: 'hvac' },
+    { label: 'Informática', value: 'it' },
+    { label: 'Automotivo', value: 'automotive' },
+    { label: 'Genérico', value: 'generic' },
+  ];
+
   form = this.fb.group(
     {
       fullName:        ['', [Validators.required, Validators.minLength(2)]],
       email:           ['', [Validators.required, Validators.email]],
       password:        ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
+      companyName:     ['', [Validators.required, Validators.minLength(2)]],
+      segment:         ['generic'],
+      phone:           [''],
+      cnpj:            [''],
     },
     { validators: passwordMatchValidator },
   );
@@ -56,8 +69,16 @@ export class SignupComponent {
       );
 
       if (session) {
+        // Session available (email confirmation disabled) — create tenant immediately
+        await this.auth.createTenant({
+          companyName: this.form.value.companyName!,
+          segment:     this.form.value.segment || 'generic',
+          phone:       this.form.value.phone   || undefined,
+          cnpj:        this.form.value.cnpj    || undefined,
+        });
         this.router.navigate(['/app/dashboard']);
       } else {
+        // Email confirmation required — tenant will be created after confirmation + login
         this.success = true;
         this.loading = false;
       }

@@ -17,6 +17,7 @@ import { EquipmentsModule } from './modules/equipments/equipments.module';
 import { QuotesModule } from './modules/quotes/quotes.module';
 import { FinancialModule } from './modules/financial/financial.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { SuppliersModule } from './modules/suppliers/suppliers.module';
     QuotesModule,
     FinancialModule,
     SuppliersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

@@ -4,13 +4,14 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
+import { Repository, IsNull, DataSource } from 'typeorm';
 import { ServiceOrderEntity } from './entities/service-order.entity';
 import { CreateServiceOrderDto } from './dto/create-service-order.dto';
 import { UpdateServiceOrderDto, ChangeStatusDto } from './dto/update-service-order.dto';
 
 const PLAN_LIMITS: Record<string, number> = {
+  trial: 20,
   starter: 100,
   pro: 1000,
   enterprise: Infinity,
@@ -21,6 +22,8 @@ export class ServiceOrdersService {
   constructor(
     @InjectRepository(ServiceOrderEntity)
     private readonly repo: Repository<ServiceOrderEntity>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   findAll(tenantId: string) {
@@ -42,7 +45,13 @@ export class ServiceOrdersService {
     const count = await this.repo.count({
       where: { tenantId, deletedAt: IsNull() },
     });
-    const limit = PLAN_LIMITS['starter'];
+    const [tenant] = await this.dataSource.query<{ plan: string; plan_limits: { max_os: number } }[]>(
+      `SELECT plan, plan_limits FROM public.tenants WHERE id = $1 LIMIT 1`,
+      [tenantId],
+    );
+    const planKey = tenant?.plan ?? 'starter';
+    const maxOs = tenant?.plan_limits?.max_os ?? PLAN_LIMITS[planKey] ?? PLAN_LIMITS['starter'];
+    const limit = PLAN_LIMITS[planKey] ?? maxOs;
     if (count >= limit) {
       throw new HttpException(
         {
