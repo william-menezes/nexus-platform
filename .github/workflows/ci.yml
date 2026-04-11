@@ -25,6 +25,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Specs (Spec-Driven Development)
+        run: npm run spec:check
+
       - name: Lint (projetos afetados)
         run: npx nx affected --target=lint --parallel=3 --base=origin/${{ github.base_ref || 'develop' }}
 
