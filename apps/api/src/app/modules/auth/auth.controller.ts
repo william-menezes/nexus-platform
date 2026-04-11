@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { AuthService, OnboardingDto } from './auth.service';
 
@@ -12,5 +12,16 @@ export class AuthController {
   onboarding(@Req() req: any, @Body() dto: OnboardingDto) {
     const userId: string = req['user'];
     return this.authService.onboarding(userId, dto);
+  }
+
+  /** GET /api/auth/me — retorna dados do usuário autenticado */
+  @Get('me')
+  @UseGuards(AuthGuard)
+  me(@Req() req: any) {
+    return {
+      userId: req['user'],
+      tenantId: req['tenantId'] ?? null,
+      role: req['userRole'] ?? null,
+    };
   }
 }

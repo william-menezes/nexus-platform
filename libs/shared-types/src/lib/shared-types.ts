@@ -10,3 +10,6 @@ export * from './service-order.types';
 export * from './inventory.types';
 export * from './finance.types';
 export * from './supplier.types';
+export * from './purchase-order.types';
+export * from './contract.types';
+export * from './return.types';

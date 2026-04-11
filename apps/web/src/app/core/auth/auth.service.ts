@@ -1,9 +1,15 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+
+export interface MeResponse {
+  userId: string;
+  tenantId: string | null;
+  role: 'SUPER_ADMIN' | 'TENANT_ADMIN' | 'TECNICO' | 'VENDEDOR' | null;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -21,18 +27,36 @@ export class AuthService {
   readonly isLoggedIn$  = this.user$.pipe(map(u => !!u));
   readonly sessionReady$: Observable<boolean>     = this._ready$.asObservable();
 
+  readonly userRole   = signal<MeResponse['role']>(null);
+  readonly userTenant = signal<string | null>(null);
+
   constructor() {
     this.supabase.auth.onAuthStateChange((_event, session) => {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
+      if (session) this.loadMe();
+      else { this.userRole.set(null); this.userTenant.set(null); }
     });
 
     this.supabase.auth.getSession().then(({ data: { session } }) => {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
       this._ready$.next(true);
+      if (session) this.loadMe();
     });
   }
+
+  private loadMe() {
+    this.http.get<MeResponse>(`${environment.apiUrl}/auth/me`).subscribe({
+      next: me => {
+        this.userRole.set(me.role);
+        this.userTenant.set(me.tenantId);
+      },
+      error: () => {},
+    });
+  }
+
+  isSuperAdmin() { return this.userRole() === 'SUPER_ADMIN'; }
 
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });

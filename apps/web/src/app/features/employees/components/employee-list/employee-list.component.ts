@@ -26,7 +26,10 @@ import { EmployeesService } from '../../employees.service';
     <div class="nx-page">
       <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Funcionários</h1>
-        <a routerLink="novo" pButton label="Novo Funcionário" icon="pi pi-plus" class="p-button-sm"></a>
+        <div class="flex gap-2">
+          <a routerLink="convidar" pButton label="Convidar" icon="pi pi-envelope" class="p-button-sm p-button-outlined"></a>
+          <a routerLink="novo" pButton label="Novo Funcionário" icon="pi pi-plus" class="p-button-sm"></a>
+        </div>
       </div>
       <div class="mb-3">
         <input pInputText [(ngModel)]="search" (ngModelChange)="load()" placeholder="Buscar por nome..." class="w-full md:w-1/3" />

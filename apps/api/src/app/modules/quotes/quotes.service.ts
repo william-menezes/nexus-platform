@@ -5,6 +5,7 @@ import { QuoteEntity } from './entities/quote.entity';
 import { QuoteItemEntity } from './entities/quote-item.entity';
 import { CreateQuoteDto, QuoteItemDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto, RejectQuoteDto } from './dto/update-quote.dto';
+import { QuotePdfData } from '../pdf/pdf.interfaces';
 
 @Injectable()
 export class QuotesService {
@@ -133,6 +134,52 @@ export class QuotesService {
 
     await this.repo.update({ id: quoteId, tenantId }, { convertedToOsId: os.id });
     return this.findOne(tenantId, quoteId);
+  }
+
+  async buildPdfData(tenantId: string, id: string): Promise<QuotePdfData> {
+    const quote = await this.findOne(tenantId, id);
+
+    const [tenant] = await this.dataSource.query<{ name: string; phone?: string; cnpj?: string }[]>(
+      `SELECT name, phone, cnpj FROM public.tenants WHERE id = $1 LIMIT 1`,
+      [tenantId],
+    );
+
+    const [client] = await this.dataSource.query<{ name: string; phone?: string; email?: string }[]>(
+      `SELECT name, phone, email FROM public.clients WHERE id = $1 LIMIT 1`,
+      [quote.clientId],
+    );
+
+    let employeeName: string | undefined;
+    if (quote.employeeId) {
+      const [emp] = await this.dataSource.query<{ name: string }[]>(
+        `SELECT name FROM public.employees WHERE id = $1 LIMIT 1`,
+        [quote.employeeId],
+      );
+      employeeName = emp?.name;
+    }
+
+    return {
+      tenant: { companyName: tenant?.name ?? 'Empresa', phone: tenant?.phone, cnpj: tenant?.cnpj },
+      code: quote.code,
+      createdAt: quote.createdAt,
+      validUntil: quote.validUntil,
+      clientName: client?.name ?? 'Cliente',
+      clientPhone: client?.phone,
+      clientEmail: client?.email,
+      employeeName,
+      description: quote.description,
+      items: (quote.items ?? []).map(i => ({
+        description: i.description,
+        quantity: Number(i.quantity),
+        unitPrice: Number(i.unitPrice),
+        discount: Number(i.discount),
+        totalPrice: Number(i.totalPrice),
+      })),
+      subtotal: Number(quote.subtotal),
+      discountAmount: Number(quote.discountAmount),
+      total: Number(quote.total),
+      notes: quote.notes,
+    };
   }
 
   private buildItem(dto: QuoteItemDto): Partial<QuoteItemEntity> {

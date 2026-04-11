@@ -1,6 +1,7 @@
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards,
+  Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { QuotesService } from './quotes.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto, RejectQuoteDto } from './dto/update-quote.dto';
@@ -8,11 +9,16 @@ import { AuthGuard } from '../../core/guards/auth.guard';
 import { PermissionGuard } from '../../core/guards/permission.guard';
 import { RequirePermission } from '../../core/decorators/permission.decorator';
 import { CurrentTenant } from '../../core/decorators/tenant.decorator';
+import { PdfService } from '../pdf/pdf.service';
+import { QuotePdfData } from '../pdf/pdf.interfaces';
 
 @UseGuards(AuthGuard, PermissionGuard)
 @Controller('quotes')
 export class QuotesController {
-  constructor(private readonly service: QuotesService) {}
+  constructor(
+    private readonly service: QuotesService,
+    private readonly pdf: PdfService,
+  ) {}
 
   @Get()
   @RequirePermission('quotes:read')
@@ -70,5 +76,22 @@ export class QuotesController {
   @RequirePermission('quotes:approve')
   convertToOs(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.service.convertToOs(tenantId, id);
+  }
+
+  @Get(':id/pdf')
+  @RequirePermission('quotes:read')
+  async getPdf(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    const data = await this.service.buildPdfData(tenantId, id);
+    const buffer = await this.pdf.generateQuotePdf(data);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${data.code}.pdf"`,
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
   }
 }

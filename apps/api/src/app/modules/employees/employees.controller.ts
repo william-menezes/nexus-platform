@@ -4,6 +4,7 @@ import {
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { InviteEmployeeDto } from './dto/invite-employee.dto';
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { PermissionGuard } from '../../core/guards/permission.guard';
 import { RequirePermission } from '../../core/decorators/permission.decorator';
@@ -46,5 +47,11 @@ export class EmployeesController {
   @RequirePermission('employees:delete')
   remove(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.service.remove(tenantId, id);
+  }
+
+  @Post('invite')
+  @RequirePermission('employees:create')
+  invite(@CurrentTenant() tenantId: string, @Body() dto: InviteEmployeeDto) {
+    return this.service.invite(tenantId, dto);
   }
 }

@@ -7,9 +7,10 @@ import { FinanceService } from './finance.service';
 import { AsaasService } from './asaas.service';
 import { WhatsappService } from './whatsapp.service';
 import { FinanceController } from './finance.controller';
+import { PdfModule } from '../pdf/pdf.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SaleEntity, SaleItemEntity, PaymentEntity])],
+  imports: [TypeOrmModule.forFeature([SaleEntity, SaleItemEntity, PaymentEntity]), PdfModule],
   controllers: [FinanceController],
   providers: [FinanceService, AsaasService, WhatsappService],
 })

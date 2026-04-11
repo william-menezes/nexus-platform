@@ -16,4 +16,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/employee-form/employee-form.component').then(m => m.EmployeeFormComponent),
   },
+  {
+    path: 'convidar',
+    loadComponent: () =>
+      import('./components/invite-employee/invite-employee.component').then(m => m.InviteEmployeeComponent),
+  },
 ];

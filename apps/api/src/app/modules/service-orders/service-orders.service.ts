@@ -9,6 +9,7 @@ import { Repository, IsNull, DataSource } from 'typeorm';
 import { ServiceOrderEntity } from './entities/service-order.entity';
 import { CreateServiceOrderDto } from './dto/create-service-order.dto';
 import { UpdateServiceOrderDto, ChangeStatusDto } from './dto/update-service-order.dto';
+import { OsPdfData } from '../pdf/pdf.interfaces';
 
 const PLAN_LIMITS: Record<string, number> = {
   trial: 20,
@@ -83,5 +84,61 @@ export class ServiceOrdersService {
   async remove(tenantId: string, id: string) {
     await this.findOne(tenantId, id);
     await this.repo.softDelete({ id, tenantId });
+  }
+
+  async buildPdfData(tenantId: string, id: string): Promise<OsPdfData> {
+    const os = await this.findOne(tenantId, id);
+
+    const [tenant] = await this.dataSource.query<{ name: string; phone?: string; cnpj?: string }[]>(
+      `SELECT name, phone, cnpj FROM public.tenants WHERE id = $1 LIMIT 1`,
+      [tenantId],
+    );
+
+    const [client] = os.clientId
+      ? await this.dataSource.query<{ name: string; phone?: string }[]>(
+          `SELECT name, phone FROM public.clients WHERE id = $1 LIMIT 1`,
+          [os.clientId],
+        )
+      : [null];
+
+    let employeeName: string | undefined;
+    if (os.employeeId) {
+      const [emp] = await this.dataSource.query<{ name: string }[]>(
+        `SELECT name FROM public.employees WHERE id = $1 LIMIT 1`,
+        [os.employeeId],
+      );
+      employeeName = emp?.name;
+    }
+
+    const soItems = await this.dataSource.query<{
+      description: string; quantity: string; unit_price: string; discount: string; total_price: string;
+    }[]>(
+      `SELECT description, quantity, unit_price, discount, total_price FROM public.so_items WHERE service_order_id = $1 ORDER BY sort_order`,
+      [id],
+    );
+
+    const subtotal = soItems.reduce((s, i) => s + Number(i.unit_price) * Number(i.quantity), 0);
+    const total    = soItems.reduce((s, i) => s + Number(i.total_price), 0);
+
+    return {
+      tenant: { companyName: tenant?.name ?? 'Empresa', phone: tenant?.phone, cnpj: tenant?.cnpj },
+      code: os.code,
+      createdAt: os.createdAt,
+      clientName: client?.name ?? 'Cliente',
+      clientPhone: client?.phone,
+      employeeName,
+      description: os.description,
+      items: soItems.map(i => ({
+        description: i.description,
+        quantity: Number(i.quantity),
+        unitPrice: Number(i.unit_price),
+        discount: Number(i.discount),
+        totalPrice: Number(i.total_price),
+      })),
+      subtotal,
+      discountAmount: subtotal - total,
+      total,
+      warrantyUntil: os.warrantyUntil,
+    };
   }
 }

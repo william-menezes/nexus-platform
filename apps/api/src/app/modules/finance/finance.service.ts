@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, IsNull } from 'typeorm';
+import { ReceiptPdfData } from '../pdf/pdf.interfaces';
 import { SaleEntity } from './entities/sale.entity';
 import { SaleItemEntity } from './entities/sale-item.entity';
 import { PaymentEntity } from './entities/payment.entity';
@@ -129,6 +130,44 @@ export class FinanceService {
     }
     await this.sales.update({ id, tenantId }, { status: 'cancelled' });
     return this.findOne(tenantId, id);
+  }
+
+  async buildReceiptData(tenantId: string, id: string): Promise<ReceiptPdfData> {
+    const sale = await this.findOne(tenantId, id);
+
+    const [tenant] = await this.dataSource.query<{ name: string; phone?: string; cnpj?: string }[]>(
+      `SELECT name, phone, cnpj FROM public.tenants WHERE id = $1 LIMIT 1`,
+      [tenantId],
+    );
+
+    let clientName: string | undefined;
+    if (sale.clientId) {
+      const [client] = await this.dataSource.query<{ name: string }[]>(
+        `SELECT name FROM public.clients WHERE id = $1 LIMIT 1`,
+        [sale.clientId],
+      );
+      clientName = client?.name;
+    }
+
+    const subtotal = sale.items.reduce((s, i) => s + Number(i.unitPrice) * Number(i.quantity), 0);
+
+    return {
+      tenant: { companyName: tenant?.name ?? 'Empresa', phone: tenant?.phone, cnpj: tenant?.cnpj },
+      code: sale.code ?? `VND-${sale.id.slice(0, 8).toUpperCase()}`,
+      createdAt: sale.createdAt,
+      clientName,
+      items: sale.items.map(i => ({
+        description: i.description,
+        quantity: Number(i.quantity),
+        unitPrice: Number(i.unitPrice),
+        discount: 0,
+        totalPrice: Number(i.totalPrice),
+      })),
+      subtotal,
+      discountAmount: Number(sale.discountAmount),
+      total: Number(sale.total),
+      payments: sale.payments.map(p => ({ method: p.method, amount: Number(p.amount) })),
+    };
   }
 
   // DRE — Demonstração de Resultado por período

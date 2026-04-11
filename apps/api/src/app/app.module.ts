@@ -18,6 +18,10 @@ import { QuotesModule } from './modules/quotes/quotes.module';
 import { FinancialModule } from './modules/financial/financial.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { ContractsModule } from './modules/contracts/contracts.module';
+import { ReturnsModule } from './modules/returns/returns.module';
+import { PurchaseOrdersModule } from './modules/purchase-orders/purchase-orders.module';
 
 @Module({
   imports: [
@@ -42,6 +46,10 @@ import { AuthModule } from './modules/auth/auth.module';
     FinancialModule,
     SuppliersModule,
     AuthModule,
+    AdminModule,
+    ContractsModule,
+    ReturnsModule,
+    PurchaseOrdersModule,
   ],
   controllers: [AppController],
   providers: [
