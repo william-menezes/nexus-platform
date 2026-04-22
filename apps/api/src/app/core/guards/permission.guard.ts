@@ -28,12 +28,15 @@ export class PermissionGuard implements CanActivate {
     const role: string | undefined = request['userRole'];
     const tenantId: string | undefined = request['tenantId'];
 
+    // SUPER_ADMIN has cross-tenant access (no tenant required)
+    if (role === 'SUPER_ADMIN') return true;
+
     if (!role || !tenantId) {
       throw new ForbiddenException('Papel ou tenant não identificado');
     }
 
-    // SUPER_ADMIN and TENANT_ADMIN have full access
-    if (role === 'SUPER_ADMIN' || role === 'TENANT_ADMIN') return true;
+    // TENANT_ADMIN has full access within a tenant
+    if (role === 'TENANT_ADMIN') return true;
 
     const [module, action] = required.split(':');
 
@@ -51,3 +54,4 @@ export class PermissionGuard implements CanActivate {
     return true;
   }
 }
+

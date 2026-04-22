@@ -1,56 +1,199 @@
-<div class="landing-hero">
+<div class="bg-slate-950 text-white">
 
-  <nav class="landing-nav">
-    <div class="nx-brand" style="position:static; display:flex; align-items:center; gap:0.75rem;">
-      <span class="nx-brand-icon">N</span>
-      <span class="nx-brand-name">Nexus Platform</span>
-    </div>
-    <div style="display:flex; gap:1rem; align-items:center;">
+  <!-- NAV -->
+  <nav class="flex items-center justify-between px-4 py-4 max-w-7xl mx-auto">
+    <div class="font-semibold text-lg">SimplificaOS</div>
+
+    <div class="flex items-center gap-2">
       <a routerLink="/login">
-        <p-button label="Entrar" severity="secondary" [outlined]="true" />
+        <p-button label="Entrar" [outlined]="true" severity="secondary" size="small"></p-button>
       </a>
+
       <a routerLink="/cadastro">
-        <p-button label="Começar grátis" />
+        <p-button label="Começar grátis" size="small"></p-button>
       </a>
     </div>
   </nav>
 
-  <div class="landing-hero-center">
-    <h1>Gestão inteligente<br/>para sua empresa</h1>
-    <p>
-      Ordens de serviço, estoque e financeiro em um só lugar.
-      Simples, rápido e poderoso.
+  <!-- HERO -->
+  <section class="px-4 py-12 max-w-7xl mx-auto">
+    <div class="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
+
+      <!-- TEXT -->
+      <div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4">
+          Tudo que sua assistência precisa —
+          <span class="text-blue-500">em um só lugar.</span>
+        </h1>
+
+        <p class="text-slate-400 text-base sm:text-lg mb-6">
+          Organize ordens de serviço, estoque e financeiro sem complicação.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a routerLink="/cadastro" class="w-full sm:w-auto">
+            <p-button label="Começar grátis" class="w-full sm:w-auto shadow-lg" size="large"></p-button>
+          </a>
+
+          <a routerLink="/login" class="w-full sm:w-auto">
+            <p-button label="Já tenho conta" [outlined]="true" severity="secondary" class="w-full sm:w-auto" size="large"></p-button>
+          </a>
+        </div>
+      </div>
+
+      <!-- IMAGE -->
+      <div class="relative flex justify-center">
+        <img
+          src="hero.png"
+          class="w-full max-w-sm sm:max-w-md lg:max-w-lg rounded-xl shadow-2xl"
+          alt="Imagem de exemplo do sistema"
+        />
+
+        <!-- overlay -->
+        <div class="absolute inset-0 bg-gradient-to-l from-transparent via-slate-950/40 to-slate-950 rounded-xl"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROBLEMA -->
+  <section class="bg-slate-900 py-16 px-4 text-center">
+    <h2 class="text-2xl sm:text-3xl font-semibold mb-10">
+      Sua assistência está desorganizada?
+    </h2>
+
+    <div class="flex flex-col gap-3 text-slate-300 max-w-md mx-auto">
+      <p>❌ Anota serviço em papel ou WhatsApp</p>
+      <p>❌ Perde tempo procurando informações</p>
+      <p>❌ Não sabe quais serviços estão abertos</p>
+      <p>❌ Não tem controle de estoque</p>
+      <p>❌ Não sabe quanto realmente ganha</p>
+    </div>
+  </section>
+
+  <!-- BENEFÍCIOS -->
+  <section class="py-16 px-4 bg-slate-50 text-slate-900 text-center">
+    <h2 class="text-2xl sm:text-3xl font-semibold mb-12">
+      Organize sua assistência de verdade
+    </h2>
+
+    <div class="flex flex-col gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition">
+        <h3 class="font-semibold mb-2">Controle total</h3>
+        <p class="text-slate-500">Saiba exatamente o que está acontecendo.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition">
+        <h3 class="font-semibold mb-2">Economize tempo</h3>
+        <p class="text-slate-500">Menos papel, mais produtividade.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition">
+        <h3 class="font-semibold mb-2">Mais lucro</h3>
+        <p class="text-slate-500">Tenha visão clara do financeiro.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="py-16 px-4 bg-white text-center text-slate-900">
+    <h2 class="text-2xl sm:text-3xl font-semibold mb-12">
+      Simples assim
+    </h2>
+
+    <div class="flex flex-col gap-10 sm:grid sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+
+      <div>
+        <div class="text-blue-600 font-bold text-xl mb-2">1</div>
+        <h3 class="font-semibold mb-2">Cadastre o serviço</h3>
+        <p class="text-slate-500">Rápido e simples.</p>
+      </div>
+
+      <div>
+        <div class="text-blue-600 font-bold text-xl mb-2">2</div>
+        <h3 class="font-semibold mb-2">Acompanhe tudo</h3>
+        <p class="text-slate-500">Status em tempo real.</p>
+      </div>
+
+      <div>
+        <div class="text-blue-600 font-bold text-xl mb-2">3</div>
+        <h3 class="font-semibold mb-2">Controle financeiro</h3>
+        <p class="text-slate-500">Saiba quanto ganhou.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROVA -->
+  <section class="py-16 px-4 bg-slate-950 text-white text-center">
+    <h2 class="text-2xl sm:text-3xl font-semibold mb-10">
+      Feito para quem precisa de controle de verdade
+    </h2>
+
+    <div class="flex flex-col sm:flex-row justify-center gap-10">
+
+      <div>
+        <p class="text-3xl font-bold">+100</p>
+        <p class="text-slate-400">ordens gerenciadas</p>
+      </div>
+
+      <div>
+        <p class="text-3xl font-bold">+30%</p>
+        <p class="text-slate-400">mais organização</p>
+      </div>
+
+      <div>
+        <p class="text-3xl font-bold">Simples</p>
+        <p class="text-slate-400">de usar no dia a dia</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="py-16 px-4 bg-slate-50 text-slate-900">
+    <h2 class="text-2xl sm:text-3xl font-semibold text-center mb-12">
+      Tudo em um só lugar
+    </h2>
+
+    <div class="flex flex-col gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+
+      <div class="p-6 bg-white rounded-xl shadow-sm border hover:shadow-md transition">
+        <i class="pi pi-wrench text-blue-600 text-xl mb-3"></i>
+        <h3 class="font-semibold mb-1">Ordens de Serviço</h3>
+        <p class="text-slate-500 text-sm">Controle completo.</p>
+      </div>
+
+      <div class="p-6 bg-white rounded-xl shadow-sm border hover:shadow-md transition">
+        <i class="pi pi-box text-blue-600 text-xl mb-3"></i>
+        <h3 class="font-semibold mb-1">Estoque</h3>
+        <p class="text-slate-500 text-sm">Sem complicação.</p>
+      </div>
+
+      <div class="p-6 bg-white rounded-xl shadow-sm border hover:shadow-md transition">
+        <i class="pi pi-chart-bar text-blue-600 text-xl mb-3"></i>
+        <h3 class="font-semibold mb-1">Financeiro</h3>
+        <p class="text-slate-500 text-sm">Visão clara.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="bg-blue-600 text-white text-center py-16 px-4">
+    <h2 class="text-2xl sm:text-3xl font-semibold mb-4">
+      Comece hoje mesmo
+    </h2>
+
+    <p class="text-blue-100 mb-6 text-sm sm:text-base">
+      Leva menos de 1 minuto para criar sua conta.
     </p>
-    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-      <a routerLink="/cadastro">
-        <p-button label="Criar conta gratuita" size="large" />
-      </a>
-      <a routerLink="/login">
-        <p-button label="Já tenho conta" severity="secondary" [outlined]="true" size="large" />
-      </a>
-    </div>
-  </div>
 
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1.5rem; max-width:960px; margin:4rem auto 0; padding:0 1.5rem;">
-
-    <div class="landing-feature-card">
-      <i class="pi pi-wrench" style="font-size:2rem; color:var(--nx-primary);"></i>
-      <h3>Ordens de Serviço</h3>
-      <p>Gerencie OS do início ao fim. Acompanhe status, clientes e histórico em tempo real.</p>
-    </div>
-
-    <div class="landing-feature-card">
-      <i class="pi pi-box" style="font-size:2rem; color:var(--nx-primary);"></i>
-      <h3>Controle de Estoque</h3>
-      <p>Produtos, entradas, saídas e importação de NF-e. Nunca fique sem peças no momento certo.</p>
-    </div>
-
-    <div class="landing-feature-card">
-      <i class="pi pi-chart-bar" style="font-size:2rem; color:var(--nx-primary);"></i>
-      <h3>PDV &amp; Financeiro</h3>
-      <p>Ponto de venda completo, DRE mensal e integração com Asaas para boletos e PIX.</p>
-    </div>
-
-  </div>
+    <a routerLink="/cadastro" class="w-full sm:w-auto">
+      <p-button label="Começar grátis agora" size="large" class="w-full sm:w-auto shadow-lg"></p-button>
+    </a>
+  </section>
 
 </div>

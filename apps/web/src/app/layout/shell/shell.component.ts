@@ -2,6 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../core/auth/auth.service';
+import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
+import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
+import { DividerModule } from 'primeng/divider';
 
 interface NavItem {
   label: string;
@@ -12,7 +17,10 @@ interface NavItem {
 @Component({
   standalone: true,
   selector: 'app-shell',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [
+    RouterLink, RouterLinkActive, RouterOutlet,
+    ButtonModule, DrawerModule, AvatarModule, TooltipModule, DividerModule,
+  ],
   templateUrl: './shell.component.html',
 })
 export class ShellComponent {
@@ -20,7 +28,9 @@ export class ShellComponent {
   private readonly router = inject(Router);
 
   private readonly user = toSignal(this.auth.user$);
-  sidebarOpen = signal(true);
+
+  sidebarOpen    = signal(true);
+  mobileMenuOpen = false;
 
   readonly nav: NavItem[] = [
     { label: 'Dashboard',         icon: 'pi pi-home',          route: '/app/dashboard' },
@@ -49,5 +59,7 @@ export class ShellComponent {
     this.router.navigate(['/login']);
   }
 
-  toggleSidebar() { this.sidebarOpen.update(v => !v); }
+  toggleSidebar()  { this.sidebarOpen.update(v => !v); }
+  openMobileMenu() { this.mobileMenuOpen = true; }
+  closeMobileMenu() { this.mobileMenuOpen = false; }
 }

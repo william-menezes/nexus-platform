@@ -34,7 +34,7 @@ export class AuthService {
     this.supabase.auth.onAuthStateChange((_event, session) => {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
-      if (session) this.loadMe();
+      if (session) void this.refreshMe();
       else { this.userRole.set(null); this.userTenant.set(null); }
     });
 
@@ -42,18 +42,21 @@ export class AuthService {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
       this._ready$.next(true);
-      if (session) this.loadMe();
+      if (session) void this.refreshMe();
     });
   }
 
-  private loadMe() {
-    this.http.get<MeResponse>(`${environment.apiUrl}/auth/me`).subscribe({
-      next: me => {
-        this.userRole.set(me.role);
-        this.userTenant.set(me.tenantId);
-      },
-      error: () => {},
-    });
+  async refreshMe(): Promise<MeResponse | null> {
+    try {
+      const me = await firstValueFrom(
+        this.http.get<MeResponse>(`${environment.apiUrl}/auth/me`),
+      );
+      this.userRole.set(me.role);
+      this.userTenant.set(me.tenantId);
+      return me;
+    } catch {
+      return null;
+    }
   }
 
   isSuperAdmin() { return this.userRole() === 'SUPER_ADMIN'; }
@@ -61,6 +64,11 @@ export class AuthService {
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    if (data.session) {
+      this._user$.next(data.session.user);
+      this._session$.next(data.session);
+      await this.refreshMe();
+    }
     return data;
   }
 

@@ -7,5 +7,6 @@ import { ButtonModule } from 'primeng/button';
   selector: 'app-landing',
   imports: [RouterLink, ButtonModule],
   templateUrl: './landing.component.html',
+  styleUrl: './landing.component.scss',
 })
 export class LandingComponent {}

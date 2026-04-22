@@ -1,20 +1,31 @@
-<div class="nx-page">
+<p-toast />
 
-  <div class="nx-page-header">
+<!-- ── Breadcrumb & Título (fora do card) ── -->
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" />
+
+<div class="nx-page-header">
+  <div>
     <h1 class="nx-page-title">{{ isEdit ? 'Editar Cliente' : 'Novo Cliente' }}</h1>
-    <a routerLink="/app/clientes">
-      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
-    </a>
+    <p class="nx-page-subtitle">
+      {{ isEdit ? 'Atualize os dados do cliente abaixo' : 'Preencha os dados para cadastrar um novo cliente' }}
+    </p>
   </div>
+  <a routerLink="/app/clientes">
+    <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+  </a>
+</div>
 
-  @if (error) {
-    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
-  }
+@if (error) {
+  <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+}
 
-  <form [formGroup]="form" (ngSubmit)="save()" style="max-width:640px;">
+<!-- ── Card envolve apenas o formulário ── -->
+<p-card styleClass="max-w-2xl">
+  <form [formGroup]="form" (ngSubmit)="save()" class="nx-form">
 
-    <div style="margin-bottom:1.25rem;">
-      <label class="nx-label">Tipo de Pessoa *</label>
+    <!-- Tipo de Pessoa -->
+    <div class="nx-form-group">
+      <label class="nx-form-label">Tipo de Pessoa *</label>
       <p-selectButton
         [options]="typeOptions"
         formControlName="type"
@@ -23,38 +34,95 @@
       />
     </div>
 
-    <div style="margin-bottom:1.25rem;">
-      <label class="nx-label" for="name">Nome *</label>
-      <input pInputText id="name" formControlName="name" style="width:100%;" />
+    <!-- Nome -->
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="cf-name">Nome completo *</label>
+      <input
+        pInputText
+        id="cf-name"
+        formControlName="name"
+        placeholder="{{ form.get('type')?.value === 'company' ? 'Razão social' : 'Nome completo' }}"
+        class="w-full"
+      />
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <small class="p-error">Nome é obrigatório.</small>
+      }
     </div>
 
-    <div style="margin-bottom:1.25rem;">
-      <label class="nx-label" for="cpfCnpj">CPF / CNPJ</label>
-      <input pInputText id="cpfCnpj" formControlName="cpfCnpj" style="width:100%;" />
+    <!-- CPF / CNPJ (máscara dinâmica) -->
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="cf-cpfCnpj">
+        {{ form.get('type')?.value === 'company' ? 'CNPJ' : 'CPF' }}
+      </label>
+      <p-inputmask
+        inputId="cf-cpfCnpj"
+        formControlName="cpfCnpj"
+        [mask]="cpfCnpjMask"
+        [placeholder]="cpfCnpjPlaceholder"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+      />
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
-      <div>
-        <label class="nx-label" for="phone">Telefone</label>
-        <input pInputText id="phone" formControlName="phone" style="width:100%;" />
+    <!-- Telefones -->
+    <div class="nx-form-row cols-2">
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="cf-phone">Telefone / WhatsApp</label>
+        <p-inputmask
+          inputId="cf-phone"
+          formControlName="phone"
+          mask="(99) 99999-9999"
+          placeholder="(00) 00000-0000"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
       </div>
-      <div>
-        <label class="nx-label" for="phone2">Telefone 2</label>
-        <input pInputText id="phone2" formControlName="phone2" style="width:100%;" />
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="cf-phone2">Telefone 2 (opcional)</label>
+        <p-inputmask
+          inputId="cf-phone2"
+          formControlName="phone2"
+          mask="(99) 99999-9999"
+          placeholder="(00) 00000-0000"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
       </div>
     </div>
 
-    <div style="margin-bottom:1.25rem;">
-      <label class="nx-label" for="email">Email</label>
-      <input pInputText id="email" formControlName="email" type="email" style="width:100%;" />
+    <!-- Email -->
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="cf-email">E-mail</label>
+      <input
+        pInputText
+        id="cf-email"
+        formControlName="email"
+        type="email"
+        placeholder="cliente@email.com"
+        class="w-full"
+      />
+      @if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <small class="p-error">E-mail inválido.</small>
+      }
     </div>
 
-    <div style="margin-bottom:1.5rem;">
-      <label class="nx-label" for="notes">Observações</label>
-      <input pInputText id="notes" formControlName="notes" style="width:100%;" />
+    <!-- Observações -->
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="cf-notes">Observações</label>
+      <textarea
+        pTextarea
+        id="cf-notes"
+        formControlName="notes"
+        rows="3"
+        placeholder="Informações adicionais sobre o cliente..."
+        class="w-full"
+      ></textarea>
     </div>
 
-    <div style="display:flex; gap:0.75rem;">
+    <p-divider />
+
+    <!-- Ações -->
+    <div class="nx-form-actions">
       <p-button
         type="submit"
         [label]="isEdit ? 'Salvar alterações' : 'Criar cliente'"
@@ -68,5 +136,4 @@
     </div>
 
   </form>
-
-</div>
+</p-card>

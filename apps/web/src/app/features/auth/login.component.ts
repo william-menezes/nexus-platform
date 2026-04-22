@@ -35,7 +35,9 @@ export class LoginComponent {
         this.form.value.email!,
         this.form.value.password!,
       );
-      this.router.navigate(['/app/dashboard']);
+      const me = await this.auth.refreshMe();
+      if (me?.role === 'SUPER_ADMIN') this.router.navigate(['/admin/dashboard']);
+      else this.router.navigate(['/app/dashboard']);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
       this.error = this.translateError(msg);

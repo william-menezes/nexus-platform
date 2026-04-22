@@ -1,0 +1,233 @@
+<p-toast />
+
+<!-- ── Breadcrumb & Título (fora do card) ── -->
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" />
+
+<div class="nx-page-header">
+  <div>
+    <h1 class="nx-page-title">{{ isEdit ? 'Editar Orçamento' : 'Novo Orçamento' }}</h1>
+    <p class="nx-page-subtitle">
+      {{ isEdit ? 'Atualize os dados do orçamento' : 'Crie um orçamento para envio ao cliente' }}
+    </p>
+  </div>
+  <a routerLink="/app/orcamentos">
+    <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+  </a>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+
+  <!-- ════════════════════════════════
+       CARD 1 — Dados gerais
+       ════════════════════════════════ -->
+  <p-card styleClass="mb-4">
+    <div class="nx-form">
+
+      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: var(--nx-muted)">
+        <i class="pi pi-user mr-2"></i>Cliente
+      </p>
+
+      <!-- Busca de cliente (autocomplete) -->
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="qf-clientSearch">Pesquisar cliente *</label>
+        <p-autocomplete
+          [(ngModel)]="selectedClient"
+          [ngModelOptions]="{ standalone: true }"
+          inputId="qf-clientSearch"
+          [suggestions]="clientSuggestions"
+          (completeMethod)="searchClients($event)"
+          (onSelect)="onClientSelect($event)"
+          (onClear)="onClientClear()"
+          optionLabel="name"
+          placeholder="Digite o nome ou CPF do cliente..."
+          [showClear]="true"
+          [forceSelection]="false"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        >
+          <ng-template let-client pTemplate="item">
+            <div class="flex flex-col py-0.5">
+              <span class="font-semibold text-sm">{{ client.name }}</span>
+              <span class="text-xs" style="color: var(--nx-muted)">
+                {{ client.cpfCnpj || client.phone || 'Sem documento/telefone' }}
+              </span>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+        @if (form.get('clientId')?.invalid && form.get('clientId')?.touched) {
+          <small class="p-error">Selecione ou informe um cliente.</small>
+        }
+        <!-- Campo oculto que armazena o ID selecionado -->
+        <input type="hidden" formControlName="clientId" />
+      </div>
+
+      <p-divider />
+
+      <p class="text-xs font-bold uppercase tracking-widest mb-4 mt-2" style="color: var(--nx-muted)">
+        <i class="pi pi-info-circle mr-2"></i>Informações gerais
+      </p>
+
+      <div class="nx-form-row cols-2">
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="qf-validUntil">Válido até</label>
+          <input
+            pInputText
+            id="qf-validUntil"
+            formControlName="validUntil"
+            type="date"
+            class="w-full"
+          />
+        </div>
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="qf-discount">Desconto geral (R$)</label>
+          <p-inputnumber
+            inputId="qf-discount"
+            formControlName="discountAmount"
+            mode="currency"
+            currency="BRL"
+            locale="pt-BR"
+            [minFractionDigits]="2"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          />
+        </div>
+      </div>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="qf-description">Descrição / observações</label>
+        <textarea
+          pTextarea
+          id="qf-description"
+          formControlName="description"
+          rows="2"
+          placeholder="Observações gerais sobre o orçamento..."
+          class="w-full"
+        ></textarea>
+      </div>
+
+    </div>
+  </p-card>
+
+
+  <!-- ════════════════════════════════
+       CARD 2 — Itens
+       ════════════════════════════════ -->
+  <p-card styleClass="mb-4">
+    <div formArrayName="items">
+
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-xs font-bold uppercase tracking-widest m-0" style="color: var(--nx-muted)">
+          <i class="pi pi-list mr-2"></i>Itens do orçamento
+        </p>
+        <p-button
+          type="button"
+          label="Adicionar item"
+          icon="pi pi-plus"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          (click)="addItem()"
+        />
+      </div>
+
+      @if (itemsArray.length === 0) {
+        <div class="flex flex-col items-center justify-center py-10 text-center">
+          <i class="pi pi-inbox text-4xl mb-3" style="color: var(--nx-muted)"></i>
+          <p class="text-sm m-0" style="color: var(--nx-muted)">Nenhum item adicionado ainda.</p>
+          <p class="text-xs mt-1 m-0" style="color: var(--nx-muted)">Clique em "Adicionar item" para começar.</p>
+        </div>
+      }
+
+      @for (item of itemsArray.controls; track $index) {
+        <div
+          [formGroupName]="$index"
+          class="rounded-xl p-4 mb-3"
+          style="background: var(--nx-surface-low); border: 1px solid var(--nx-outline)"
+        >
+          <div class="grid grid-cols-12 gap-3 items-end">
+
+            <!-- Tipo -->
+            <div class="col-span-12 md:col-span-3 nx-form-group mb-0">
+              <label class="nx-form-label">Tipo</label>
+              <p-select
+                formControlName="itemType"
+                [options]="itemTypes"
+                optionLabel="label"
+                optionValue="value"
+                styleClass="w-full"
+              />
+            </div>
+
+            <!-- Descrição -->
+            <div class="col-span-12 md:col-span-4 nx-form-group mb-0">
+              <label class="nx-form-label">Descrição *</label>
+              <input
+                pInputText
+                formControlName="description"
+                placeholder="Descreva o item..."
+                class="w-full"
+              />
+            </div>
+
+            <!-- Quantidade -->
+            <div class="col-span-6 md:col-span-2 nx-form-group mb-0">
+              <label class="nx-form-label">Qtd</label>
+              <p-inputnumber
+                formControlName="quantity"
+                [min]="0.001"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="3"
+                styleClass="w-full"
+                inputStyleClass="w-full"
+              />
+            </div>
+
+            <!-- Preço Unitário -->
+            <div class="col-span-6 md:col-span-2 nx-form-group mb-0">
+              <label class="nx-form-label">Preço unit.</label>
+              <p-inputnumber
+                formControlName="unitPrice"
+                mode="currency"
+                currency="BRL"
+                locale="pt-BR"
+                styleClass="w-full"
+                inputStyleClass="w-full"
+              />
+            </div>
+
+            <!-- Remover -->
+            <div class="col-span-12 md:col-span-1 flex justify-end">
+              <p-button
+                type="button"
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                size="small"
+                (click)="removeItem($index)"
+                aria-label="Remover item"
+              />
+            </div>
+
+          </div>
+        </div>
+      }
+
+    </div>
+  </p-card>
+
+
+  <!-- ── Ações (fora dos cards mas dentro do form) ── -->
+  <div class="nx-form-actions">
+    <p-button
+      type="submit"
+      [label]="isEdit ? 'Salvar alterações' : 'Criar orçamento'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      [disabled]="form.invalid"
+    />
+    <a routerLink="/app/orcamentos">
+      <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" />
+    </a>
+  </div>
+
+</form>

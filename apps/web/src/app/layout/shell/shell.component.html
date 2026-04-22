@@ -1,34 +1,42 @@
-<div class="flex h-screen bg-surface-muted overflow-hidden">
+<div class="flex h-screen overflow-hidden" style="background: var(--p-surface-ground, #f8fafc)">
 
-  <!-- Sidebar -->
+  <!-- ═══════════════════════════════════════════
+       DESKTOP SIDEBAR — oculto em mobile (< lg)
+       ═══════════════════════════════════════════ -->
   <aside
-    class="flex flex-col bg-white border-r border-surface-border shrink-0 transition-[width] duration-200 motion-reduce:transition-none"
-    [class]="sidebarOpen() ? 'w-64' : 'w-16'"
+    class="hidden lg:flex flex-col shrink-0 bg-white transition-[width] duration-200 motion-reduce:transition-none"
+    [style.width]="sidebarOpen() ? '256px' : '72px'"
+    style="border-right: 1px solid var(--p-surface-border, #e2e8f0)"
   >
     <!-- Brand -->
-    <div class="flex items-center gap-3 px-4 h-16 border-b border-surface-border shrink-0">
-      <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-500 text-white font-bold text-sm shrink-0">
-        N
-      </div>
+    <div
+      class="flex items-center gap-3 px-4 h-16 shrink-0"
+      style="border-bottom: 1px solid var(--p-surface-border, #e2e8f0)"
+    >
+      <div
+        class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0 select-none"
+        style="background: var(--p-primary-color, #3b82f6)"
+      >N</div>
       @if (sidebarOpen()) {
-        <span class="font-display font-semibold text-text text-base truncate">Nexus</span>
+        <span class="font-semibold text-sm truncate" style="color: var(--p-text-color)">
+          Nexus Platform
+        </span>
       }
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto py-3 px-2 space-y-0.5" aria-label="Menu principal">
+    <nav class="flex-1 overflow-y-auto py-3 px-2" aria-label="Menu principal">
       @for (item of nav; track item.route) {
         <a
           [routerLink]="item.route"
-          routerLinkActive="bg-primary-50 text-primary-700 font-medium"
+          routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: false }"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary text-sm
-                 hover:bg-surface-muted hover:text-text transition-colors
-                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-          [attr.title]="sidebarOpen() ? null : item.label"
+          class="nx-nav-link"
+          [pTooltip]="sidebarOpen() ? '' : item.label"
+          tooltipPosition="right"
           [attr.aria-label]="item.label"
         >
-          <i [class]="item.icon + ' text-[1rem] w-5 text-center shrink-0'"></i>
+          <i [class]="item.icon + ' text-base w-5 text-center shrink-0'"></i>
           @if (sidebarOpen()) {
             <span class="truncate">{{ item.label }}</span>
           }
@@ -37,44 +45,127 @@
     </nav>
 
     <!-- User area -->
-    <div class="border-t border-surface-border p-3 flex items-center gap-2 shrink-0">
-      <div
-        class="w-8 h-8 rounded-full bg-primary-500 text-white text-xs font-semibold
-               flex items-center justify-center shrink-0 select-none"
-        aria-hidden="true"
-      >
-        {{ userInitial }}
-      </div>
+    <div
+      class="p-3 flex items-center gap-2 shrink-0"
+      style="border-top: 1px solid var(--p-surface-border, #e2e8f0)"
+    >
+      <p-avatar
+        [label]="userInitial"
+        shape="circle"
+        size="normal"
+        styleClass="shrink-0"
+        [style]="{ background: 'var(--p-primary-color)', color: '#fff', fontWeight: '700', fontSize: '0.8rem' }"
+      />
       @if (sidebarOpen()) {
-        <div class="flex-1 min-w-0">
-          <p class="text-xs text-text-secondary truncate">{{ userEmail }}</p>
-        </div>
+        <p class="flex-1 min-w-0 text-xs truncate m-0" style="color: var(--p-text-muted-color)">
+          {{ userEmail }}
+        </p>
       }
-      <button
+      <p-button
+        icon="pi pi-sign-out"
+        [text]="true"
+        severity="danger"
+        size="small"
         (click)="logout()"
-        class="p-1.5 rounded-md text-text-muted hover:text-danger-600 hover:bg-danger-50 transition-colors
-               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger-500 ml-auto"
         aria-label="Sair da conta"
-        title="Sair"
-      >
-        <i class="pi pi-sign-out text-sm"></i>
-      </button>
+        [pTooltip]="sidebarOpen() ? '' : 'Sair'"
+        tooltipPosition="right"
+      />
     </div>
   </aside>
 
-  <!-- Main area -->
+
+  <!-- ═══════════════════════════════════════════
+       MOBILE DRAWER — aparece só ao clicar no ☰
+       ═══════════════════════════════════════════ -->
+  <p-drawer
+    [(visible)]="mobileMenuOpen"
+    [modal]="true"
+    position="left"
+    [style]="{ width: '280px' }"
+    styleClass="lg:hidden"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0"
+          style="background: var(--p-primary-color, #3b82f6)"
+        >N</div>
+        <span class="font-semibold text-sm" style="color: var(--p-text-color)">Nexus Platform</span>
+      </div>
+    </ng-template>
+
+    <nav aria-label="Menu mobile">
+      @for (item of nav; track item.route) {
+        <a
+          [routerLink]="item.route"
+          (click)="closeMobileMenu()"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="nx-nav-link"
+          [attr.aria-label]="item.label"
+        >
+          <i [class]="item.icon + ' text-base w-5 text-center shrink-0'"></i>
+          <span class="truncate">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <ng-template pTemplate="footer">
+      <div class="flex items-center gap-2 px-1">
+        <p-avatar
+          [label]="userInitial"
+          shape="circle"
+          size="normal"
+          [style]="{ background: 'var(--p-primary-color)', color: '#fff', fontWeight: '700', fontSize: '0.8rem' }"
+        />
+        <p class="flex-1 min-w-0 text-xs truncate m-0" style="color: var(--p-text-muted-color)">
+          {{ userEmail }}
+        </p>
+        <p-button
+          icon="pi pi-sign-out"
+          [text]="true"
+          severity="danger"
+          size="small"
+          (click)="logout()"
+          aria-label="Sair da conta"
+        />
+      </div>
+    </ng-template>
+  </p-drawer>
+
+
+  <!-- ═══════════════════════════════════════════
+       ÁREA PRINCIPAL
+       ═══════════════════════════════════════════ -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
     <!-- Top bar -->
-    <header class="h-16 bg-white border-b border-surface-border flex items-center gap-4 px-4 sticky top-0 z-30 shrink-0">
-      <button
+    <header
+      class="h-16 flex items-center gap-3 px-4 sticky top-0 z-30 shrink-0 bg-white"
+      style="border-bottom: 1px solid var(--p-surface-border, #e2e8f0)"
+    >
+      <!-- Desktop: toggle colapsar sidebar -->
+      <p-button
+        icon="pi pi-bars"
+        [text]="true"
+        severity="secondary"
         (click)="toggleSidebar()"
-        class="p-2 rounded-lg text-text-secondary hover:bg-surface-muted hover:text-text transition-colors
-               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
         aria-label="Alternar menu lateral"
-      >
-        <i class="pi pi-bars"></i>
-      </button>
+        styleClass="hidden lg:flex"
+        pTooltip="Colapsar menu"
+        tooltipPosition="bottom"
+      />
+
+      <!-- Mobile: abrir drawer -->
+      <p-button
+        icon="pi pi-bars"
+        [text]="true"
+        severity="secondary"
+        (click)="openMobileMenu()"
+        aria-label="Abrir menu"
+        styleClass="flex lg:hidden"
+      />
     </header>
 
     <!-- Page content -->

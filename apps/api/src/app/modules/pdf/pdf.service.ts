@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { join } from 'path';
-import PdfPrinter from 'pdfmake';
+import pdfmake from 'pdfmake';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TDocumentDefinitions = any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,11 +22,12 @@ const LIGHT   = '#F9FAFB';
 
 const FONTS_PATH = join(process.cwd(), 'node_modules/pdfmake/fonts/Roboto');
 
-const printer = new PdfPrinter({
+pdfmake.setUrlAccessPolicy(() => false);
+pdfmake.setFonts({
   Roboto: {
-    normal:      join(FONTS_PATH, 'Roboto-Regular.ttf'),
-    bold:        join(FONTS_PATH, 'Roboto-Medium.ttf'),
-    italics:     join(FONTS_PATH, 'Roboto-Italic.ttf'),
+    normal: join(FONTS_PATH, 'Roboto-Regular.ttf'),
+    bold: join(FONTS_PATH, 'Roboto-Medium.ttf'),
+    italics: join(FONTS_PATH, 'Roboto-Italic.ttf'),
     bolditalics: join(FONTS_PATH, 'Roboto-MediumItalic.ttf'),
   },
 });
@@ -145,14 +146,7 @@ function styles() {
 }
 
 function buildPdf(docDef: TDocumentDefinitions): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    const doc = printer.createPdfKitDocument(docDef);
-    doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-    doc.on('end',  () => resolve(Buffer.concat(chunks)));
-    doc.on('error', reject);
-    doc.end();
-  });
+  return pdfmake.createPdf(docDef).getBuffer();
 }
 
 @Injectable()

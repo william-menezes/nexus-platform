@@ -1,87 +1,151 @@
-<div class="nx-page" style="max-width: 640px;">
+<p-toast />
 
-  <div class="nx-page-header">
-    <h1 class="nx-page-title">{{ isEdit ? 'Editar OS' : 'Nova OS' }}</h1>
-    <a routerLink="/app/os">
-      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
-    </a>
+<!-- ── Breadcrumb & Título (fora do card) ── -->
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" />
+
+<div class="nx-page-header">
+  <div>
+    <h1 class="nx-page-title">{{ isEdit ? 'Editar OS' : 'Nova Ordem de Serviço' }}</h1>
+    <p class="nx-page-subtitle">
+      {{ isEdit ? 'Atualize os dados da ordem de serviço' : 'Preencha os dados para abrir uma nova OS' }}
+    </p>
   </div>
+  <a routerLink="/app/os">
+    <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+  </a>
+</div>
 
-  @if (error) {
-    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
-  }
+@if (error) {
+  <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+}
 
+<!-- ── Card envolve apenas o formulário ── -->
+<p-card styleClass="max-w-2xl">
   <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
 
-    <div class="nx-form-group">
-      <label class="nx-form-label" for="clientName">Cliente *</label>
-      <input
-        pInputText
-        id="clientName"
-        formControlName="clientName"
-        type="text"
-        placeholder="Nome do cliente"
-        class="w-full"
-      />
-      @if (form.get('clientName')?.invalid && form.get('clientName')?.touched) {
-        <small class="p-error">Campo obrigatório.</small>
-      }
+    <!-- ── Seção: Cliente ── -->
+    <div class="mb-5">
+      <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--nx-muted)">
+        <i class="pi pi-user mr-2"></i>Dados do Cliente
+      </p>
+
+      <!-- Busca por nome / CPF (autocomplete) -->
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="os-clientSearch">
+          Pesquisar cliente
+        </label>
+        <p-autocomplete
+          [(ngModel)]="selectedClient"
+          [ngModelOptions]="{ standalone: true }"
+          inputId="os-clientSearch"
+          [suggestions]="clientSuggestions"
+          (completeMethod)="searchClients($event)"
+          (onSelect)="onClientSelect($event)"
+          (onClear)="onClientClear()"
+          optionLabel="name"
+          placeholder="Digite o nome ou CPF do cliente..."
+          [showClear]="true"
+          [forceSelection]="false"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        >
+          <ng-template let-client pTemplate="item">
+            <div class="flex flex-col py-0.5">
+              <span class="font-semibold text-sm">{{ client.name }}</span>
+              <span class="text-xs" style="color: var(--nx-muted)">
+                {{ client.cpfCnpj || client.phone || 'Sem documento/telefone' }}
+              </span>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+        <small style="color: var(--nx-muted)">
+          Selecione um cliente existente ou preencha o nome manualmente abaixo.
+        </small>
+      </div>
+
+      <!-- Nome do cliente (pode ser preenchido pelo autocomplete ou manualmente) -->
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="os-clientName">Nome do cliente *</label>
+        <input
+          pInputText
+          id="os-clientName"
+          formControlName="clientName"
+          placeholder="Nome do cliente"
+          class="w-full"
+        />
+        @if (form.get('clientName')?.invalid && form.get('clientName')?.touched) {
+          <small class="p-error">Nome do cliente é obrigatório.</small>
+        }
+      </div>
+
+      <!-- Telefone -->
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="os-clientPhone">Telefone / WhatsApp</label>
+        <p-inputmask
+          inputId="os-clientPhone"
+          formControlName="clientPhone"
+          mask="(99) 99999-9999"
+          placeholder="(00) 00000-0000"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
     </div>
 
-    <div class="nx-form-group">
-      <label class="nx-form-label" for="clientPhone">Telefone</label>
-      <input
-        pInputText
-        id="clientPhone"
-        formControlName="clientPhone"
-        type="tel"
-        placeholder="(11) 99999-9999"
-        class="w-full"
-      />
+    <p-divider />
+
+    <!-- ── Seção: Serviço ── -->
+    <div class="mt-5">
+      <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--nx-muted)">
+        <i class="pi pi-wrench mr-2"></i>Detalhes do Serviço
+      </p>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="os-description">Descrição do problema *</label>
+        <textarea
+          pTextarea
+          id="os-description"
+          formControlName="description"
+          rows="4"
+          placeholder="Descreva o defeito ou serviço solicitado..."
+          class="w-full"
+        ></textarea>
+        @if (form.get('description')?.invalid && form.get('description')?.touched) {
+          <small class="p-error">Descrição é obrigatória.</small>
+        }
+      </div>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="os-priceIdeal">Preço estimado (R$)</label>
+        <p-inputnumber
+          inputId="os-priceIdeal"
+          formControlName="priceIdeal"
+          mode="currency"
+          currency="BRL"
+          locale="pt-BR"
+          [minFractionDigits]="2"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          placeholder="R$ 0,00"
+        />
+      </div>
     </div>
 
-    <div class="nx-form-group">
-      <label class="nx-form-label" for="description">Descrição do problema *</label>
-      <textarea
-        pTextarea
-        id="description"
-        formControlName="description"
-        rows="4"
-        placeholder="Descreva o defeito ou serviço solicitado"
-        class="w-full"
-      ></textarea>
-      @if (form.get('description')?.invalid && form.get('description')?.touched) {
-        <small class="p-error">Campo obrigatório.</small>
-      }
-    </div>
+    <p-divider />
 
-    <div class="nx-form-group">
-      <label class="nx-form-label" for="priceIdeal">Preço estimado (R$)</label>
-      <p-inputnumber
-        inputId="priceIdeal"
-        formControlName="priceIdeal"
-        mode="currency"
-        currency="BRL"
-        locale="pt-BR"
-        [minFractionDigits]="2"
-        styleClass="w-full"
-        inputStyleClass="w-full"
-      />
-    </div>
-
+    <!-- Ações -->
     <div class="nx-form-actions">
       <p-button
         type="submit"
-        [label]="submitting ? 'Salvando...' : 'Salvar'"
+        [label]="isEdit ? 'Salvar alterações' : 'Abrir OS'"
         icon="pi pi-check"
         [loading]="submitting"
         [disabled]="form.invalid"
       />
       <a routerLink="/app/os">
-        <p-button label="Cancelar" severity="secondary" [outlined]="true" />
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" />
       </a>
     </div>
 
   </form>
-
-</div>
+</p-card>

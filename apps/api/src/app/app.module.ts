@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { TenantMiddleware } from './core/middleware/tenant.middleware';
@@ -22,17 +22,39 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ContractsModule } from './modules/contracts/contracts.module';
 import { ReturnsModule } from './modules/returns/returns.module';
 import { PurchaseOrdersModule } from './modules/purchase-orders/purchase-orders.module';
+import { normalizePostgresUrl } from './core/database/normalize-postgres-url';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      autoLoadEntities: true,
-      synchronize: false,
-      ssl: { rejectUnauthorized: false },
-      namingStrategy: new SnakeNamingStrategy(),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const url = normalizePostgresUrl(config.get<string>('DATABASE_URL'));
+        if (!url) {
+          throw new Error('Missing required env var: DATABASE_URL');
+        }
+
+        try {
+          // Ensure we fail fast with a clear message (and without leaking credentials).
+          // eslint-disable-next-line no-new
+          new URL(url);
+        } catch {
+          throw new Error(
+            "Invalid DATABASE_URL. If you're using a `.env` file and your password contains `#`, wrap the whole value in quotes (dotenv treats `#` as a comment). Also URL-encode special characters (e.g. # -> %23, / -> %2F).",
+          );
+        }
+
+        return {
+          type: 'postgres' as const,
+          url,
+          autoLoadEntities: true,
+          synchronize: false,
+          ssl: { rejectUnauthorized: false },
+          namingStrategy: new SnakeNamingStrategy(),
+        };
+      },
     }),
     ServiceOrdersModule,
     InventoryModule,
