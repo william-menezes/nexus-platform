@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
+import { AuthService } from '../../../core/auth/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -24,6 +24,7 @@ export class LoginComponent {
   form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
+    remember: [false],
   });
 
   async submit() {

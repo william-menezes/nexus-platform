@@ -11,7 +11,7 @@ export const appRoutes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./features/auth/login.component').then(m => m.LoginComponent),
+      import('./features/auth/login/login.component').then(m => m.LoginComponent),
   },
   {
     path: 'cadastro',
