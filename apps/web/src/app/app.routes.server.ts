@@ -7,8 +7,9 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'cadastro', renderMode: RenderMode.Prerender },
 
   // Rotas autenticadas — renderizadas no cliente (requerem sessão, sem SSR)
-  { path: 'app/**',  renderMode: RenderMode.Client },
+  { path: 'app/**',   renderMode: RenderMode.Client },
+  { path: 'admin/**', renderMode: RenderMode.Client },
 
   // Fallback
-  { path: '**',      renderMode: RenderMode.Prerender },
+  { path: '**',       renderMode: RenderMode.Prerender },
 ];

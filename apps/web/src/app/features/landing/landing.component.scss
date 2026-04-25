@@ -1,7 +1,13 @@
-img {
-  transition: transform 0.3s ease;
+:host {
+  display: block;
 }
 
-img:hover {
-  transform: scale(1.03) rotate(-2deg);
+/* micro interação */
+article {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+article:hover {
+  transform: translateY(-4px);
 }

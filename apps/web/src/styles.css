@@ -13,13 +13,94 @@
   font-style: normal;
 }
 
-/* ============================================================
-   Nexus Platform — Layout & Utilities
-   Os componentes PrimeNG usam o tema Aura Blue via app.config.ts
-   Não sobrescrever estilos internos do PrimeNG aqui.
-   ============================================================ */
+/* =====================================================
+   SIMPLIFICAOS THEME
+   Base: PrimeNG Lara (preset via app.config.ts)
+   ===================================================== */
 
-/* ── Reset & Base ── */
+/* ── 1. TOKENS ── */
+:root {
+  /* PRIMARY */
+  --primary-color:  #2563EB;
+  --primary-hover:  #1D4ED8;
+  --primary-active: #1E40AF;
+  --primary-light:  #DBEAFE;
+
+  /* BACKGROUND */
+  --bg-dark:    #0F172A;
+  --bg-surface: #111827;
+  --bg-light:   #F8FAFC;
+  --bg-card:    #FFFFFF;
+
+  /* TEXT */
+  --text-primary:   #0F172A;
+  --text-secondary: #64748B;
+  --text-inverse:   #F8FAFC;
+
+  /* BORDER */
+  --border-color: #E2E8F0;
+
+  /* INPUT */
+  --input-bg:    #F8FAFC;
+  --input-border: #E2E8F0;
+  --input-focus:  #2563EB;
+
+  /* STATES */
+  --hover-bg:  #EFF6FF;
+  --active-bg: #DBEAFE;
+
+  /* RADIUS */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  /* SHADOW */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  /* TRANSITIONS */
+  --transition-fast: 0.2s ease;
+
+  /* ── Legacy aliases (--nx-*) so existing components keep working ── */
+  --nx-primary:        var(--primary-color);
+  --nx-primary-hover:  var(--primary-hover);
+  --nx-primary-active: var(--primary-active);
+  --nx-primary-soft:   var(--primary-light);
+  --nx-bg-dark:        var(--bg-dark);
+  --nx-bg-surface:     var(--bg-surface);
+  --nx-bg-light:       var(--bg-light);
+  --nx-bg-card:        var(--bg-card);
+  --nx-text:           var(--text-primary);
+  --nx-muted:          var(--text-secondary);
+  --nx-text-inverse:   var(--text-inverse);
+  --nx-border:         var(--border-color);
+  --nx-radius-sm:      var(--radius-sm);
+  --nx-radius-md:      var(--radius-md);
+  --nx-radius-xl:      var(--radius-lg);
+  --nx-shadow:         var(--shadow-md);
+
+  /* ── PrimeNG Lara token overrides ── */
+  --p-primary-color:        var(--primary-color);
+  --p-primary-hover-color:  var(--primary-hover);
+  --p-primary-active-color: var(--primary-active);
+  --p-primary-50:  #eff6ff;
+  --p-primary-100: var(--primary-light);
+  --p-primary-500: var(--primary-color);
+  --p-primary-600: var(--primary-color);
+  --p-primary-700: var(--primary-hover);
+
+  --p-text-color:       var(--text-primary);
+  --p-text-muted-color: var(--text-secondary);
+
+  --p-surface-ground:  var(--bg-light);
+  --p-surface-section: var(--bg-light);
+  --p-surface-card:    var(--bg-card);
+  --p-surface-border:  var(--border-color);
+  --p-surface-hover:   var(--hover-bg);
+}
+
+/* ── 2. RESET & BASE ── */
 *,
 *::before,
 *::after {
@@ -27,99 +108,287 @@
 }
 
 body {
-  font-family: 'Manrope', sans-serif;
   margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-light);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
-  background: var(--p-surface-ground, #f8fafc);
-  color: var(--p-text-color, #0f172a);
 }
 
-/* ── SIMPLIFICAOS THEME (PrimeNG Aura + tokens via CSS vars) ── */
-:root {
-  /* Brand */
-  --nx-primary: #2563eb;
-  --nx-primary-hover: #1d4ed8;
-  --nx-primary-active: #1e40af;
-  --nx-primary-soft: #dbeafe;
-
-  /* Surfaces */
-  --nx-bg-dark: #0f172a;
-  --nx-bg-surface: #111827;
-  --nx-bg-light: #f8fafc;
-  --nx-bg-card: #ffffff;
-
-  /* Text */
-  --nx-text: #0f172a;
-  --nx-muted: #64748b;
-  --nx-text-inverse: #f8fafc;
-
-  /* Borders */
-  --nx-border: #e2e8f0;
-
-  /* Radius / Shadow */
-  --nx-radius-sm: 6px;
-  --nx-radius-md: 8px;
-  --nx-radius-xl: 18px;
-  --nx-shadow:
-    0 2px 6px rgba(15, 23, 42, 0.06), 0 10px 30px rgba(15, 23, 42, 0.08);
-
-  /* PrimeNG tokens (override Aura via CSS variables; keep component CSS intact) */
-  --p-primary-color: var(--nx-primary);
-  --p-primary-hover-color: var(--nx-primary-hover);
-  --p-primary-active-color: var(--nx-primary-active);
-  --p-primary-50: #eff6ff;
-  --p-primary-100: var(--nx-primary-soft);
-  --p-primary-500: var(--nx-primary);
-  --p-primary-600: var(--nx-primary);
-  --p-primary-700: var(--nx-primary-hover);
-
-  --p-text-color: var(--nx-text);
-  --p-text-muted-color: var(--nx-muted);
-
-  --p-surface-ground: var(--nx-bg-light);
-  --p-surface-section: var(--nx-bg-light);
-  --p-surface-card: var(--nx-bg-card);
-  --p-surface-border: var(--nx-border);
-  --p-surface-hover: #eff6ff;
+a {
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
-/* ── Nav items do Sidebar ── */
+a:hover {
+  text-decoration: underline;
+}
+
+label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ── 3. LAYOUT UTILITIES ── */
+.container {
+  padding: 24px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ── 4. PRIMENG: BUTTONS ── */
+.p-button {
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  padding: 8px 14px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link) {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):active {
+  background: var(--primary-active);
+  border-color: var(--primary-active);
+}
+
+.p-button.p-button-outlined {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* ── 5. PRIMENG: INPUTS ── */
+.p-inputtext,
+.p-password input {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.p-inputtext:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+/* ── 6. PRIMENG: CARD ── */
+.p-card,
+.p-dialog {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: none;
+  transition: transform var(--transition-fast);
+}
+
+.p-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ── 7. PRIMENG: DATATABLE ── */
+.p-datatable {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.p-datatable thead th {
+  background: #F1F5F9;
+  color: #475569;
+  font-weight: 600;
+  border: none;
+}
+
+.p-datatable tbody tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.p-datatable tbody tr:hover {
+  background: var(--hover-bg);
+}
+
+/* ── 8. PRIMENG: SIDEBAR / MENU ── */
+.p-sidebar {
+  background: var(--bg-dark);
+  color: var(--text-inverse);
+}
+
+.p-menuitem-link {
+  border-radius: var(--radius-md);
+  margin: 4px 0;
+  transition: background var(--transition-fast);
+}
+
+.p-menuitem-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── 9. DENSITY (compact UI) ── */
+.p-component {
+  font-size: 14px;
+}
+
+.p-card-body {
+  padding: 16px;
+}
+
+/* ── 10. AUTH PAGES ── */
+.auth-container {
+  display: flex;
+  height: 100vh;
+  background: var(--bg-dark);
+}
+
+.auth-left {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-card);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-right {
+  width: 60%;
+  background: linear-gradient(135deg, var(--bg-dark), #1E293B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-inverse);
+  position: relative;
+}
+
+.auth-overlay {
+  max-width: 420px;
+  padding: 2rem;
+}
+
+/* Legacy centered auth layout (keep for existing pages) */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, #1e293b 100%);
+}
+
+.auth-page .auth-card {
+  max-width: 440px;
+  border: 1px solid var(--border-color);
+  padding: 2.5rem;
+}
+
+.auth-brand {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  margin: 0.375rem 0 0;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 0.875rem;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.auth-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ── 11. NAV LINKS (Sidebar) ── */
 .nx-nav-link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 0.875rem;
-  border-radius: 0.5rem;
-  color: var(--p-text-muted-color, #64748b);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  transition: background var(--transition-fast), color var(--transition-fast);
   margin-bottom: 2px;
   outline: none;
   white-space: nowrap;
   overflow: hidden;
 }
+
 .nx-nav-link:hover {
-  background: var(--p-surface-hover, #f1f5f9);
-  color: var(--p-text-color, #0f172a);
+  background: var(--hover-bg);
+  color: var(--text-primary);
+  text-decoration: none;
 }
+
 .nx-nav-link.active {
-  background: var(--p-primary-50, #eff6ff);
-  color: var(--p-primary-700, #1d4ed8);
+  background: var(--primary-light);
+  color: var(--primary-hover);
   font-weight: 600;
 }
+
 .nx-nav-link.active i {
-  color: var(--p-primary-500, #3b82f6);
+  color: var(--primary-color);
 }
+
 .nx-nav-link:focus-visible {
-  outline: 2px solid var(--p-primary-500, #3b82f6);
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
-/* ── Layout: página ── */
+/* ── 12. PAGE LAYOUT ── */
 .nx-page {
   width: 100%;
 }
@@ -138,16 +407,16 @@ body {
   font-weight: 800;
   letter-spacing: -0.02em;
   margin: 0 0 0.125rem;
-  color: var(--p-text-color, #0f172a);
+  color: var(--text-primary);
 }
 
 .nx-page-subtitle {
   font-size: 0.875rem;
   margin: 0;
-  color: var(--p-text-muted-color, #64748b);
+  color: var(--text-secondary);
 }
 
-/* ── Layout: formulário ── */
+/* ── 13. FORM LAYOUT ── */
 .nx-form {
   width: 100%;
 }
@@ -162,16 +431,18 @@ body {
   font-size: 0.8125rem;
   font-weight: 600;
   margin-bottom: 0.4rem;
-  color: var(--p-text-color, #0f172a);
+  color: var(--text-primary);
 }
 
 .nx-form-row {
   display: grid;
   gap: 1rem;
 }
+
 .nx-form-row.cols-2 {
   grid-template-columns: 1fr 1fr;
 }
+
 .nx-form-row.cols-3 {
   grid-template-columns: 1fr 1fr 1fr;
 }
@@ -183,29 +454,32 @@ body {
   flex-wrap: wrap;
 }
 
-/* ── Stat card ── */
+/* ── 14. STAT CARD ── */
 .nx-stat {
-  border-radius: var(--nx-radius-xl);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
-  box-shadow: var(--nx-shadow);
-  background: var(--p-surface-card, #fff);
-  border: 1px solid var(--p-surface-border, #e2e8f0);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
+
 .nx-stat-value {
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
-  color: var(--p-text-color, #0f172a);
+  color: var(--text-primary);
 }
+
 .nx-stat-label {
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-top: 0.5rem;
-  color: var(--nx-muted);
+  color: var(--text-secondary);
 }
+
 .nx-stat-icon {
   width: 44px;
   height: 44px;
@@ -217,78 +491,26 @@ body {
   margin-bottom: 1rem;
 }
 
-/* ── Auth pages ── */
-.auth-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, var(--nx-bg-dark) 0%, #1e293b 100%);
-}
-.auth-card {
-  width: 100%;
-  max-width: 440px;
-  background: var(--p-surface-card, #fff);
-  border-radius: var(--nx-radius-xl);
-  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.1);
-  padding: 2.5rem;
-  border: 1px solid var(--p-surface-border, #e2e8f0);
-}
-.auth-brand {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-.auth-logo {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: var(--p-primary-color, #3b82f6);
-}
-.auth-subtitle {
-  font-size: 0.9rem;
-  margin: 0.375rem 0 0;
-  font-weight: 500;
-  color: var(--p-text-muted-color, #64748b);
-}
-.auth-footer {
-  text-align: center;
-  font-size: 0.875rem;
-  margin-top: 1.5rem;
-  font-weight: 500;
-  color: var(--p-text-muted-color, #64748b);
-}
-.auth-footer a {
-  color: var(--p-primary-color, #3b82f6);
-  text-decoration: none;
-  font-weight: 600;
-}
-.auth-footer a:hover {
-  text-decoration: underline;
-}
-
-/* ── Landing ── */
+/* ── 15. LANDING ── */
 .landing-hero {
   min-height: 100vh;
   background: linear-gradient(
     155deg,
-    var(--p-primary-50, #eff6ff) 0%,
-    var(--p-surface-ground, #f8fafc) 55%,
+    #eff6ff 0%,
+    var(--bg-light) 55%,
     #f0f7ff 100%
   );
   display: flex;
   flex-direction: column;
 }
+
 .landing-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 3rem;
 }
+
 .landing-hero-center {
   flex: 1;
   display: flex;
@@ -298,25 +520,29 @@ body {
   text-align: center;
   padding: 5rem 2rem 2rem;
 }
+
 .landing-headline {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--p-text-color, #0f172a);
+  color: var(--text-primary);
   line-height: 1.05;
   margin: 0 0 1.5rem;
 }
+
 .landing-headline span {
-  color: var(--p-primary-color, #3b82f6);
+  color: var(--primary-color);
 }
+
 .landing-lead {
   font-size: 1.125rem;
-  color: var(--nx-muted);
+  color: var(--text-secondary);
   max-width: 520px;
   margin: 0 auto 2.5rem;
   font-weight: 500;
   line-height: 1.7;
 }
+
 .landing-cta {
   display: flex;
   gap: 1rem;
@@ -325,9 +551,10 @@ body {
 }
 
 .landing-features {
-  background: var(--p-surface-card, #fff);
+  background: var(--bg-card);
   padding: 6rem 3rem;
 }
+
 .landing-features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -335,70 +562,77 @@ body {
   max-width: 1100px;
   margin: 3rem auto 0;
 }
+
 .landing-feature-card {
-  background: var(--p-surface-ground, #f8fafc);
-  border-radius: var(--nx-radius-xl);
+  background: var(--bg-light);
+  border-radius: var(--radius-lg);
   padding: 2rem;
-  border: 1px solid var(--p-surface-border, #e2e8f0);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  border: 1px solid var(--border-color);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
+
 .landing-feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.1);
+  box-shadow: var(--shadow-lg);
 }
+
 .landing-feature-icon {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
+
 .landing-feature-title {
   font-size: 1.1rem;
   font-weight: 700;
   margin: 0 0 0.5rem;
-  color: var(--p-text-color, #0f172a);
+  color: var(--text-primary);
 }
+
 .landing-feature-desc {
   font-size: 0.875rem;
-  color: var(--nx-muted);
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
 }
+
 .landing-section-label {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--p-primary-color, #3b82f6);
+  color: var(--primary-color);
   text-align: center;
 }
+
 .landing-section-title {
   font-size: 2.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--p-text-color, #0f172a);
+  color: var(--text-primary);
   text-align: center;
   margin: 0.75rem 0 0;
 }
 
-/* ── DRE / PDV ── */
+/* ── 16. DRE / PDV ── */
 .dre-bar-wrap {
   height: 6px;
-  background: var(--p-surface-ground, #f1f5f9);
+  background: #f1f5f9;
   border-radius: 99px;
 }
+
 .dre-bar {
   height: 6px;
-  background: var(--p-primary-color, #3b82f6);
+  background: var(--primary-color);
   border-radius: 99px;
   transition: width 0.4s ease;
 }
 
 .pdv-totals {
-  background: var(--p-surface-section, #f8fafc);
-  border-radius: 0.75rem;
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
   padding: 1.25rem 1.5rem;
 }
+
 .pdv-total-row {
   display: flex;
   justify-content: space-between;
@@ -406,94 +640,20 @@ body {
   padding: 0.375rem 0;
   font-size: 0.9rem;
 }
+
 .pdv-total-row.grand {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--p-text-color, #0f172a);
-  border-top: 1px solid var(--p-surface-border, #e2e8f0);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-color);
   margin-top: 0.5rem;
   padding-top: 0.75rem;
 }
-.pdv-remaining-ok {
-  color: #166534;
-  font-weight: 700;
-}
-.pdv-remaining-bad {
-  color: var(--p-red-600, #dc2626);
-  font-weight: 700;
-}
 
-/* ── Misc ── */
-.w-full {
-  width: 100% !important;
-}
-a {
-  color: inherit;
-}
+.pdv-remaining-ok  { color: #166534; font-weight: 700; }
+.pdv-remaining-bad { color: #dc2626; font-weight: 700; }
 
-/* ── PrimeNG: pequenos ajustes de identidade (sem sobrescrever layout interno) ── */
-.p-button {
-  border-radius: var(--nx-radius-md);
-  font-weight: 600;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link) {
-  background: var(--nx-primary);
-  border-color: var(--nx-primary);
-}
-.p-button:not(.p-button-text):not(.p-button-outlined):not(
-    .p-button-link
-  ):hover {
-  background: var(--nx-primary-hover);
-  border-color: var(--nx-primary-hover);
-}
-.p-button:not(.p-button-text):not(.p-button-outlined):not(
-    .p-button-link
-  ):active {
-  background: var(--nx-primary-active);
-  border-color: var(--nx-primary-active);
-}
-.p-button.p-button-outlined {
-  border-color: var(--nx-primary);
-  color: var(--nx-primary);
-}
-.p-inputtext,
-.p-password input {
-  border-radius: var(--nx-radius-md);
-}
-.p-card,
-.p-dialog {
-  border-radius: var(--nx-radius-xl);
-  box-shadow: var(--nx-shadow);
-}
-.p-datatable {
-  border-radius: var(--nx-radius-xl);
-  overflow: hidden;
-}
-.p-datatable thead th {
-  background: #f1f5f9;
-  color: #475569;
-  font-weight: 600;
-  border: none;
-}
-.p-datatable tbody tr {
-  border-bottom: 1px solid var(--nx-border);
-}
-.p-datatable tbody tr:hover {
-  background: var(--p-surface-hover, #eff6ff);
-}
-.p-sidebar {
-  background: var(--nx-bg-dark);
-  color: var(--nx-text-inverse);
-}
-.p-menuitem-link {
-  border-radius: var(--nx-radius-md);
-  margin: 4px 0;
-  transition: background 0.15s ease;
-}
-.p-menuitem-link:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
+/* ── 17. MISC ── */
+.w-full { width: 100% !important; }
+
+a { color: inherit; }

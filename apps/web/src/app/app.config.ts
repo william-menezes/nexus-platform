@@ -1,19 +1,19 @@
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
-  provideBrowserGlobalErrorListeners,
   isDevMode,
+  provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
-import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeng/themes';
-import Aura from '@primeng/themes/aura';
+import  Aura  from '@primeuix/themes/aura';
 import { MessageService } from 'primeng/api';
-import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
+import { authInterceptor } from './core/interceptors/auth-interceptor';
 
 const NexusPreset = definePreset(Aura, {
   semantic: {
