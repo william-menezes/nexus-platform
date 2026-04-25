@@ -1,0 +1,111 @@
+<!-- Brand -->
+<div class="flex items-center gap-2 mb-6">
+  <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
+    <i class="pi pi-wrench text-white text-sm"></i>
+  </div>
+  <span class="font-bold text-white text-lg">SimplificaOS</span>
+</div>
+
+<!-- Step indicator -->
+<div class="flex items-center gap-2 mb-6">
+  <div class="flex items-center gap-1.5">
+    <div class="w-6 h-6 rounded-full bg-blue-600/30 border border-blue-500/40 flex items-center justify-center">
+      <i class="pi pi-check text-blue-400 text-xs"></i>
+    </div>
+    <span class="text-slate-500 text-xs">Conta</span>
+  </div>
+  <div class="flex-1 h-px bg-slate-700 mx-1"></div>
+  <div class="flex items-center gap-1.5">
+    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center">
+      <span class="text-white text-xs font-bold">2</span>
+    </div>
+    <span class="text-white text-xs font-medium">Empresa</span>
+  </div>
+</div>
+
+<!-- Heading -->
+<h1 class="text-2xl font-bold text-white mb-1">Configure sua empresa</h1>
+<p class="text-slate-400 text-sm mb-6">
+  Essas informações aparecerão nas suas OS, orçamentos e relatórios.
+</p>
+
+<!-- Error -->
+@if (error) {
+  <p-message severity="error" class="block w-full mb-5">{{ error }}</p-message>
+}
+
+<!-- Form -->
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
+
+  <!-- Company name -->
+  <div class="flex flex-col gap-1.5">
+    <label for="companyName" class="text-sm font-medium text-slate-300">Nome da empresa</label>
+    <input
+      pInputText
+      id="companyName"
+      type="text"
+      formControlName="companyName"
+      placeholder="Assistência Técnica Silva"
+      class="w-full"
+    />
+    @if (form.get('companyName')?.invalid && form.get('companyName')?.touched) {
+      <small class="p-error">Informe o nome da empresa.</small>
+    }
+  </div>
+
+  <!-- Segment -->
+  <div class="flex flex-col gap-1.5">
+    <label for="segment" class="text-sm font-medium text-slate-300">Segmento</label>
+    <p-select
+      id="segment"
+      formControlName="segment"
+      [options]="segments"
+      optionLabel="label"
+      optionValue="value"
+      class="w-full"
+    />
+  </div>
+
+  <!-- Phone (optional) -->
+  <div class="flex flex-col gap-1.5">
+    <label for="phone" class="text-sm font-medium text-slate-300">
+      Telefone <span class="text-slate-500 font-normal">(opcional)</span>
+    </label>
+    <input
+      pInputText
+      id="phone"
+      type="tel"
+      formControlName="phone"
+      placeholder="(11) 99999-9999"
+      class="w-full"
+    />
+  </div>
+
+  <!-- CNPJ (optional) -->
+  <div class="flex flex-col gap-1.5">
+    <label for="cnpj" class="text-sm font-medium text-slate-300">
+      CNPJ <span class="text-slate-500 font-normal">(opcional)</span>
+    </label>
+    <input
+      pInputText
+      id="cnpj"
+      type="text"
+      formControlName="cnpj"
+      placeholder="00.000.000/0001-00"
+      class="w-full"
+    />
+  </div>
+
+  <!-- Submit -->
+  <p-button
+    type="submit"
+    label="Começar agora"
+    icon="pi pi-arrow-right"
+    iconPos="right"
+    [loading]="loading"
+    [disabled]="form.invalid"
+    [fluid]="true"
+    class="mt-1"
+  />
+
+</form>

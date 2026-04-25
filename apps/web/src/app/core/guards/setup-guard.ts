@@ -4,7 +4,8 @@ import { AuthService } from '../auth/auth.service';
 import { combineLatest } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 
-export const authGuard: CanActivateFn = (_route, _state) => {
+/** Allows only authenticated users who have not yet created a tenant. */
+export const setupGuard: CanActivateFn = (_route, _state) => {
   const auth   = inject(AuthService);
   const router = inject(Router);
 
@@ -12,8 +13,8 @@ export const authGuard: CanActivateFn = (_route, _state) => {
     filter(([sessionReady, meLoaded]) => sessionReady && meLoaded),
     take(1),
     map(() => {
-      if (!auth.getAccessToken())  return router.createUrlTree(['/login']);
-      if (!auth.userTenant())      return router.createUrlTree(['/cadastro/empresa']);
+      if (!auth.getAccessToken()) return router.createUrlTree(['/login']);
+      if (auth.userTenant())      return router.createUrlTree(['/app/dashboard']);
       return true;
     }),
   );

@@ -5,7 +5,6 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
-import { SelectModule } from 'primeng/select';
 import { AuthService } from '../../../core/auth/auth.service';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -19,25 +18,19 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 @Component({
   standalone: true,
   selector: 'app-signup',
-  imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule, MessageModule, SelectModule],
+  imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule, MessageModule],
   templateUrl: './signup.component.html',
+  host: { style: 'display: contents;' },
 })
 export class SignupComponent {
   private readonly fb     = inject(FormBuilder);
   private readonly auth   = inject(AuthService);
   private readonly router = inject(Router);
 
-  loading   = false;
-  error     = '';
-  success   = false;
-
-  segments = [
-    { label: 'Eletrônicos', value: 'electronics' },
-    { label: 'Climatização (HVAC)', value: 'hvac' },
-    { label: 'Informática', value: 'it' },
-    { label: 'Automotivo', value: 'automotive' },
-    { label: 'Genérico', value: 'generic' },
-  ];
+  loading      = false;
+  error        = '';
+  success      = false;
+  googleLoading = false;
 
   form = this.fb.group(
     {
@@ -45,10 +38,6 @@ export class SignupComponent {
       email:           ['', [Validators.required, Validators.email]],
       password:        ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
-      companyName:     ['', [Validators.required, Validators.minLength(2)]],
-      segment:         ['generic'],
-      phone:           [''],
-      cnpj:            [''],
     },
     { validators: passwordMatchValidator },
   );
@@ -69,16 +58,10 @@ export class SignupComponent {
       );
 
       if (session) {
-        // Session available (email confirmation disabled) — create tenant immediately
-        await this.auth.createTenant({
-          companyName: this.form.value.companyName!,
-          segment:     this.form.value.segment || 'generic',
-          phone:       this.form.value.phone   || undefined,
-          cnpj:        this.form.value.cnpj    || undefined,
-        });
-        this.router.navigate(['/app/dashboard']);
+        // Email confirmation disabled — go straight to company setup
+        this.router.navigate(['/cadastro/empresa']);
       } else {
-        // Email confirmation required — tenant will be created after confirmation + login
+        // Email confirmation required — show success screen
         this.success = true;
         this.loading = false;
       }
@@ -86,6 +69,18 @@ export class SignupComponent {
       const msg = err instanceof Error ? err.message : '';
       this.error = this.translateError(msg);
       this.loading = false;
+    }
+  }
+
+  async signInWithGoogle() {
+    this.googleLoading = true;
+    this.error         = '';
+    try {
+      await this.auth.signInWithGoogle();
+      // Page will redirect to /auth/callback via Supabase OAuth
+    } catch {
+      this.error         = 'Não foi possível conectar com o Google. Tente novamente.';
+      this.googleLoading = false;
     }
   }
 
@@ -101,7 +96,7 @@ export class SignupComponent {
 
   getStrengthColor(index: number): string {
     const score = this.getStrengthScore();
-    if (index >= score) return 'bg-gray-200';
+    if (index >= score) return 'bg-slate-700';
     if (score === 1)    return 'bg-red-400';
     if (score === 2)    return 'bg-yellow-400';
     if (score === 3)    return 'bg-blue-400';

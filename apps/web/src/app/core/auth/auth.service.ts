@@ -19,30 +19,43 @@ export class AuthService {
     environment.supabaseAnonKey
   );
 
-  private _user$    = new BehaviorSubject<User | null>(null);
-  private _session$ = new BehaviorSubject<Session | null>(null);
-  private _ready$   = new BehaviorSubject<boolean>(false);
+  private _user$     = new BehaviorSubject<User | null>(null);
+  private _session$  = new BehaviorSubject<Session | null>(null);
+  private _ready$    = new BehaviorSubject<boolean>(false);
+  private _meLoaded$ = new BehaviorSubject<boolean>(false);
 
-  readonly user$:         Observable<User | null> = this._user$.asObservable();
+  readonly user$:         Observable<User | null>    = this._user$.asObservable();
   readonly isLoggedIn$  = this.user$.pipe(map(u => !!u));
-  readonly sessionReady$: Observable<boolean>     = this._ready$.asObservable();
+  readonly sessionReady$: Observable<boolean>         = this._ready$.asObservable();
+  readonly meLoaded$:     Observable<boolean>         = this._meLoaded$.asObservable();
 
   readonly userRole   = signal<MeResponse['role']>(null);
   readonly userTenant = signal<string | null>(null);
 
   constructor() {
+    // Primary source of truth: onAuthStateChange fires INITIAL_SESSION on load,
+    // SIGNED_IN after OAuth/email-confirmation code exchange, SIGNED_OUT on logout.
     this.supabase.auth.onAuthStateChange((_event, session) => {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
-      if (session) void this.refreshMe();
-      else { this.userRole.set(null); this.userTenant.set(null); }
+      this._ready$.next(true);
+
+      if (session) {
+        this._meLoaded$.next(false); // reset while we fetch the latest me
+        void this.refreshMe();
+      } else {
+        this.userRole.set(null);
+        this.userTenant.set(null);
+        this._meLoaded$.next(true);
+      }
     });
 
+    // Belt-and-suspenders: ensures sessionReady fires even if onAuthStateChange is slow
     this.supabase.auth.getSession().then(({ data: { session } }) => {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
       this._ready$.next(true);
-      if (session) void this.refreshMe();
+      // refreshMe is handled by onAuthStateChange — don't call it here to avoid double requests
     });
   }
 
@@ -53,8 +66,10 @@ export class AuthService {
       );
       this.userRole.set(me.role);
       this.userTenant.set(me.tenantId);
+      this._meLoaded$.next(true);
       return me;
     } catch {
+      this._meLoaded$.next(true);
       return null;
     }
   }
@@ -76,10 +91,21 @@ export class AuthService {
     const { data, error } = await this.supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: { full_name: fullName },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
     if (error) throw error;
     return data;
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    const { error } = await this.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) throw error;
   }
 
   async signOut() {
@@ -88,6 +114,13 @@ export class AuthService {
 
   getAccessToken(): string | null {
     return this._session$.getValue()?.access_token ?? null;
+  }
+
+  async resetPassword(email: string) {
+    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/redefinir-senha`,
+    });
+    if (error) throw error;
   }
 
   createTenant(dto: { companyName: string; segment?: string; cnpj?: string; phone?: string }) {

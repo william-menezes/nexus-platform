@@ -12,6 +12,7 @@ import { MessageModule } from 'primeng/message';
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule, MessageModule],
   templateUrl: './login.component.html',
+  host: { style: 'display: contents;' },
 })
 export class LoginComponent {
   private readonly fb     = inject(FormBuilder);
@@ -33,8 +34,8 @@ export class LoginComponent {
     this.error   = '';
     try {
       await this.auth.signIn(
-        this.form.value.email!,
-        this.form.value.password!,
+        this.form.value.email ?? '',
+        this.form.value.password ?? '',
       );
       const me = await this.auth.refreshMe();
       if (me?.role === 'SUPER_ADMIN') this.router.navigate(['/admin/dashboard']);

@@ -1,210 +1,105 @@
-<div class="flex flex-col lg:flex-row min-h-screen bg-[#0F172A]">
-
-  <!-- ══════════════════════════════════════
-       LEFT — Form panel
-  ══════════════════════════════════════ -->
-  <div class="flex-1 lg:flex-none lg:w-[40%] flex items-center justify-center py-12 px-8 overflow-y-auto">
-    <div class="w-full max-w-[400px]">
-
-      <!-- Brand -->
-      <div class="flex items-center gap-2 mb-10">
-        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
-          <i class="pi pi-wrench text-white text-sm"></i>
-        </div>
-        <span class="font-bold text-white text-lg">SimplificaOS</span>
-      </div>
-
-      <!-- Heading -->
-      <h1 class="text-2xl font-bold text-white mb-1">Bem-vindo de volta</h1>
-      <p class="text-slate-400 text-sm mb-8">
-        Não tem conta?
-        <a routerLink="/cadastro" class="text-blue-400 hover:text-blue-300 font-medium transition-colors">
-          Criar conta grátis
-        </a>
-      </p>
-
-      <!-- Error message -->
-      @if (error) {
-        <p-message severity="error" class="block w-full mb-5">{{ error }}</p-message>
-      }
-
-      <!-- Form -->
-      <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
-
-        <!-- Email -->
-        <div class="flex flex-col gap-1.5">
-          <label for="email" class="text-sm font-medium text-slate-300">
-            E-mail
-          </label>
-          <input
-            pInputText
-            id="email"
-            type="email"
-            formControlName="email"
-            autocomplete="email"
-            placeholder="seu@email.com"
-            class="w-full"
-            [class.ng-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
-          />
-          @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <small class="p-error">E-mail inválido.</small>
-          }
-        </div>
-
-        <!-- Password -->
-        <div class="flex flex-col gap-1.5">
-          <label for="password" class="text-sm font-medium text-slate-300">
-            Senha
-          </label>
-          <p-password
-            formControlName="password"
-            inputId="password"
-            [feedback]="false"
-            [toggleMask]="true"
-            autocomplete="current-password"
-            placeholder="••••••••"
-            styleClass="w-full"
-            inputStyleClass="w-full"
-          />
-          @if (form.get('password')?.invalid && form.get('password')?.touched) {
-            <small class="p-error">Senha deve ter pelo menos 6 caracteres.</small>
-          }
-        </div>
-
-        <!-- Remember + Forgot -->
-        <div class="flex items-center justify-between">
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              formControlName="remember"
-              class="w-4 h-4 rounded border-slate-600 bg-slate-800 accent-blue-600 cursor-pointer"
-            />
-            <span class="text-slate-400 text-sm">Lembrar este dispositivo</span>
-          </label>
-          <a
-            routerLink="/esqueci-senha"
-            class="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-          >
-            Esqueceu a senha?
-          </a>
-        </div>
-
-        <!-- Submit -->
-        <p-button
-          type="submit"
-          label="Entrar"
-          [loading]="loading"
-          [disabled]="form.invalid"
-          [fluid]="true"
-        />
-
-      </form>
-
-      <!-- Divider -->
-      <div class="flex items-center gap-3 my-6">
-        <div class="flex-1 h-px bg-slate-700"></div>
-        <span class="text-slate-500 text-xs">ou entre com</span>
-        <div class="flex-1 h-px bg-slate-700"></div>
-      </div>
-
-      <!-- Social — Google only -->
-      <button
-        type="button"
-        class="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-lg border border-slate-700 bg-transparent text-slate-300 text-sm font-medium hover:bg-slate-800 hover:border-slate-600 transition-colors"
-      >
-        <i class="pi pi-google text-base"></i>
-        Entrar com Google
-      </button>
-
-    </div>
+<!-- Brand -->
+<div class="flex items-center gap-2 mb-10">
+  <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
+    <i class="pi pi-wrench text-white text-sm"></i>
   </div>
-
-
-  <!-- ══════════════════════════════════════
-       RIGHT — Visual panel (hidden on mobile)
-  ══════════════════════════════════════ -->
-  <div
-    class="hidden lg:flex lg:flex-1 relative items-center justify-center overflow-hidden"
-    style="background: linear-gradient(135deg, #0B1A3E 0%, #1E3A8A 60%, #2563EB 100%);"
-  >
-    <!-- Subtle grid overlay -->
-    <div
-      class="absolute inset-0 opacity-[0.04]"
-      style="background-image: linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px); background-size: 40px 40px;"
-    ></div>
-
-    <div class="relative z-10 w-full max-w-[420px] px-10 py-12">
-
-      <!-- Tag -->
-      <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-300 bg-white/10 px-3 py-1.5 rounded-full mb-8">
-        <span class="w-1.5 h-1.5 bg-blue-300 rounded-full"></span>
-        Gestão de Assistência Técnica
-      </span>
-
-      <!-- Headline -->
-      <h2 class="text-3xl font-bold text-white leading-snug mb-4">
-        Tudo que sua assistência precisa em um só lugar.
-      </h2>
-      <p class="text-blue-200 text-sm leading-relaxed mb-10">
-        Gerencie ordens de serviço, estoque e financeiro com agilidade —
-        do primeiro atendimento ao fechamento do caixa.
-      </p>
-
-      <!-- Stats row -->
-      <div class="grid grid-cols-3 gap-4 mb-10">
-        <div class="text-center">
-          <p class="text-3xl font-bold text-white">500+</p>
-          <p class="text-blue-300 text-xs mt-1">Assistências ativas</p>
-        </div>
-        <div class="text-center border-x border-white/10">
-          <p class="text-3xl font-bold text-white">15k+</p>
-          <p class="text-blue-300 text-xs mt-1">OS concluídas</p>
-        </div>
-        <div class="text-center">
-          <p class="text-3xl font-bold text-white">99%</p>
-          <p class="text-blue-300 text-xs mt-1">Satisfação</p>
-        </div>
-      </div>
-
-      <!-- Testimonial card -->
-      <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
-        <div class="flex gap-1 mb-3">
-          @for (_ of [1, 2, 3, 4, 5]; track $index) {
-            <i class="pi pi-star-fill text-yellow-400 text-xs"></i>
-          }
-        </div>
-        <p class="text-white text-sm leading-relaxed italic">
-          "O SimplificaOS transformou minha assistência. Antes eu usava planilhas,
-          agora controlo tudo em um só lugar — OS, estoque e financeiro."
-        </p>
-        <div class="flex items-center gap-3 mt-4">
-          <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white text-sm shrink-0">
-            J
-          </div>
-          <div>
-            <p class="font-semibold text-white text-sm">João Silva</p>
-            <p class="text-blue-300 text-xs">Proprietário · Oficina Tech SP</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Feature chips -->
-      <div class="flex flex-wrap gap-2 mt-6">
-        <span class="flex items-center gap-1.5 bg-white/10 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-white/10">
-          <i class="pi pi-check text-green-400 text-xs"></i>
-          OS em segundos
-        </span>
-        <span class="flex items-center gap-1.5 bg-white/10 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-white/10">
-          <i class="pi pi-check text-green-400 text-xs"></i>
-          Estoque inteligente
-        </span>
-        <span class="flex items-center gap-1.5 bg-white/10 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-white/10">
-          <i class="pi pi-check text-green-400 text-xs"></i>
-          Financeiro completo
-        </span>
-      </div>
-
-    </div>
-  </div>
-
+  <span class="font-bold text-white text-lg">SimplificaOS</span>
 </div>
+
+<!-- Heading -->
+<h1 class="text-2xl font-bold text-white mb-1">Bem-vindo de volta</h1>
+<p class="text-slate-400 text-sm mb-8">
+  Não tem conta?
+  <a routerLink="/cadastro" class="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+    Criar conta grátis
+  </a>
+</p>
+
+<!-- Error -->
+@if (error) {
+  <p-message severity="error" class="block w-full mb-5">{{ error }}</p-message>
+}
+
+<!-- Form -->
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
+
+  <!-- Email -->
+  <div class="flex flex-col gap-1.5">
+    <label for="email" class="text-sm font-medium text-slate-300">E-mail</label>
+    <input
+      pInputText
+      id="email"
+      type="email"
+      formControlName="email"
+      autocomplete="email"
+      placeholder="seu@email.com"
+      class="w-full"
+      [class.ng-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+    />
+    @if (form.get('email')?.invalid && form.get('email')?.touched) {
+      <small class="p-error">E-mail inválido.</small>
+    }
+  </div>
+
+  <!-- Password -->
+  <div class="flex flex-col gap-1.5">
+    <label for="password" class="text-sm font-medium text-slate-300">Senha</label>
+    <p-password
+      formControlName="password"
+      inputId="password"
+      [feedback]="false"
+      [toggleMask]="true"
+      autocomplete="current-password"
+      placeholder="••••••••"
+      class="w-full"
+      inputStyleClass="w-full"
+    />
+    @if (form.get('password')?.invalid && form.get('password')?.touched) {
+      <small class="p-error">Senha deve ter pelo menos 6 caracteres.</small>
+    }
+  </div>
+
+  <!-- Remember + Forgot -->
+  <div class="flex items-center justify-between">
+    <label class="flex items-center gap-2 cursor-pointer select-none">
+      <input
+        type="checkbox"
+        formControlName="remember"
+        class="w-4 h-4 rounded border-slate-600 bg-slate-800 accent-blue-600 cursor-pointer"
+      />
+      <span class="text-slate-400 text-sm">Lembrar este dispositivo</span>
+    </label>
+    <a
+      routerLink="/esqueci-senha"
+      class="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+    >
+      Esqueceu a senha?
+    </a>
+  </div>
+
+  <!-- Submit -->
+  <p-button
+    type="submit"
+    label="Entrar"
+    [loading]="loading"
+    [disabled]="form.invalid"
+    [fluid]="true"
+  />
+
+</form>
+
+<!-- Divider -->
+<div class="flex items-center gap-3 my-6">
+  <div class="flex-1 h-px bg-slate-700"></div>
+  <span class="text-slate-500 text-xs">ou entre com</span>
+  <div class="flex-1 h-px bg-slate-700"></div>
+</div>
+
+<!-- Social — Google only -->
+<button
+  type="button"
+  class="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-lg border border-slate-700 bg-transparent text-slate-300 text-sm font-medium hover:bg-slate-800 hover:border-slate-600 transition-colors"
+>
+  <i class="pi pi-google text-base"></i>
+  Entrar com Google
+</button>

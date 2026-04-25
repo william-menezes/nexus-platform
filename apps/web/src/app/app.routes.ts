@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { adminGuard } from './core/guards/admin-guard';
+import { setupGuard } from './core/guards/setup-guard';
 
 export const appRoutes: Routes = [
   {
@@ -9,14 +10,41 @@ export const appRoutes: Routes = [
       import('./features/landing/landing.component').then(m => m.LandingComponent),
   },
   {
-    path: 'login',
+    path: '',
     loadComponent: () =>
-      import('./features/auth/login/login.component').then(m => m.LoginComponent),
+      import('./features/auth/auth-shell/auth-shell.component').then(m => m.AuthShellComponent),
+    children: [
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./features/auth/login/login.component').then(m => m.LoginComponent),
+      },
+      {
+        path: 'cadastro',
+        loadComponent: () =>
+          import('./features/auth/signup/signup.component').then(m => m.SignupComponent),
+      },
+      {
+        path: 'cadastro/empresa',
+        canActivate: [setupGuard],
+        loadComponent: () =>
+          import('./features/auth/company-setup/company-setup.component').then(
+            m => m.CompanySetupComponent,
+          ),
+      },
+      {
+        path: 'esqueci-senha',
+        loadComponent: () =>
+          import('./features/auth/forgot-password/forgot-password.component').then(
+            m => m.ForgotPasswordComponent,
+          ),
+      },
+    ],
   },
   {
-    path: 'cadastro',
+    path: 'auth/callback',
     loadComponent: () =>
-      import('./features/auth/signup/signup.component').then(m => m.SignupComponent),
+      import('./features/auth/callback/auth-callback.component').then(m => m.AuthCallbackComponent),
   },
   {
     path: 'app',

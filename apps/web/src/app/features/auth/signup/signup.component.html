@@ -1,178 +1,163 @@
-<div class="auth-page">
-  <div class="auth-card">
+<!-- Brand -->
+<div class="flex items-center gap-2 mb-8">
+  <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
+    <i class="pi pi-wrench text-white text-sm"></i>
+  </div>
+  <span class="font-bold text-white text-lg">SimplificaOS</span>
+</div>
 
-    <div class="auth-brand">
-      <span class="auth-logo">N</span>
-      <h1>Nexus Platform</h1>
-      <p>Crie sua conta</p>
+<!-- Success state -->
+@if (success) {
+  <div class="text-center py-4">
+    <div class="w-14 h-14 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-5">
+      <i class="pi pi-envelope text-blue-400 text-2xl"></i>
+    </div>
+    <h2 class="text-xl font-bold text-white mb-2">Verifique seu e-mail</h2>
+    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+      Enviamos um link de confirmação para
+      <span class="text-white font-medium">{{ form.value.email }}</span>.
+      Verifique sua caixa de entrada e spam.
+    </p>
+    <p class="text-slate-500 text-xs mb-6">
+      Após confirmar, você será redirecionado para concluir o cadastro da sua empresa.
+    </p>
+    <a routerLink="/login" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
+      <i class="pi pi-arrow-left text-xs"></i>
+      Voltar para o login
+    </a>
+  </div>
+
+} @else {
+
+  <!-- Heading -->
+  <h1 class="text-2xl font-bold text-white mb-1">Crie sua conta</h1>
+  <p class="text-slate-400 text-sm mb-6">
+    Já tem conta?
+    <a routerLink="/login" class="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+      Entrar
+    </a>
+  </p>
+
+  <!-- Google -->
+  <button
+    type="button"
+    (click)="signInWithGoogle()"
+    [disabled]="googleLoading"
+    class="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-lg border border-slate-700 bg-transparent text-slate-300 text-sm font-medium hover:bg-slate-800 hover:border-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-5"
+  >
+    @if (googleLoading) {
+      <span class="w-4 h-4 border-2 border-slate-500 border-t-white rounded-full animate-spin"></span>
+    } @else {
+      <i class="pi pi-google text-base"></i>
+    }
+    Continuar com Google
+  </button>
+
+  <!-- Divider -->
+  <div class="flex items-center gap-3 mb-5">
+    <div class="flex-1 h-px bg-slate-700"></div>
+    <span class="text-slate-500 text-xs">ou com e-mail</span>
+    <div class="flex-1 h-px bg-slate-700"></div>
+  </div>
+
+  <!-- Error -->
+  @if (error) {
+    <p-message severity="error" class="block w-full mb-5">{{ error }}</p-message>
+  }
+
+  <!-- Form -->
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
+
+    <!-- Full name -->
+    <div class="flex flex-col gap-1.5">
+      <label for="fullName" class="text-sm font-medium text-slate-300">Nome completo</label>
+      <input
+        pInputText
+        id="fullName"
+        type="text"
+        formControlName="fullName"
+        autocomplete="name"
+        placeholder="João Silva"
+        class="w-full"
+      />
+      @if (form.get('fullName')?.invalid && form.get('fullName')?.touched) {
+        <small class="p-error">Informe seu nome completo.</small>
+      }
     </div>
 
-    @if (success) {
-      <div style="text-align:center; padding: 1rem 0;">
-        <i class="pi pi-envelope" style="font-size: 3rem; color: var(--nx-primary);"></i>
-        <h2 style="margin: 1rem 0 0.5rem;">Verifique seu e-mail</h2>
-        <p style="color: var(--p-text-muted-color); font-size: 0.875rem; margin-bottom: 1.5rem;">
-          Enviamos um link de confirmação para
-          <strong>{{ form.value.email }}</strong>.
-        </p>
-        <a routerLink="/login" style="color: var(--nx-primary); font-weight: 600;">
-          ← Voltar para o login
-        </a>
-      </div>
-    } @else {
-
-      @if (error) {
-        <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+    <!-- Email -->
+    <div class="flex flex-col gap-1.5">
+      <label for="email" class="text-sm font-medium text-slate-300">E-mail</label>
+      <input
+        pInputText
+        id="email"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        placeholder="seu@email.com"
+        class="w-full"
+      />
+      @if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <small class="p-error">E-mail inválido.</small>
       }
+    </div>
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
-
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="fullName">Nome completo</label>
-          <input
-            pInputText
-            id="fullName"
-            type="text"
-            formControlName="fullName"
-            autocomplete="name"
-            placeholder="João Silva"
-            class="w-full"
-          />
-          @if (form.get('fullName')?.invalid && form.get('fullName')?.touched) {
-            <small class="p-error">Informe seu nome completo.</small>
+    <!-- Password -->
+    <div class="flex flex-col gap-1.5">
+      <label for="password" class="text-sm font-medium text-slate-300">Senha</label>
+      <p-password
+        formControlName="password"
+        inputId="password"
+        [feedback]="false"
+        [toggleMask]="true"
+        autocomplete="new-password"
+        placeholder="Mínimo 8 caracteres"
+        class="w-full"
+        inputStyleClass="w-full"
+      />
+      @if (form.get('password')?.value) {
+        <div class="flex gap-1 mt-1">
+          @for (i of [0, 1, 2, 3]; track i) {
+            <div class="h-1 flex-1 rounded-full" [class]="getStrengthColor(i)"></div>
           }
         </div>
+        @if (getStrengthLabel()) {
+          <small class="text-slate-400">{{ getStrengthLabel() }}</small>
+        }
+      }
+      @if (form.get('password')?.invalid && form.get('password')?.touched) {
+        <small class="p-error">Senha deve ter pelo menos 8 caracteres.</small>
+      }
+    </div>
 
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="email">E-mail</label>
-          <input
-            pInputText
-            id="email"
-            type="email"
-            formControlName="email"
-            autocomplete="email"
-            placeholder="seu@email.com"
-            class="w-full"
-          />
-          @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <small class="p-error">E-mail inválido.</small>
-          }
-        </div>
+    <!-- Confirm password -->
+    <div class="flex flex-col gap-1.5">
+      <label for="confirmPassword" class="text-sm font-medium text-slate-300">Confirmar senha</label>
+      <p-password
+        formControlName="confirmPassword"
+        inputId="confirmPassword"
+        [feedback]="false"
+        [toggleMask]="true"
+        autocomplete="new-password"
+        placeholder="Repita a senha"
+        class="w-full"
+        inputStyleClass="w-full"
+      />
+      @if (mismatch) {
+        <small class="p-error">As senhas não coincidem.</small>
+      }
+    </div>
 
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="password">Senha</label>
-          <p-password
-            formControlName="password"
-            inputId="password"
-            [feedback]="false"
-            [toggleMask]="true"
-            autocomplete="new-password"
-            placeholder="Mínimo 8 caracteres"
-            styleClass="w-full"
-            inputStyleClass="w-full"
-          />
-          @if (form.get('password')?.value) {
-            <div style="margin-top: 0.5rem;">
-              <div style="display:flex; gap:4px;">
-                @for (i of [0,1,2,3]; track i) {
-                  <div style="height:4px; flex:1; border-radius:2px;"
-                       [class]="getStrengthColor(i)"></div>
-                }
-              </div>
-              <small style="color: var(--p-text-muted-color);">{{ getStrengthLabel() }}</small>
-            </div>
-          }
-          @if (form.get('password')?.invalid && form.get('password')?.touched) {
-            <small class="p-error">Senha deve ter pelo menos 8 caracteres.</small>
-          }
-        </div>
+    <!-- Submit -->
+    <p-button
+      type="submit"
+      label="Criar conta"
+      [loading]="loading"
+      [disabled]="form.invalid"
+      [fluid]="true"
+      class="mt-1"
+    />
 
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="confirmPassword">Confirmar senha</label>
-          <p-password
-            formControlName="confirmPassword"
-            inputId="confirmPassword"
-            [feedback]="false"
-            [toggleMask]="true"
-            autocomplete="new-password"
-            placeholder="Repita a senha"
-            styleClass="w-full"
-            inputStyleClass="w-full"
-          />
-          @if (mismatch) {
-            <small class="p-error">As senhas não coincidem.</small>
-          }
-        </div>
+  </form>
 
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="companyName">Nome da empresa</label>
-          <input
-            pInputText
-            id="companyName"
-            type="text"
-            formControlName="companyName"
-            placeholder="Assistência Técnica Silva"
-            class="w-full"
-          />
-          @if (form.get('companyName')?.invalid && form.get('companyName')?.touched) {
-            <small class="p-error">Informe o nome da empresa.</small>
-          }
-        </div>
-
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="segment">Segmento</label>
-          <p-select
-            id="segment"
-            formControlName="segment"
-            [options]="segments"
-            optionLabel="label"
-            optionValue="value"
-            styleClass="w-full"
-          />
-        </div>
-
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="phone">Telefone (opcional)</label>
-          <input
-            pInputText
-            id="phone"
-            type="tel"
-            formControlName="phone"
-            placeholder="(11) 99999-9999"
-            class="w-full"
-          />
-        </div>
-
-        <div class="nx-form-group">
-          <label class="nx-form-label" for="cnpj">CNPJ (opcional)</label>
-          <input
-            pInputText
-            id="cnpj"
-            type="text"
-            formControlName="cnpj"
-            placeholder="00.000.000/0001-00"
-            class="w-full"
-          />
-        </div>
-
-        <div class="nx-form-actions">
-          <p-button
-            type="submit"
-            label="Criar conta"
-            [loading]="loading"
-            [disabled]="form.invalid"
-            styleClass="w-full"
-          />
-        </div>
-
-      </form>
-
-      <div class="auth-footer">
-        Já tem conta?
-        <a routerLink="/login">Entrar</a>
-      </div>
-
-    }
-
-  </div>
-</div>
+}
