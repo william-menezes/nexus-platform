@@ -2,12 +2,22 @@
   display: block;
 }
 
-/* micro interação */
 article {
   position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-article:hover {
-  transform: translateY(-4px);
+/* FAQ answer fade-in */
+.faq-answer {
+  animation: fadeDown 0.18s ease;
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
