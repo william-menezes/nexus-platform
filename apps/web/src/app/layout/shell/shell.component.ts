@@ -1,65 +1,24 @@
-import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
-import { ButtonModule } from 'primeng/button';
-import { DrawerModule } from 'primeng/drawer';
-import { AvatarModule } from 'primeng/avatar';
-import { TooltipModule } from 'primeng/tooltip';
-import { DividerModule } from 'primeng/divider';
-
-interface NavItem {
-  label: string;
-  icon:  string;
-  route: string;
-}
+import { TenantService } from '../../core/tenant/tenant.service';
+import { LayoutService } from '../../core/layout/layout.service';
+import { SidebarComponent } from '../components/sidebar/sidebar.component';
+import { HeaderComponent } from '../components/header/header.component';
 
 @Component({
   standalone: true,
   selector: 'app-shell',
-  imports: [
-    RouterLink, RouterLinkActive, RouterOutlet,
-    ButtonModule, DrawerModule, AvatarModule, TooltipModule, DividerModule,
-  ],
+  imports: [RouterOutlet, SidebarComponent, HeaderComponent],
   templateUrl: './shell.component.html',
 })
-export class ShellComponent {
-  private readonly auth   = inject(AuthService);
-  private readonly router = inject(Router);
+export class ShellComponent implements OnInit {
+  private readonly auth      = inject(AuthService);
+  private readonly tenantSvc = inject(TenantService);
+  readonly layout            = inject(LayoutService);
 
-  private readonly user = toSignal(this.auth.user$);
-
-  sidebarOpen    = signal(true);
-  mobileMenuOpen = false;
-
-  readonly nav: NavItem[] = [
-    { label: 'Dashboard',         icon: 'pi pi-home',          route: '/app/dashboard' },
-    { label: 'Clientes',          icon: 'pi pi-users',         route: '/app/clientes' },
-    { label: 'Orçamentos',        icon: 'pi pi-file-edit',     route: '/app/orcamentos' },
-    { label: 'Ordens de Serviço', icon: 'pi pi-wrench',        route: '/app/os' },
-    { label: 'Vendas',            icon: 'pi pi-shopping-cart', route: '/app/vendas' },
-    { label: 'Estoque',           icon: 'pi pi-box',           route: '/app/estoque' },
-    { label: 'Financeiro',        icon: 'pi pi-wallet',        route: '/app/financeiro' },
-    { label: 'Equipamentos',      icon: 'pi pi-desktop',       route: '/app/equipamentos' },
-    { label: 'Funcionários',      icon: 'pi pi-id-card',       route: '/app/funcionarios' },
-    { label: 'Fornecedores',      icon: 'pi pi-truck',         route: '/app/fornecedores' },
-    { label: 'Compras',           icon: 'pi pi-shopping-bag',  route: '/app/compras' },
-    { label: 'Contratos',         icon: 'pi pi-file',          route: '/app/contratos' },
-    { label: 'Devoluções',        icon: 'pi pi-replay',        route: '/app/devolucoes' },
-    { label: 'Serviços',          icon: 'pi pi-briefcase',     route: '/app/servicos' },
-    { label: 'Configurações',     icon: 'pi pi-cog',           route: '/app/configuracoes' },
-    { label: 'Logs de Auditoria', icon: 'pi pi-history',       route: '/app/logs' },
-  ];
-
-  get userEmail()   { return this.user()?.email ?? ''; }
-  get userInitial() { return this.userEmail.charAt(0).toUpperCase() || '?'; }
-
-  async logout() {
-    await this.auth.signOut();
-    this.router.navigate(['/login']);
+  async ngOnInit() {
+    const me = await this.auth.refreshMe();
+    if (me?.tenant) this.tenantSvc.setFromMe(me.tenant);
   }
-
-  toggleSidebar()  { this.sidebarOpen.update(v => !v); }
-  openMobileMenu() { this.mobileMenuOpen = true; }
-  closeMobileMenu() { this.mobileMenuOpen = false; }
 }

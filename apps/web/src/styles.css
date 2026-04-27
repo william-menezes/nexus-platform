@@ -100,6 +100,21 @@
   --p-surface-hover:   var(--hover-bg);
 }
 
+/* ── 1b. DARK MODE TOKENS ── */
+html.dark {
+  --bg-dark:    #020617;
+  --bg-surface: #0F172A;
+  --bg-light:   #0F172A;
+  --bg-card:    #1E293B;
+  --text-primary:   #F1F5F9;
+  --text-secondary: #94A3B8;
+  --border-color:   #334155;
+  --hover-bg:  rgba(37, 99, 235, 0.15);
+  --active-bg: rgba(37, 99, 235, 0.25);
+  --input-bg:    #1E293B;
+  --input-border: #334155;
+}
+
 /* ── 2. RESET & BASE ── */
 *,
 *::before,
@@ -349,41 +364,131 @@ label {
   text-decoration: underline;
 }
 
-/* ── 11. NAV LINKS (Sidebar) ── */
-.nx-nav-link {
+/* ── 11. SIDEBAR + HEADER ── */
+
+/* Sidebar: elemento estático no desktop, overlay fixed no mobile */
+.nx-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: width 0.22s ease-in-out, border-color 0.22s ease-in-out;
+}
+
+/* Desktop: colapsa quando não está aberto */
+@media (min-width: 1024px) {
+  .nx-sidebar:not(.open) {
+    width: 0;
+    border-right-color: transparent;
+  }
+}
+
+/* Mobile: overlay fixo que desliza da esquerda */
+@media (max-width: 1023px) {
+  .nx-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease-in-out;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+    /* Cancela o transition de width do desktop */
+    width: 280px;
+  }
+
+  .nx-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Header */
+.nx-header {
+  height: 3.5rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background var(--transition-fast), color var(--transition-fast);
-  margin-bottom: 2px;
-  outline: none;
-  white-space: nowrap;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 10;
+}
+
+/* Breadcrumb — remove o fundo e borda padrão do PrimeNG */
+.nx-breadcrumb.p-breadcrumb {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-list {
+  flex-wrap: nowrap;
   overflow: hidden;
 }
 
-.nx-nav-link:hover {
-  background: var(--hover-bg);
-  color: var(--text-primary);
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-item-link {
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 0.125rem 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-item-link:hover {
+  color: var(--primary-color);
   text-decoration: none;
 }
 
-.nx-nav-link.active {
-  background: var(--primary-light);
+/* Último item (página atual) — sem link, cor mais escura */
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-item:last-child .p-breadcrumb-item-link {
+  color: var(--text-primary);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* Nav links */
+.nx-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  margin-bottom: 1px;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+  border-left: 2px solid transparent;
+}
+
+.nx-sidebar-link:hover {
+  background: var(--hover-bg);
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.nx-sidebar-link.active {
+  background: var(--active-bg);
   color: var(--primary-hover);
+  border-left-color: var(--primary-color);
   font-weight: 600;
 }
 
-.nx-nav-link.active i {
+.nx-sidebar-link.active i {
   color: var(--primary-color);
 }
 
-.nx-nav-link:focus-visible {
+.nx-sidebar-link:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }

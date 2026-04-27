@@ -53,6 +53,18 @@ export class AuthService {
     return { tenantId: tenant.id, trialEndsAt };
   }
 
+  async getTenantInfo(tenantId: string) {
+    const rows = await this.dataSource.query<
+      { name: string; plan: string; logo_url: string | null; trial_ends_at: string | null }[]
+    >(
+      `SELECT name, plan, logo_url, trial_ends_at FROM public.tenants WHERE id = $1 LIMIT 1`,
+      [tenantId],
+    );
+    if (!rows.length) return null;
+    const { name, plan, logo_url, trial_ends_at } = rows[0];
+    return { name, plan, logoUrl: logo_url, trialEndsAt: trial_ends_at };
+  }
+
   private generateSlug(name: string): string {
     const base = name
       .toLowerCase()

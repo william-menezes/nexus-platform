@@ -5,10 +5,18 @@ import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
+export interface TenantInfo {
+  name: string;
+  plan: 'trial' | 'starter' | 'pro' | 'enterprise';
+  logoUrl: string | null;
+  trialEndsAt: string | null;
+}
+
 export interface MeResponse {
   userId: string;
   tenantId: string | null;
   role: 'SUPER_ADMIN' | 'TENANT_ADMIN' | 'TECNICO' | 'VENDEDOR' | null;
+  tenant: TenantInfo | null;
 }
 
 @Injectable({ providedIn: 'root' })

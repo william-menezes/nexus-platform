@@ -1,0 +1,50 @@
+<!-- ══ LEFT — toggle ══ -->
+<div class="flex items-center gap-1 flex-1 min-w-0">
+
+  <p-button
+    icon="pi pi-bars"
+    [text]="true"
+    severity="secondary"
+    size="small"
+    (onClick)="layout.toggleSidebar()"
+    aria-label="Alternar menu"
+    pTooltip="Alternar menu"
+    tooltipPosition="bottom"
+  />
+
+</div>
+
+<!-- ══ RIGHT — theme + user ══ -->
+<div class="flex items-center gap-1 shrink-0">
+
+  <!-- Theme toggle -->
+  <p-button
+    [icon]="theme.isDark() ? 'pi pi-sun' : 'pi pi-moon'"
+    [text]="true"
+    severity="secondary"
+    size="small"
+    (onClick)="theme.toggle()"
+    [attr.aria-label]="theme.isDark() ? 'Ativar modo claro' : 'Ativar modo escuro'"
+    [pTooltip]="theme.isDark() ? 'Modo claro' : 'Modo escuro'"
+    tooltipPosition="bottom"
+  />
+
+  <!-- User avatar + menu -->
+  <p-menu #userMenu [model]="userMenuItems" [popup]="true" appendTo="body" />
+  <button
+    type="button"
+    class="flex items-center justify-center rounded-full cursor-pointer border-0 bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-blue-300 hover:opacity-80 transition-opacity"
+    (click)="userMenu.toggle($event)"
+    [attr.aria-label]="'Menu de ' + userName()"
+    pTooltip="Minha conta"
+    tooltipPosition="bottom"
+  >
+    <p-avatar
+      [label]="userInitial()"
+      shape="circle"
+      size="normal"
+      [style]="{ background: '#2563EB', color: '#fff', fontWeight: '700', fontSize: '0.75rem', width: '2rem', height: '2rem' }"
+    />
+  </button>
+
+</div>

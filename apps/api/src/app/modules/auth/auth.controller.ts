@@ -14,14 +14,20 @@ export class AuthController {
     return this.authService.onboarding(userId, dto);
   }
 
-  /** GET /api/auth/me — retorna dados do usuário autenticado */
+  /** GET /api/auth/me — retorna dados do usuário autenticado + tenant */
   @Get('me')
   @UseGuards(AuthGuard)
-  me(@Req() req: any) {
+  async me(@Req() req: any) {
+    const tenantId: string | null = req['tenantId'] ?? null;
+    const tenant = tenantId
+      ? await this.authService.getTenantInfo(tenantId)
+      : null;
+
     return {
       userId: req['user'],
-      tenantId: req['tenantId'] ?? null,
+      tenantId,
       role: req['userRole'] ?? null,
+      tenant,
     };
   }
 }

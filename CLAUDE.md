@@ -1648,6 +1648,7 @@ O `AuditInterceptor` registra automaticamente:
 - **Forms:** Reactive Forms com FormBuilder
 - **Testes:** `*.spec.ts` ao lado. TestBed com mocks de services.
 - **Estilo:** TailwindCSS + PrimeNG. Design tokens em `styles.css`.
+- **Responsividade:** Todas as telas devem sem responsivas. O princípio do mobile first deve ser adotado.
 
 ### Shared
 

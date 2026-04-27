@@ -1,174 +1,23 @@
-<div class="flex h-screen overflow-hidden" style="background: var(--p-surface-ground, #f8fafc)">
+<div class="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
 
-  <!-- ═══════════════════════════════════════════
-       DESKTOP SIDEBAR — oculto em mobile (< lg)
-       ═══════════════════════════════════════════ -->
-  <aside
-    class="hidden lg:flex flex-col shrink-0 bg-white transition-[width] duration-200 motion-reduce:transition-none"
-    [style.width]="sidebarOpen() ? '256px' : '72px'"
-    style="border-right: 1px solid var(--p-surface-border, #e2e8f0)"
-  >
-    <!-- Brand -->
+  <!-- ══ BACKDROP mobile — aparece quando o sidebar está aberto no mobile ══ -->
+  @if (layout.sidebarVisible()) {
     <div
-      class="flex items-center gap-3 px-4 h-16 shrink-0"
-      style="border-bottom: 1px solid var(--p-surface-border, #e2e8f0)"
-    >
-      <div
-        class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0 select-none"
-        style="background: var(--p-primary-color, #3b82f6)"
-      >N</div>
-      @if (sidebarOpen()) {
-        <span class="font-semibold text-sm truncate" style="color: var(--p-text-color)">
-          Nexus Platform
-        </span>
-      }
-    </div>
+      class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+      (click)="layout.closeSidebar()"
+    ></div>
+  }
 
-    <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto py-3 px-2" aria-label="Menu principal">
-      @for (item of nav; track item.route) {
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: false }"
-          class="nx-nav-link"
-          [pTooltip]="sidebarOpen() ? '' : item.label"
-          tooltipPosition="right"
-          [attr.aria-label]="item.label"
-        >
-          <i [class]="item.icon + ' text-base w-5 text-center shrink-0'"></i>
-          @if (sidebarOpen()) {
-            <span class="truncate">{{ item.label }}</span>
-          }
-        </a>
-      }
-    </nav>
+  <!-- ══ SIDEBAR — estático no desktop, overlay fixed no mobile ══ -->
+  <app-sidebar />
 
-    <!-- User area -->
-    <div
-      class="p-3 flex items-center gap-2 shrink-0"
-      style="border-top: 1px solid var(--p-surface-border, #e2e8f0)"
-    >
-      <p-avatar
-        [label]="userInitial"
-        shape="circle"
-        size="normal"
-        styleClass="shrink-0"
-        [style]="{ background: 'var(--p-primary-color)', color: '#fff', fontWeight: '700', fontSize: '0.8rem' }"
-      />
-      @if (sidebarOpen()) {
-        <p class="flex-1 min-w-0 text-xs truncate m-0" style="color: var(--p-text-muted-color)">
-          {{ userEmail }}
-        </p>
-      }
-      <p-button
-        icon="pi pi-sign-out"
-        [text]="true"
-        severity="danger"
-        size="small"
-        (click)="logout()"
-        aria-label="Sair da conta"
-        [pTooltip]="sidebarOpen() ? '' : 'Sair'"
-        tooltipPosition="right"
-      />
-    </div>
-  </aside>
-
-
-  <!-- ═══════════════════════════════════════════
-       MOBILE DRAWER — aparece só ao clicar no ☰
-       ═══════════════════════════════════════════ -->
-  <p-drawer
-    [(visible)]="mobileMenuOpen"
-    [modal]="true"
-    position="left"
-    [style]="{ width: '280px' }"
-    styleClass="lg:hidden"
-  >
-    <ng-template pTemplate="header">
-      <div class="flex items-center gap-3">
-        <div
-          class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0"
-          style="background: var(--p-primary-color, #3b82f6)"
-        >N</div>
-        <span class="font-semibold text-sm" style="color: var(--p-text-color)">Nexus Platform</span>
-      </div>
-    </ng-template>
-
-    <nav aria-label="Menu mobile">
-      @for (item of nav; track item.route) {
-        <a
-          [routerLink]="item.route"
-          (click)="closeMobileMenu()"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: false }"
-          class="nx-nav-link"
-          [attr.aria-label]="item.label"
-        >
-          <i [class]="item.icon + ' text-base w-5 text-center shrink-0'"></i>
-          <span class="truncate">{{ item.label }}</span>
-        </a>
-      }
-    </nav>
-
-    <ng-template pTemplate="footer">
-      <div class="flex items-center gap-2 px-1">
-        <p-avatar
-          [label]="userInitial"
-          shape="circle"
-          size="normal"
-          [style]="{ background: 'var(--p-primary-color)', color: '#fff', fontWeight: '700', fontSize: '0.8rem' }"
-        />
-        <p class="flex-1 min-w-0 text-xs truncate m-0" style="color: var(--p-text-muted-color)">
-          {{ userEmail }}
-        </p>
-        <p-button
-          icon="pi pi-sign-out"
-          [text]="true"
-          severity="danger"
-          size="small"
-          (click)="logout()"
-          aria-label="Sair da conta"
-        />
-      </div>
-    </ng-template>
-  </p-drawer>
-
-
-  <!-- ═══════════════════════════════════════════
-       ÁREA PRINCIPAL
-       ═══════════════════════════════════════════ -->
+  <!-- ══ ÁREA PRINCIPAL ══ -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-    <!-- Top bar -->
-    <header
-      class="h-16 flex items-center gap-3 px-4 sticky top-0 z-30 shrink-0 bg-white"
-      style="border-bottom: 1px solid var(--p-surface-border, #e2e8f0)"
-    >
-      <!-- Desktop: toggle colapsar sidebar -->
-      <p-button
-        icon="pi pi-bars"
-        [text]="true"
-        severity="secondary"
-        (click)="toggleSidebar()"
-        aria-label="Alternar menu lateral"
-        styleClass="hidden lg:flex"
-        pTooltip="Colapsar menu"
-        tooltipPosition="bottom"
-      />
+    <!-- Header extraído para componente dedicado -->
+    <app-header />
 
-      <!-- Mobile: abrir drawer -->
-      <p-button
-        icon="pi pi-bars"
-        [text]="true"
-        severity="secondary"
-        (click)="openMobileMenu()"
-        aria-label="Abrir menu"
-        styleClass="flex lg:hidden"
-      />
-    </header>
-
-    <!-- Page content -->
+    <!-- Conteúdo da página -->
     <main class="flex-1 overflow-y-auto">
       <div class="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-6">
         <router-outlet />
