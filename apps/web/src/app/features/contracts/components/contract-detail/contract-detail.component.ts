@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -8,7 +8,8 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Contract, ContractBilling } from '@nexus-platform/shared-types';
 import { ContractsService } from '../../contracts.service';
 
@@ -30,141 +31,10 @@ const BILLING_STATUS: Record<string, string> = {
   imports: [
     CommonModule, RouterLink,
     ButtonModule, TagModule, CardModule, TableModule,
-    ToastModule, ConfirmDialogModule, DividerModule,
+    ToastModule, ConfirmDialogModule, DividerModule, BreadcrumbModule,
   ],
   providers: [ConfirmationService, MessageService],
-  template: `
-    <p-toast />
-    <p-confirmDialog />
-    <div class="nx-page max-w-4xl mx-auto" *ngIf="contract(); else loading">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/contratos" pButton icon="pi pi-arrow-left"
-          class="p-button-text p-button-sm" aria-label="Voltar"></a>
-        <h1 class="text-2xl font-bold">{{ contract()!.code }}</h1>
-        <p-tag [value]="statusLabel(contract()!.status)"
-          [severity]="statusSeverity(contract()!.status)" />
-      </div>
-
-      <!-- Action buttons -->
-      <div class="flex gap-2 mb-4 flex-wrap">
-        <button pButton label="Ativar" icon="pi pi-play" class="p-button-sm p-button-success"
-          *ngIf="contract()!.status === 'draft'"
-          (click)="doActivate()"></button>
-        <button pButton label="Suspender" icon="pi pi-pause" class="p-button-sm p-button-warn"
-          *ngIf="contract()!.status === 'active'"
-          (click)="doSuspend()"></button>
-        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-sm p-button-danger"
-          *ngIf="!['cancelled','expired'].includes(contract()!.status)"
-          (click)="confirmCancel()"></button>
-        <button pButton label="Gerar Fatura" icon="pi pi-dollar" class="p-button-sm"
-          *ngIf="contract()!.status === 'active'"
-          (click)="doBill()"></button>
-        <a [routerLink]="[contract()!.id, 'editar']" pButton label="Editar"
-          icon="pi pi-pencil" class="p-button-sm p-button-outlined"
-          *ngIf="contract()!.status === 'draft'"></a>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <p-card header="Dados do Contrato">
-          <div class="text-sm flex flex-col gap-2">
-            <div class="flex justify-between">
-              <span class="text-gray-500">Cliente</span>
-              <span class="font-medium">{{ contract()!.clientName || contract()!.clientId }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Tipo</span>
-              <span>{{ contract()!.type === 'fixed' ? 'Mensal Fixo' : 'Franquia de Horas' }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Início</span>
-              <span>{{ contract()!.startDate | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="flex justify-between" *ngIf="contract()!.endDate">
-              <span class="text-gray-500">Término</span>
-              <span>{{ contract()!.endDate | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Dia Faturamento</span>
-              <span>Dia {{ contract()!.billingDay }}</span>
-            </div>
-            <div class="flex justify-between" *ngIf="contract()!.nextBillingAt">
-              <span class="text-gray-500">Próximo Faturamento</span>
-              <span>{{ contract()!.nextBillingAt | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="flex justify-between" *ngIf="contract()!.adjustmentRate">
-              <span class="text-gray-500">Reajuste Anual</span>
-              <span>{{ contract()!.adjustmentRate }}%</span>
-            </div>
-          </div>
-        </p-card>
-
-        <p-card header="Valores">
-          <div class="text-sm flex flex-col gap-2" *ngIf="contract()!.type === 'fixed'">
-            <div class="flex justify-between text-base font-bold">
-              <span>Mensalidade</span>
-              <span>{{ contract()!.monthlyValue | currency:'BRL':'symbol':'1.2-2' }}</span>
-            </div>
-          </div>
-          <div class="text-sm flex flex-col gap-2" *ngIf="contract()!.type === 'hourly_franchise'">
-            <div class="flex justify-between">
-              <span class="text-gray-500">Horas Franquia</span>
-              <span class="font-medium">{{ contract()!.franchiseHours }}h / mês</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Hora Excedente</span>
-              <span class="font-medium">{{ contract()!.hourExcessPrice | currency:'BRL':'symbol':'1.2-2' }}</span>
-            </div>
-          </div>
-          <p-divider *ngIf="contract()!.description" />
-          <p class="text-sm text-gray-600" *ngIf="contract()!.description">
-            {{ contract()!.description }}
-          </p>
-          <p class="text-sm text-gray-500 mt-2" *ngIf="contract()!.notes">
-            <em>{{ contract()!.notes }}</em>
-          </p>
-        </p-card>
-      </div>
-
-      <!-- Billing history -->
-      <p-card header="Histórico de Faturamento">
-        <p-table [value]="billing()" [loading]="loadingBilling()" stripedRows>
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Período</th>
-              <th class="text-right">Base</th>
-              <th class="text-right">Horas Exc.</th>
-              <th class="text-right">Excedente</th>
-              <th class="text-right">Total</th>
-              <th>Status</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-b>
-            <tr>
-              <td>{{ b.periodStart | date:'MM/yyyy' }}</td>
-              <td class="text-right">{{ b.baseAmount | currency:'BRL':'symbol':'1.2-2' }}</td>
-              <td class="text-right">{{ b.excessHours || 0 }}h</td>
-              <td class="text-right">{{ b.excessAmount | currency:'BRL':'symbol':'1.2-2' }}</td>
-              <td class="text-right font-medium">{{ b.totalAmount | currency:'BRL':'symbol':'1.2-2' }}</td>
-              <td>{{ billingStatusLabel(b.status) }}</td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="6" class="text-center text-gray-500 py-6">
-                Nenhum faturamento gerado.
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
-    </div>
-
-    <ng-template #loading>
-      <div class="nx-page flex justify-center py-20">
-        <i class="pi pi-spin pi-spinner text-4xl text-gray-400"></i>
-      </div>
-    </ng-template>
-  `,
+  templateUrl: './contract-detail.component.html',
 })
 export class ContractDetailComponent implements OnInit {
   private readonly svc = inject(ContractsService);
@@ -175,6 +45,12 @@ export class ContractDetailComponent implements OnInit {
   readonly contract = signal<Contract | null>(null);
   readonly billing = signal<ContractBilling[]>([]);
   readonly loadingBilling = signal(false);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs = computed<MenuItem[]>(() => [
+    { label: 'Contratos', routerLink: '/app/contratos' },
+    { label: this.contract()?.code ?? '...' },
+  ]);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -7,7 +7,8 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { Equipment, EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
 
@@ -16,40 +17,10 @@ import { EquipmentsService } from '../../equipments.service';
   selector: 'app-equipment-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule,
-    TextareaModule, SelectModule, ButtonModule, ToastModule,
+    TextareaModule, SelectModule, ButtonModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <div class="p-4 max-w-lg">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/equipamentos" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
-        <h1 class="text-2xl font-bold">{{ isEdit ? 'Editar Equipamento' : 'Novo Equipamento' }}</h1>
-      </div>
-      <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3">
-        <div class="flex flex-col gap-1">
-          <label>Tipo de Equipamento *</label>
-          <p-select formControlName="equipmentTypeId" [options]="types()" optionLabel="name" optionValue="id" placeholder="Selecione..." />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Marca</label>
-          <input pInputText formControlName="brand" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Modelo</label>
-          <input pInputText formControlName="model" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Observações</label>
-          <textarea pTextarea formControlName="notes" rows="3"></textarea>
-        </div>
-        <div class="flex gap-2 mt-2">
-          <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
-          <a routerLink="/app/equipamentos" pButton class="p-button-secondary" label="Cancelar"></a>
-        </div>
-      </form>
-    </div>
-  `,
+  templateUrl: './equipment-form.component.html',
 })
 export class EquipmentFormComponent implements OnInit {
   private svc = inject(EquipmentsService);
@@ -57,6 +28,15 @@ export class EquipmentFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly isEditSignal = signal(!!this.route.snapshot.paramMap.get('id'));
+  get breadcrumbs(): MenuItem[] {
+    return [
+      { label: 'Equipamentos', routerLink: '/app/equipamentos' },
+      { label: this.isEditSignal() ? 'Editar Equipamento' : 'Novo Equipamento' },
+    ];
+  }
 
   isEdit = false;
   editId = '';

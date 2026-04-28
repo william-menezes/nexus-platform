@@ -1,0 +1,57 @@
+<p-toast />
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-text">Devoluções</h1>
+    <a routerLink="nova" pButton label="Nova Devolução" icon="pi pi-plus" class="p-button-sm"></a>
+  </div>
+
+  <div class="mb-3 flex gap-2 items-center">
+    <p-select [options]="statusOptions" [(ngModel)]="statusFilter"
+      optionLabel="label" optionValue="value"
+      placeholder="Todos os status" [showClear]="true"
+      (onChange)="load()" styleClass="w-48" />
+  </div>
+
+  <div class="overflow-x-auto">
+    <p-table [value]="returns()" [loading]="loading()" stripedRows>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Código</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Data</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ret>
+        <tr>
+          <td>
+            <a [routerLink]="[ret.id]" class="text-primary font-medium hover:underline">
+              {{ ret.code }}
+            </a>
+          </td>
+          <td>{{ typeLabel(ret.type) }}</td>
+          <td>
+            <p-tag [value]="statusLabel(ret.status)" [severity]="statusSeverity(ret.status)" />
+          </td>
+          <td>{{ ret.totalAmount | currency:'BRL':'symbol':'1.2-2' }}</td>
+          <td>{{ ret.createdAt | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <a [routerLink]="[ret.id]" pButton icon="pi pi-eye"
+              class="p-button-sm p-button-text" aria-label="Ver detalhes"
+              pTooltip="Ver detalhes"></a>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center text-text-secondary py-8">
+            Nenhuma devolução encontrada.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

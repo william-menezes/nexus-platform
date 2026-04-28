@@ -9,7 +9,8 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { ReturnsService } from '../../returns.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -23,83 +24,10 @@ interface SaleItemOption { id: string; productId: string; productName: string; q
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule, SelectModule,
-    TextareaModule, CardModule, ToastModule,
+    TextareaModule, CardModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <div class="nx-page max-w-3xl mx-auto">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/devolucoes" pButton icon="pi pi-arrow-left"
-          class="p-button-text p-button-sm" aria-label="Voltar"></a>
-        <h1 class="text-2xl font-bold">Nova Devolução</h1>
-      </div>
-
-      <form [formGroup]="form" (ngSubmit)="save()">
-        <p-card header="Dados da Devolução" styleClass="mb-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="flex flex-col gap-1 md:col-span-2">
-              <label class="font-medium">Venda *</label>
-              <p-select formControlName="saleId" [options]="sales()"
-                optionLabel="code" optionValue="id"
-                placeholder="Selecione a venda" [filter]="true"
-                filterBy="code" styleClass="w-full"
-                (onChange)="onSaleSelect($event)" />
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label class="font-medium">Tipo *</label>
-              <p-select formControlName="type" [options]="typeOptions"
-                optionLabel="label" optionValue="value"
-                placeholder="Tipo de devolução" styleClass="w-full" />
-            </div>
-
-            <div class="flex flex-col gap-1 md:col-span-2">
-              <label class="font-medium">Motivo *</label>
-              <input pInputText formControlName="reason"
-                placeholder="Descreva o motivo da devolução" />
-            </div>
-
-            <div class="flex flex-col gap-1 md:col-span-2">
-              <label class="font-medium">Observações</label>
-              <textarea pTextarea formControlName="notes" rows="2"
-                placeholder="Observações internas..."></textarea>
-            </div>
-          </div>
-        </p-card>
-
-        <p-card header="Itens a Devolver" styleClass="mb-4"
-          *ngIf="saleItems().length > 0">
-          <div formArrayName="items">
-            <div *ngFor="let si of saleItems(); let i = index"
-              [formGroupName]="i"
-              class="flex items-center gap-4 mb-3 p-3 bg-gray-50 rounded">
-              <div class="flex-1">
-                <span class="font-medium">{{ si.productName }}</span>
-                <span class="text-sm text-gray-500 ml-2">
-                  (máx: {{ si.quantity }})
-                </span>
-              </div>
-              <div class="w-32 flex flex-col gap-1">
-                <label class="text-xs text-gray-500">Qtd Devolver</label>
-                <p-inputNumber formControlName="quantity"
-                  [min]="0" [max]="si.quantity"
-                  [minFractionDigits]="0" styleClass="w-full" />
-              </div>
-            </div>
-          </div>
-        </p-card>
-
-        <div class="flex justify-end gap-2">
-          <a routerLink="/app/devolucoes" pButton label="Cancelar"
-            class="p-button-outlined p-button-sm"></a>
-          <button pButton type="submit" label="Criar Devolução"
-            icon="pi pi-check" class="p-button-sm"
-            [disabled]="form.invalid || saving()"></button>
-        </div>
-      </form>
-    </div>
-  `,
+  templateUrl: './return-form.component.html',
 })
 export class ReturnFormComponent implements OnInit {
   private readonly svc = inject(ReturnsService);
@@ -107,6 +35,12 @@ export class ReturnFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [
+    { label: 'Devoluções', routerLink: '/app/devolucoes' },
+    { label: 'Nova Devolução' },
+  ];
 
   readonly sales = signal<SaleOption[]>([]);
   readonly saleItems = signal<SaleItemOption[]>([]);

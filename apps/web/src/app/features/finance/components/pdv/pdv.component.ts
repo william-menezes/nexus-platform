@@ -9,6 +9,8 @@ import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
 import { MessageModule } from 'primeng/message';
 import { CardModule } from 'primeng/card';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
 import { Product } from '@nexus-platform/shared-types';
 import { FinanceService } from '../../finance.service';
 import { InventoryService } from '../../../inventory/inventory.service';
@@ -28,7 +30,7 @@ const METHOD_OPTIONS = [
   selector: 'app-pdv',
   imports: [
     ReactiveFormsModule, RouterLink, CurrencyPipe,
-    ButtonModule, InputTextModule, InputNumberModule, SelectModule, DividerModule, MessageModule, CardModule,
+    ButtonModule, InputTextModule, InputNumberModule, SelectModule, DividerModule, MessageModule, CardModule, BreadcrumbModule,
   ],
   templateUrl: './pdv.component.html',
 })
@@ -37,6 +39,12 @@ export class PdvComponent implements OnInit {
   private readonly svc     = inject(FinanceService);
   private readonly invSvc  = inject(InventoryService);
   private readonly router  = inject(Router);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [
+    { label: 'Vendas', routerLink: '/app/vendas' },
+    { label: 'PDV' },
+  ];
 
   products: Product[] = [];
   productOptions: { label: string; value: string }[] = [];

@@ -6,17 +6,22 @@ import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
 import { ServiceOrder } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
 
 @Component({
   standalone: true,
   selector: 'app-os-list',
-  imports: [DatePipe, RouterLink, ButtonModule, MessageModule, TableModule, TagModule, TooltipModule],
+  imports: [DatePipe, RouterLink, ButtonModule, MessageModule, TableModule, TagModule, TooltipModule, BreadcrumbModule],
   templateUrl: './os-list.component.html',
 })
 export class OsListComponent implements OnInit {
   private readonly svc = inject(ServiceOrdersService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [{ label: 'Ordens de Serviço', routerLink: '/app/os' }];
 
   orders  = signal<ServiceOrder[]>([]);
   loading = signal(false);

@@ -1,0 +1,44 @@
+<p-toast />
+<p-confirmDialog />
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page">
+  <div class="flex justify-between items-center mb-4">
+    <div class="flex items-center gap-2">
+      <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
+      <h1 class="text-2xl font-bold text-text">Plano de Contas</h1>
+    </div>
+  </div>
+  <div class="overflow-x-auto">
+    <p-table [value]="accounts()" [loading]="loading()" stripedRows>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Tipo</th>
+          <th>Sistema</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-a>
+        <tr>
+          <td class="font-mono">{{ a.code }}</td>
+          <td>{{ a.name }}</td>
+          <td>{{ typeLabel(a.type) }}</td>
+          <td>
+            @if (a.isSystem) {
+              <p-tag severity="secondary" value="Sistema" />
+            }
+          </td>
+          <td>
+            @if (!a.isSystem) {
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(a)"></button>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="5" class="text-center py-8 text-text-muted">Nenhuma conta encontrada</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

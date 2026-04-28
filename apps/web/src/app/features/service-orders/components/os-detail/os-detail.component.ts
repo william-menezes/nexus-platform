@@ -6,7 +6,8 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { ServiceOrder } from '@nexus-platform/shared-types';
@@ -21,7 +22,7 @@ const STATUS_FLOW: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-os-detail',
-  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink, TagModule, ButtonModule, CardModule, SkeletonModule, ConfirmDialogModule, ToastModule, MessageModule],
+  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink, TagModule, ButtonModule, CardModule, SkeletonModule, ConfirmDialogModule, ToastModule, MessageModule, BreadcrumbModule],
   providers: [ConfirmationService, MessageService],
   templateUrl: './os-detail.component.html',
 })
@@ -31,6 +32,14 @@ export class OsDetailComponent implements OnInit {
   private readonly router      = inject(Router);
   private readonly confirm     = inject(ConfirmationService);
   private readonly toast       = inject(MessageService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  get breadcrumbs(): MenuItem[] {
+    return [
+      { label: 'Ordens de Serviço', routerLink: '/app/os' },
+      { label: this.os?.code ?? '...' },
+    ];
+  }
 
   os: ServiceOrder | null = null;
   loading = true;

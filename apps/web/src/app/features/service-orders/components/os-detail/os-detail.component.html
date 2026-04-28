@@ -1,7 +1,8 @@
-<div class="nx-page" style="max-width:720px;">
+<p-toast />
+<p-confirmdialog />
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
-  <p-toast />
-  <p-confirmdialog />
+<div class="nx-page" style="max-width:720px;">
 
   @if (loading) {
     <p-skeleton height="40px" styleClass="mb-4" />

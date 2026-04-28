@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
@@ -9,7 +9,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { FinancialEntry, Installment } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 
@@ -20,91 +21,20 @@ type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contr
   selector: 'app-entry-detail',
   imports: [
     CommonModule, RouterLink, TableModule, ButtonModule, TagModule,
-    DialogModule, InputNumberModule, SelectModule, ReactiveFormsModule, ToastModule,
+    DialogModule, InputNumberModule, SelectModule, ReactiveFormsModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <div class="nx-page" *ngIf="entry() as e">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
-        <h1 class="text-2xl font-bold">{{ e.description }}</h1>
-        <p-tag [severity]="e.type === 'receivable' ? 'success' : 'danger'"
-          [value]="e.type === 'receivable' ? 'A Receber' : 'A Pagar'" />
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-lg shadow p-4">
-          <p class="text-sm text-gray-500">Total</p>
-          <p class="text-xl font-bold">{{ e.totalAmount | currency:'BRL' }}</p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4">
-          <p class="text-sm text-gray-500">Pago</p>
-          <p class="text-lg">{{ e.paidAmount | currency:'BRL' }}</p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4">
-          <p class="text-sm text-gray-500">Vencimento</p>
-          <p class="text-lg">{{ e.dueDate | date:'dd/MM/yyyy' }}</p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4">
-          <p class="text-sm text-gray-500">Status</p>
-          <p-tag [severity]="statusSeverity(e.status)" [value]="statusLabel(e.status)" />
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow p-4">
-        <h2 class="text-lg font-semibold mb-3">Parcelas</h2>
-        <p-table [value]="e.installments || []">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>#</th>
-              <th>Vencimento</th>
-              <th>Valor</th>
-              <th>Pago</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-inst>
-            <tr>
-              <td>{{ inst.installmentNumber }}</td>
-              <td>{{ inst.dueDate | date:'dd/MM/yyyy' }}</td>
-              <td>{{ inst.amount | currency:'BRL' }}</td>
-              <td>{{ inst.paidAmount | currency:'BRL' }}</td>
-              <td><p-tag [severity]="statusSeverity(inst.status)" [value]="statusLabel(inst.status)" /></td>
-              <td>
-                @if (inst.status !== 'paid') {
-                  <button pButton icon="pi pi-check" label="Pagar" class="p-button-sm p-button-success" (click)="openPayDialog(inst)"></button>
-                }
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr><td colspan="6" class="text-center py-4 text-gray-400">Sem parcelas</td></tr>
-          </ng-template>
-        </p-table>
-      </div>
-    </div>
-
-    <p-dialog [(visible)]="payDialogVisible" header="Registrar Pagamento" [modal]="true" [style]="{ width: '380px' }">
-      <form [formGroup]="payForm" (ngSubmit)="pay()" class="flex flex-col gap-3 pt-2">
-        <div class="flex flex-col gap-1">
-          <label>Valor Pago</label>
-          <p-inputNumber formControlName="paidAmount" mode="currency" currency="BRL" locale="pt-BR" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Forma de Pagamento</label>
-          <p-select formControlName="paymentMethod" [options]="paymentMethods" optionLabel="label" optionValue="value" />
-        </div>
-        <div class="flex justify-end gap-2 mt-2">
-          <button pButton type="button" label="Cancelar" class="p-button-secondary" (click)="payDialogVisible = false"></button>
-          <button pButton type="submit" label="Confirmar" [loading]="paying()" [disabled]="payForm.invalid"></button>
-        </div>
-      </form>
-    </p-dialog>
-  `,
+  templateUrl: './entry-detail.component.html',
 })
 export class EntryDetailComponent implements OnInit {
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  get breadcrumbs(): MenuItem[] {
+    return [
+      { label: 'Lançamentos', routerLink: '/app/financeiro/lancamentos' },
+      { label: this.entry()?.description ?? '...' },
+    ];
+  }
+
   private svc = inject(FinancialService);
   private route = inject(ActivatedRoute);
   private msg = inject(MessageService);

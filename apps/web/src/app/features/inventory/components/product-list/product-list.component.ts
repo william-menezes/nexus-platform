@@ -6,7 +6,8 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Product } from '@nexus-platform/shared-types';
 import { InventoryService } from '../../inventory.service';
 
@@ -14,7 +15,7 @@ import { InventoryService } from '../../inventory.service';
   standalone: true,
   selector: 'app-product-list',
   imports: [
-    CurrencyPipe, RouterLink, TableModule, ButtonModule, TagModule, ConfirmDialogModule, ToastModule,
+    CurrencyPipe, RouterLink, TableModule, ButtonModule, TagModule, ConfirmDialogModule, ToastModule, BreadcrumbModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './product-list.component.html',
@@ -23,6 +24,9 @@ export class ProductListComponent implements OnInit {
   private readonly svc = inject(InventoryService);
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [{ label: 'Estoque', routerLink: '/app/estoque' }];
 
   products    = signal<Product[]>([]);
   loading     = signal(false);

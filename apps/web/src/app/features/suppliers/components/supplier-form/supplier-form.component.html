@@ -1,0 +1,90 @@
+<p-toast />
+
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+
+<div class="nx-page max-w-2xl mx-auto">
+  <div class="flex items-center gap-2 mb-4">
+    <a routerLink="/app/fornecedores" pButton icon="pi pi-arrow-left"
+      class="p-button-text p-button-sm"></a>
+    <h1 class="text-2xl font-bold text-text">{{ isEdit() ? 'Editar Fornecedor' : 'Novo Fornecedor' }}</h1>
+  </div>
+
+  <p-card>
+    <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1 md:col-span-2">
+          <label class="font-medium text-text">Nome *</label>
+          <input pInputText formControlName="name" placeholder="Razão social / nome" class="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium text-text">CNPJ</label>
+          <input pInputText formControlName="cnpj" placeholder="00.000.000/0000-00" class="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium text-text">Contato</label>
+          <input pInputText formControlName="contact" placeholder="Nome do contato" class="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium text-text">Telefone</label>
+          <input pInputText formControlName="phone" placeholder="(00) 00000-0000" class="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium text-text">Email</label>
+          <input pInputText formControlName="email" placeholder="fornecedor@email.com" type="email" class="w-full" />
+        </div>
+      </div>
+
+      <fieldset class="border border-surface-border rounded p-3">
+        <legend class="text-sm font-medium px-1 text-text">Endereço</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2" formGroupName="address">
+          <div class="flex flex-col gap-1 md:col-span-2">
+            <label class="font-medium text-sm text-text">Logradouro</label>
+            <input pInputText formControlName="street" placeholder="Rua, Avenida..." class="w-full" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm text-text">Número</label>
+            <input pInputText formControlName="number" class="w-full" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm text-text">Complemento</label>
+            <input pInputText formControlName="complement" placeholder="Sala, Andar..." class="w-full" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm text-text">Bairro</label>
+            <input pInputText formControlName="neighborhood" class="w-full" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm text-text">Cidade</label>
+            <input pInputText formControlName="city" class="w-full" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm text-text">Estado</label>
+            <input pInputText formControlName="state" maxlength="2" placeholder="SP" class="w-full" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm text-text">CEP</label>
+            <input pInputText formControlName="zipCode" placeholder="00000-000" class="w-full" />
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-text">Observações</label>
+        <textarea pTextarea formControlName="notes" rows="3"
+          placeholder="Observações gerais sobre o fornecedor..."></textarea>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <a routerLink="/app/fornecedores" pButton label="Cancelar"
+          class="p-button-outlined p-button-sm"></a>
+        <button pButton type="submit" [label]="isEdit() ? 'Salvar' : 'Criar'"
+          icon="pi pi-check" class="p-button-sm"
+          [disabled]="form.invalid || saving()"></button>
+      </div>
+    </form>
+  </p-card>
+</div>

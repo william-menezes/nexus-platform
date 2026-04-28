@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -8,7 +8,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { ServiceCatalog } from '@nexus-platform/shared-types';
 import { ServicesCatalogService } from '../../services-catalog.service';
 
@@ -17,43 +18,10 @@ import { ServicesCatalogService } from '../../services-catalog.service';
   selector: 'app-service-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule,
-    TextareaModule, InputNumberModule, ToggleButtonModule, ButtonModule, ToastModule,
+    TextareaModule, InputNumberModule, ToggleButtonModule, ButtonModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <div class="nx-page max-w-lg">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/servicos" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
-        <h1 class="text-2xl font-bold">{{ isEdit ? 'Editar Serviço' : 'Novo Serviço' }}</h1>
-      </div>
-      <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3">
-        <div class="flex flex-col gap-1">
-          <label>Nome *</label>
-          <input pInputText formControlName="name" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Descrição</label>
-          <textarea pTextarea formControlName="description" rows="3"></textarea>
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Preço Padrão *</label>
-          <p-inputNumber formControlName="defaultPrice" mode="currency" currency="BRL" locale="pt-BR" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Horas Estimadas</label>
-          <p-inputNumber formControlName="estimatedHours" [min]="0" [minFractionDigits]="1" suffix="h" />
-        </div>
-        <div class="flex items-center gap-2">
-          <p-toggleButton formControlName="isActive" onLabel="Ativo" offLabel="Inativo" />
-        </div>
-        <div class="flex gap-2 mt-2">
-          <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
-          <a routerLink="/app/servicos" pButton class="p-button-secondary" label="Cancelar"></a>
-        </div>
-      </form>
-    </div>
-  `,
+  templateUrl: './service-form.component.html',
 })
 export class ServiceFormComponent implements OnInit {
   private svc = inject(ServicesCatalogService);
@@ -61,6 +29,15 @@ export class ServiceFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly isEditSignal = signal(false);
+  get breadcrumbs(): MenuItem[] {
+    return [
+      { label: 'Serviços', routerLink: '/app/servicos' },
+      { label: this.isEditSignal() ? 'Editar Serviço' : 'Novo Serviço' },
+    ];
+  }
 
   isEdit = false;
   editId = '';
@@ -78,6 +55,7 @@ export class ServiceFormComponent implements OnInit {
     this.editId = this.route.snapshot.params['id'];
     if (this.editId) {
       this.isEdit = true;
+      this.isEditSignal.set(true);
       this.svc.getOne(this.editId).subscribe(s => this.form.patchValue(s as any));
     }
   }

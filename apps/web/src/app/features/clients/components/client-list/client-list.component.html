@@ -1,20 +1,14 @@
 <div class="nx-page">
 
+  <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="font-display text-xl font-semibold text-text">Clientes</h1>
       <p class="text-sm text-text-secondary mt-0.5">Gerencie os clientes da sua empresa</p>
     </div>
-    <a
-      routerLink="novo"
-      class="inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-medium text-white
-             hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-             focus-visible:ring-offset-2 transition-colors"
-    >
-      <i class="pi pi-plus text-xs"></i>
-      Novo Cliente
-    </a>
+    <a routerLink="novo" pButton label="Novo Cliente" icon="pi pi-plus" class="p-button-sm">Novo Cliente</a>
   </div>
 
   <!-- Search -->
@@ -26,7 +20,7 @@
         placeholder="Buscar por nome ou CPF/CNPJ…"
         [(ngModel)]="search"
         (keyup.enter)="onSearch()"
-        class="block w-full rounded-lg border border-surface-border bg-white pl-9 pr-3 py-2.5 text-sm text-text
+        class="block w-full rounded-lg border border-surface-border bg-surface pl-9 pr-3 py-2.5 text-sm text-text
                placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500
                focus:outline-none transition-colors"
         aria-label="Buscar clientes"
@@ -43,7 +37,7 @@
   }
 
   <!-- Table card -->
-  <div class="rounded-xl border border-surface-border bg-white overflow-hidden shadow-sm">
+  <div class="rounded-xl border border-surface-border bg-surface overflow-hidden shadow-sm">
 
     <!-- Loading skeleton -->
     @if (loading()) {

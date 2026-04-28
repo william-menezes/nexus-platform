@@ -8,7 +8,8 @@ import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { PurchaseOrder } from '@nexus-platform/shared-types';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 
@@ -34,77 +35,18 @@ const STATUS_SEVERITY: Record<string, string> = {
   imports: [
     CommonModule, RouterLink, FormsModule,
     TableModule, ButtonModule, SelectModule, TagModule,
-    ConfirmDialogModule, ToastModule,
+    ConfirmDialogModule, ToastModule, BreadcrumbModule,
   ],
   providers: [ConfirmationService, MessageService],
-  template: `
-    <p-toast />
-    <p-confirmDialog />
-    <div class="nx-page">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold">Pedidos de Compra</h1>
-        <a routerLink="nova" pButton label="Novo Pedido" icon="pi pi-plus" class="p-button-sm"></a>
-      </div>
-
-      <div class="mb-3 flex gap-2 items-center">
-        <p-select [options]="statusOptions" [(ngModel)]="statusFilter"
-          optionLabel="label" optionValue="value"
-          placeholder="Todos os status" [showClear]="true"
-          (onChange)="load()" styleClass="w-48" />
-      </div>
-
-      <p-table [value]="orders()" [loading]="loading()" stripedRows>
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Código</th>
-            <th>Fornecedor</th>
-            <th>Status</th>
-            <th>Total</th>
-            <th>Previsão</th>
-            <th>Criado em</th>
-            <th>Ações</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-po>
-          <tr>
-            <td>
-              <a [routerLink]="[po.id]" class="text-primary font-medium hover:underline">
-                {{ po.code }}
-              </a>
-            </td>
-            <td>{{ po.supplier?.name || po.supplierId }}</td>
-            <td>
-              <p-tag [value]="statusLabel(po.status)" [severity]="statusSeverity(po.status)" />
-            </td>
-            <td>{{ po.total | currency:'BRL':'symbol':'1.2-2' }}</td>
-            <td>{{ po.expectedAt ? (po.expectedAt | date:'dd/MM/yyyy') : '—' }}</td>
-            <td>{{ po.createdAt | date:'dd/MM/yyyy' }}</td>
-            <td>
-              <a [routerLink]="[po.id]" pButton icon="pi pi-eye"
-                class="p-button-sm p-button-text mr-1" pTooltip="Ver detalhes"
-                aria-label="Ver detalhes"></a>
-              <button pButton icon="pi pi-trash"
-                class="p-button-sm p-button-text p-button-danger"
-                [disabled]="!canDelete(po.status)"
-                (click)="confirmDelete(po)" pTooltip="Excluir"></button>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="7" class="text-center text-gray-500 py-8">
-              Nenhum pedido de compra encontrado.
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  `,
+  templateUrl: './purchase-order-list.component.html',
 })
 export class PurchaseOrderListComponent implements OnInit {
   private readonly svc = inject(PurchaseOrdersService);
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [{ label: 'Pedidos de Compra', routerLink: '/app/compras' }];
 
   readonly orders = signal<PurchaseOrder[]>([]);
   readonly loading = signal(false);

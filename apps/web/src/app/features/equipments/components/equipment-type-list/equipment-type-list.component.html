@@ -1,0 +1,46 @@
+<p-toast />
+<p-confirmDialog />
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-text">Tipos de Equipamento</h1>
+    <button pButton label="Novo Tipo" icon="pi pi-plus" class="p-button-sm" (click)="openDialog()"></button>
+  </div>
+  <div class="overflow-x-auto">
+    <p-table [value]="types()" [loading]="loading()" stripedRows>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nome</th>
+          <th>Campos</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-t>
+        <tr>
+          <td>{{ t.name }}</td>
+          <td>{{ (t.fieldsSchema || []).length }} campo(s)</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text mr-1" (click)="openDialog(t)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(t)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="3" class="text-center py-8 text-text-muted">Nenhum tipo encontrado</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [(visible)]="dialogVisible" [header]="editId ? 'Editar Tipo' : 'Novo Tipo'" [modal]="true" [style]="{ width: '400px' }">
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3 pt-2">
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Nome *</label>
+      <input pInputText formControlName="name" class="w-full" />
+    </div>
+    <div class="flex justify-end gap-2 mt-2">
+      <button pButton type="button" label="Cancelar" class="p-button-secondary" (click)="dialogVisible = false"></button>
+      <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
+    </div>
+  </form>
+</p-dialog>

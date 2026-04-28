@@ -10,7 +10,8 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 import { SuppliersService } from '../../../suppliers/suppliers.service';
 import { Supplier } from '@nexus-platform/shared-types';
@@ -31,137 +32,10 @@ interface ProductOption {
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule, DatePickerModule,
-    SelectModule, TextareaModule, CardModule, ToastModule,
+    SelectModule, TextareaModule, CardModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <div class="nx-page max-w-4xl mx-auto">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/compras" pButton icon="pi pi-arrow-left"
-          class="p-button-text p-button-sm" aria-label="Voltar"></a>
-        <h1 class="text-2xl font-bold">Novo Pedido de Compra</h1>
-      </div>
-
-      <form [formGroup]="form" (ngSubmit)="save()">
-        <p-card header="Dados do Pedido" styleClass="mb-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="flex flex-col gap-1 md:col-span-2">
-              <label class="font-medium">Fornecedor *</label>
-              <p-select formControlName="supplierId" [options]="suppliers()"
-                optionLabel="name" optionValue="id"
-                placeholder="Selecione o fornecedor" [filter]="true"
-                filterBy="name" styleClass="w-full" />
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label class="font-medium">Previsão de Entrega</label>
-              <p-datepicker formControlName="expectedAt" dateFormat="dd/mm/yy"
-                [showIcon]="true" styleClass="w-full" />
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label class="font-medium">Nº NF do Fornecedor</label>
-              <input pInputText formControlName="nfeNumber" placeholder="000000" />
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label class="font-medium">Desconto (R$)</label>
-              <p-inputNumber formControlName="discount" mode="currency" currency="BRL"
-                locale="pt-BR" [minFractionDigits]="2" styleClass="w-full" />
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label class="font-medium">Frete (R$)</label>
-              <p-inputNumber formControlName="shippingCost" mode="currency" currency="BRL"
-                locale="pt-BR" [minFractionDigits]="2" styleClass="w-full" />
-            </div>
-
-            <div class="flex flex-col gap-1 md:col-span-2">
-              <label class="font-medium">Observações</label>
-              <textarea pTextarea formControlName="notes" rows="2"
-                placeholder="Observações sobre o pedido..."></textarea>
-            </div>
-          </div>
-        </p-card>
-
-        <p-card header="Itens do Pedido" styleClass="mb-4">
-          <div formArrayName="items">
-            <div *ngFor="let item of itemsArray.controls; let i = index"
-              [formGroupName]="i"
-              class="grid grid-cols-12 gap-2 items-end mb-3 p-3 bg-gray-50 rounded">
-
-              <div class="col-span-12 md:col-span-5 flex flex-col gap-1">
-                <label class="text-sm font-medium">Produto *</label>
-                <p-select formControlName="productId" [options]="products()"
-                  optionLabel="name" optionValue="id"
-                  placeholder="Selecione o produto" [filter]="true"
-                  filterBy="name" styleClass="w-full"
-                  (onChange)="onProductSelect(i, $event)" />
-              </div>
-
-              <div class="col-span-4 md:col-span-2 flex flex-col gap-1">
-                <label class="text-sm font-medium">Qtd *</label>
-                <p-inputNumber formControlName="quantity" [min]="0.001"
-                  [minFractionDigits]="0" [maxFractionDigits]="3" styleClass="w-full"
-                  (onInput)="recalc()" />
-              </div>
-
-              <div class="col-span-5 md:col-span-3 flex flex-col gap-1">
-                <label class="text-sm font-medium">Custo unit. *</label>
-                <p-inputNumber formControlName="unitCost" mode="currency" currency="BRL"
-                  locale="pt-BR" [minFractionDigits]="2" styleClass="w-full"
-                  (onInput)="recalc()" />
-              </div>
-
-              <div class="col-span-10 md:col-span-1 flex flex-col gap-1">
-                <label class="text-sm font-medium">Total</label>
-                <span class="font-medium py-2">
-                  {{ itemTotal(i) | currency:'BRL':'symbol':'1.2-2' }}
-                </span>
-              </div>
-
-              <div class="col-span-2 md:col-span-1 flex items-end">
-                <button type="button" pButton icon="pi pi-trash"
-                  class="p-button-text p-button-danger p-button-sm"
-                  (click)="removeItem(i)"></button>
-              </div>
-            </div>
-          </div>
-
-          <button type="button" pButton icon="pi pi-plus" label="Adicionar Item"
-            class="p-button-outlined p-button-sm" (click)="addItem()"></button>
-
-          <div class="mt-4 flex flex-col items-end gap-1 text-sm">
-            <div class="flex gap-4">
-              <span class="text-gray-500">Subtotal:</span>
-              <span class="font-medium">{{ subtotal() | currency:'BRL':'symbol':'1.2-2' }}</span>
-            </div>
-            <div class="flex gap-4 text-red-500" *ngIf="form.get('discount')?.value">
-              <span>Desconto:</span>
-              <span>- {{ form.get('discount')?.value | currency:'BRL':'symbol':'1.2-2' }}</span>
-            </div>
-            <div class="flex gap-4" *ngIf="form.get('shippingCost')?.value">
-              <span class="text-gray-500">Frete:</span>
-              <span class="font-medium">{{ form.get('shippingCost')?.value | currency:'BRL':'symbol':'1.2-2' }}</span>
-            </div>
-            <div class="flex gap-4 text-lg font-bold border-t pt-2">
-              <span>Total:</span>
-              <span>{{ total() | currency:'BRL':'symbol':'1.2-2' }}</span>
-            </div>
-          </div>
-        </p-card>
-
-        <div class="flex justify-end gap-2">
-          <a routerLink="/app/compras" pButton label="Cancelar"
-            class="p-button-outlined p-button-sm"></a>
-          <button pButton type="submit" label="Criar Pedido"
-            icon="pi pi-check" class="p-button-sm"
-            [disabled]="form.invalid || saving() || itemsArray.length === 0"></button>
-        </div>
-      </form>
-    </div>
-  `,
+  templateUrl: './purchase-order-form.component.html',
 })
 export class PurchaseOrderFormComponent implements OnInit {
   private readonly svc = inject(PurchaseOrdersService);
@@ -170,6 +44,12 @@ export class PurchaseOrderFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [
+    { label: 'Pedidos de Compra', routerLink: '/app/compras' },
+    { label: 'Novo Pedido' },
+  ];
 
   readonly suppliers = signal<Supplier[]>([]);
   readonly products = signal<ProductOption[]>([]);

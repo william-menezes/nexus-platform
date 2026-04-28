@@ -7,7 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Employee } from '@nexus-platform/shared-types';
@@ -18,70 +19,22 @@ import { EmployeesService } from '../../employees.service';
   selector: 'app-invite-employee',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
-    ButtonModule, InputTextModule, SelectModule, CardModule, ToastModule,
+    ButtonModule, InputTextModule, SelectModule, CardModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <div class="nx-page max-w-2xl mx-auto">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/funcionarios" pButton icon="pi pi-arrow-left"
-          class="p-button-text p-button-sm" aria-label="Voltar"></a>
-        <h1 class="text-2xl font-bold">Convidar Funcionário</h1>
-      </div>
-
-      <p-card>
-        <p class="text-sm text-gray-500 mb-4">
-          O funcionário receberá um e-mail de convite para criar sua senha e acessar o sistema.
-        </p>
-
-        <form [formGroup]="form" (ngSubmit)="send()" class="flex flex-col gap-4">
-          <div class="flex flex-col gap-1">
-            <label class="font-medium">E-mail *</label>
-            <input pInputText formControlName="email" type="email"
-              placeholder="funcionario@empresa.com" />
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <label class="font-medium">Perfil de acesso *</label>
-            <p-select formControlName="role" [options]="roleOptions"
-              optionLabel="label" optionValue="value"
-              placeholder="Selecione o perfil" styleClass="w-full" />
-            <p class="text-xs text-gray-400 mt-1">
-              <strong>Técnico:</strong> acessa OS, clientes, equipamentos e orçamentos.<br>
-              <strong>Vendedor:</strong> acessa vendas, caixa e devoluções.
-            </p>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <label class="font-medium">Vincular a funcionário existente <span class="text-gray-400 font-normal">(opcional)</span></label>
-            <p-select formControlName="employeeId" [options]="employees()"
-              optionLabel="name" optionValue="id"
-              placeholder="Selecionar funcionário do cadastro"
-              [showClear]="true" [filter]="true" filterBy="name"
-              styleClass="w-full" />
-            <p class="text-xs text-gray-400 mt-1">
-              Se selecionado, o login será vinculado ao cadastro de funcionário.
-            </p>
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <a routerLink="/app/funcionarios" pButton label="Cancelar"
-              class="p-button-outlined p-button-sm"></a>
-            <button pButton type="submit" label="Enviar Convite"
-              icon="pi pi-envelope" class="p-button-sm"
-              [disabled]="form.invalid || sending()"></button>
-          </div>
-        </form>
-      </p-card>
-    </div>
-  `,
+  templateUrl: './invite-employee.component.html',
 })
 export class InviteEmployeeComponent implements OnInit {
   private readonly svc = inject(EmployeesService);
   private readonly http = inject(HttpClient);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [
+    { label: 'Funcionários', routerLink: '/app/funcionarios' },
+    { label: 'Convidar Funcionário' },
+  ];
 
   readonly employees = signal<Employee[]>([]);
   readonly sending = signal(false);

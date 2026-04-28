@@ -5,14 +5,15 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { Client } from '@nexus-platform/shared-types';
 import { ClientsService } from '../../clients.service';
 
 @Component({
   standalone: true,
   selector: 'app-client-detail',
-  imports: [DatePipe, RouterLink, ButtonModule, TagModule, MessageModule, ConfirmDialogModule],
+  imports: [DatePipe, RouterLink, ButtonModule, TagModule, MessageModule, ConfirmDialogModule, BreadcrumbModule],
   providers: [ConfirmationService],
   templateUrl: './client-detail.component.html',
 })
@@ -21,6 +22,14 @@ export class ClientDetailComponent implements OnInit {
   private readonly router  = inject(Router);
   private readonly route   = inject(ActivatedRoute);
   private readonly confirm = inject(ConfirmationService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  get breadcrumbs(): MenuItem[] {
+    return [
+      { label: 'Clientes', routerLink: '/app/clientes' },
+      { label: this.client?.name ?? '...' },
+    ];
+  }
 
   client: Client | null = null;
   loading = true;

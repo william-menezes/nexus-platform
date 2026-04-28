@@ -1,0 +1,52 @@
+<p-toast />
+<p-confirmDialog />
+
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+
+<div class="nx-page">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-text">Fornecedores</h1>
+    <a routerLink="novo" pButton label="Novo Fornecedor" icon="pi pi-plus" class="p-button-sm"></a>
+  </div>
+  <div class="mb-3">
+    <input pInputText [(ngModel)]="search" (input)="load()"
+      placeholder="Buscar por nome..." class="w-full md:w-1/3" />
+  </div>
+  <div class="overflow-x-auto">
+    <p-table [value]="suppliers()" [loading]="loading()" stripedRows>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nome</th>
+          <th>CNPJ</th>
+          <th>Contato</th>
+          <th>Telefone</th>
+          <th>Email</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-s>
+        <tr>
+          <td>{{ s.name }}</td>
+          <td>{{ s.cnpj || '—' }}</td>
+          <td>{{ s.contact || '—' }}</td>
+          <td>{{ s.phone || '—' }}</td>
+          <td>{{ s.email || '—' }}</td>
+          <td>
+            <a [routerLink]="[s.id, 'editar']" pButton icon="pi pi-pencil"
+              class="p-button-sm p-button-text mr-1"></a>
+            <button pButton icon="pi pi-trash"
+              class="p-button-sm p-button-text p-button-danger"
+              (click)="confirmDelete(s)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center text-text-secondary py-8">
+            Nenhum fornecedor encontrado.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

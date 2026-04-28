@@ -1,0 +1,49 @@
+<p-toast />
+<p-card header="Configurações Gerais">
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm text-text">Prefixo OS</label>
+        <input pInputText formControlName="osCodePrefix" placeholder="OS" class="w-full" />
+        <small class="text-text-secondary">Ex: OS-000001</small>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm text-text">Prefixo Orçamento</label>
+        <input pInputText formControlName="quoteCodePrefix" placeholder="ORC" class="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm text-text">Prefixo Venda</label>
+        <input pInputText formControlName="saleCodePrefix" placeholder="VND" class="w-full" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm text-text">Validade do Orçamento (dias)</label>
+        <p-inputNumber formControlName="quoteValidityDays" [min]="1" [max]="365" styleClass="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm text-text">Garantia Padrão (dias)</label>
+        <p-inputNumber formControlName="warrantyDays" [min]="0" [max]="3650" styleClass="w-full" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm text-text">Moeda</label>
+        <p-select formControlName="currency" [options]="currencies"
+          optionLabel="label" optionValue="value" styleClass="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm text-text">Fuso Horário</label>
+        <p-select formControlName="timezone" [options]="timezones"
+          optionLabel="label" optionValue="value" styleClass="w-full" />
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button pButton type="submit" label="Salvar" icon="pi pi-check"
+        class="p-button-sm" [disabled]="form.invalid || saving()"></button>
+    </div>
+  </form>
+</p-card>

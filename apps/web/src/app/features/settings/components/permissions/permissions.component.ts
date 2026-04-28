@@ -6,7 +6,8 @@ import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { SettingsService, Permission } from '../../settings.service';
 
 interface PermissionRow {
@@ -44,59 +45,20 @@ const ROLES = ['TENANT_ADMIN', 'TECNICO', 'VENDEDOR'];
   selector: 'app-permissions',
   imports: [
     CommonModule, FormsModule, TableModule, ButtonModule,
-    CheckboxModule, CardModule, ToastModule,
+    CheckboxModule, CardModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <p-card header="Matriz de Permissões">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr class="bg-gray-50">
-              <th class="text-left p-3 font-semibold border-b">Módulo</th>
-              <th class="text-left p-3 font-semibold border-b">Ação</th>
-              @for (role of roles; track role) {
-                <th class="text-center p-3 font-semibold border-b min-w-[120px]">{{ role }}</th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @for (row of rows(); track row.module) {
-              @for (action of row.allActions; track action; let first = $first; let last = $last) {
-                <tr class="hover:bg-gray-50 border-b border-gray-100"
-                  [class.border-b-2]="last" [class.border-gray-300]="last">
-                  @if (first) {
-                    <td class="p-3 font-medium text-gray-700" [attr.rowspan]="row.allActions.length">
-                      {{ row.moduleLabel }}
-                    </td>
-                  }
-                  <td class="p-3 text-gray-600">{{ action }}</td>
-                  @for (role of roles; track role) {
-                    <td class="text-center p-3">
-                      <p-checkbox
-                        [ngModel]="hasPermission(row, role, action)"
-                        (ngModelChange)="togglePermission(row, role, action, $event)"
-                        [binary]="true"
-                        [disabled]="role === 'TENANT_ADMIN'" />
-                    </td>
-                  }
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
-      </div>
-      <div class="flex justify-end mt-4">
-        <button pButton label="Salvar Permissões" icon="pi pi-check"
-          class="p-button-sm" [disabled]="saving()" (click)="save()"></button>
-      </div>
-    </p-card>
-  `,
+  templateUrl: './permissions.component.html',
 })
 export class PermissionsComponent implements OnInit {
   private readonly svc = inject(SettingsService);
   private readonly msg = inject(MessageService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [
+    { label: 'Configurações', routerLink: '/app/configuracoes' },
+    { label: 'Permissões' },
+  ];
 
   readonly rows = signal<PermissionRow[]>([]);
   readonly saving = signal(false);
@@ -123,7 +85,6 @@ export class PermissionsComponent implements OnInit {
       p.actions.forEach(a => moduleActions[p.module].add(a));
     });
 
-    // Add known modules even if not in perms yet
     Object.keys(MODULE_LABELS).forEach(m => {
       if (!moduleActions[m]) moduleActions[m] = new Set(['create', 'read', 'update', 'delete']);
     });
@@ -149,7 +110,6 @@ export class PermissionsComponent implements OnInit {
     const current = new Set(row.roleActions[role] ?? []);
     if (checked) current.add(action); else current.delete(action);
     row.roleActions[role] = Array.from(current);
-    // trigger change detection
     this.rows.update(r => [...r]);
   }
 

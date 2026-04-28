@@ -1,0 +1,97 @@
+<p-toast />
+
+<p-breadcrumb [model]="breadcrumbs()" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+
+<div class="nx-page max-w-3xl mx-auto">
+  <div class="flex items-center gap-2 mb-4">
+    <a routerLink="/app/contratos" pButton icon="pi pi-arrow-left"
+      class="p-button-text p-button-sm" aria-label="Voltar"></a>
+    <h1 class="text-2xl font-bold">
+      {{ isEdit() ? 'Editar Contrato' : 'Novo Contrato' }}
+    </h1>
+  </div>
+
+  <p-card>
+    <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1 md:col-span-2">
+          <label class="font-medium">Cliente *</label>
+          <p-select formControlName="clientId" [options]="clients()"
+            optionLabel="name" optionValue="id"
+            placeholder="Selecione o cliente" [filter]="true"
+            filterBy="name" styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium">Tipo *</label>
+          <p-select formControlName="type" [options]="typeOptions"
+            optionLabel="label" optionValue="value"
+            placeholder="Tipo de contrato" styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1" *ngIf="form.get('type')?.value === 'fixed'">
+          <label class="font-medium">Valor Mensal (R$) *</label>
+          <p-inputNumber formControlName="monthlyValue" mode="currency" currency="BRL"
+            locale="pt-BR" [minFractionDigits]="2" styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1" *ngIf="form.get('type')?.value === 'hourly_franchise'">
+          <label class="font-medium">Horas Franquia *</label>
+          <p-inputNumber formControlName="franchiseHours" [minFractionDigits]="0"
+            [maxFractionDigits]="2" styleClass="w-full" suffix=" h" />
+        </div>
+
+        <div class="flex flex-col gap-1" *ngIf="form.get('type')?.value === 'hourly_franchise'">
+          <label class="font-medium">Preço Hora Excedente (R$) *</label>
+          <p-inputNumber formControlName="hourExcessPrice" mode="currency" currency="BRL"
+            locale="pt-BR" [minFractionDigits]="2" styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium">Início *</label>
+          <p-datepicker formControlName="startDate" dateFormat="dd/mm/yy"
+            [showIcon]="true" styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium">Término (vazio = indeterminado)</label>
+          <p-datepicker formControlName="endDate" dateFormat="dd/mm/yy"
+            [showIcon]="true" [showClear]="true" styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium">Dia de Faturamento</label>
+          <p-inputNumber formControlName="billingDay" [min]="1" [max]="28"
+            styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium">Taxa de Reajuste Anual (%)</label>
+          <p-inputNumber formControlName="adjustmentRate" [minFractionDigits]="2"
+            suffix=" %" styleClass="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1 md:col-span-2">
+          <label class="font-medium">Descrição</label>
+          <textarea pTextarea formControlName="description" rows="3"
+            placeholder="Descrição do contrato..."></textarea>
+        </div>
+
+        <div class="flex flex-col gap-1 md:col-span-2">
+          <label class="font-medium">Observações</label>
+          <textarea pTextarea formControlName="notes" rows="2"
+            placeholder="Observações internas..."></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <a routerLink="/app/contratos" pButton label="Cancelar"
+          class="p-button-outlined p-button-sm"></a>
+        <button pButton type="submit"
+          [label]="isEdit() ? 'Salvar' : 'Criar Contrato'"
+          icon="pi pi-check" class="p-button-sm"
+          [disabled]="form.invalid || saving()"></button>
+      </div>
+    </form>
+  </p-card>
+</div>

@@ -1,15 +1,20 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
 import { ServiceOrdersService } from '../service-orders/service-orders.service';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, BreadcrumbModule],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
   private readonly osSvc = inject(ServiceOrdersService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [{ label: 'Dashboard', routerLink: '/app/dashboard' }];
 
   loading          = signal(false);
   openOrders       = signal(0);

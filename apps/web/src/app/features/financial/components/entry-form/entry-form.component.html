@@ -1,0 +1,40 @@
+<p-toast />
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page max-w-lg">
+  <div class="flex items-center gap-2 mb-4">
+    <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
+    <h1 class="text-2xl font-bold">Novo Lançamento</h1>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3">
+    <div class="flex flex-col gap-1">
+      <label>Tipo *</label>
+      <p-select formControlName="type" [options]="typeOptions" optionLabel="label" optionValue="value" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label>Descrição *</label>
+      <input pInputText formControlName="description" class="w-full" />
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <label>Valor Total *</label>
+        <p-inputNumber formControlName="totalAmount" mode="currency" currency="BRL" locale="pt-BR" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label>Vencimento *</label>
+        <input pInputText formControlName="dueDate" type="date" class="w-full" />
+      </div>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label>Parcelas</label>
+      <p-inputNumber formControlName="installmentCount" [min]="1" [max]="60" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label>Observações</label>
+      <textarea pTextarea formControlName="notes" rows="2"></textarea>
+    </div>
+    <div class="flex gap-2 mt-2">
+      <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
+      <a routerLink="/app/financeiro" pButton class="p-button-secondary" label="Cancelar"></a>
+    </div>
+  </form>
+</div>

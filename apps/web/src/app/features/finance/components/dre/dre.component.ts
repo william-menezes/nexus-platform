@@ -8,18 +8,26 @@ import { TableModule } from 'primeng/table';
 import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
 import { DatePickerModule } from 'primeng/datepicker';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
 import { DreEntry } from '@nexus-platform/shared-types';
 import { FinanceService } from '../../finance.service';
 
 @Component({
   standalone: true,
   selector: 'app-dre',
-  imports: [ReactiveFormsModule, RouterLink, CurrencyPipe, PercentPipe, ButtonModule, CardModule, TableModule, MessageModule, DividerModule, DatePickerModule],
+  imports: [ReactiveFormsModule, RouterLink, CurrencyPipe, PercentPipe, ButtonModule, CardModule, TableModule, MessageModule, DividerModule, DatePickerModule, BreadcrumbModule],
   templateUrl: './dre.component.html',
 })
 export class DreComponent {
   private readonly fb  = inject(FormBuilder);
   private readonly svc = inject(FinanceService);
+
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+  readonly breadcrumbs: MenuItem[] = [
+    { label: 'Financeiro', routerLink: '/app/financeiro' },
+    { label: 'DRE' },
+  ];
 
   entries: DreEntry[] = [];
   loading = false;

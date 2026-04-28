@@ -1,0 +1,35 @@
+<p-toast />
+
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+
+<div class="nx-page max-w-lg">
+  <div class="flex items-center gap-2 mb-4">
+    <a routerLink="/app/servicos" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
+    <h1 class="text-2xl font-bold text-text">{{ isEdit ? 'Editar Serviço' : 'Novo Serviço' }}</h1>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3">
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Nome *</label>
+      <input pInputText formControlName="name" class="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Descrição</label>
+      <textarea pTextarea formControlName="description" rows="3"></textarea>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Preço Padrão *</label>
+      <p-inputNumber formControlName="defaultPrice" mode="currency" currency="BRL" locale="pt-BR" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Horas Estimadas</label>
+      <p-inputNumber formControlName="estimatedHours" [min]="0" [minFractionDigits]="1" suffix="h" />
+    </div>
+    <div class="flex items-center gap-2">
+      <p-toggleButton formControlName="isActive" onLabel="Ativo" offLabel="Inativo" />
+    </div>
+    <div class="flex gap-2 mt-2">
+      <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
+      <a routerLink="/app/servicos" pButton class="p-button-secondary" label="Cancelar"></a>
+    </div>
+  </form>
+</div>

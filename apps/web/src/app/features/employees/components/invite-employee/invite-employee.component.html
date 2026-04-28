@@ -1,0 +1,54 @@
+<p-toast />
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page max-w-2xl mx-auto">
+  <div class="flex items-center gap-2 mb-4">
+    <a routerLink="/app/funcionarios" pButton icon="pi pi-arrow-left"
+      class="p-button-text p-button-sm" aria-label="Voltar"></a>
+    <h1 class="text-2xl font-bold text-text">Convidar Funcionário</h1>
+  </div>
+
+  <p-card>
+    <p class="text-sm text-text-secondary mb-4">
+      O funcionário receberá um e-mail de convite para criar sua senha e acessar o sistema.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="send()" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-text">E-mail *</label>
+        <input pInputText formControlName="email" type="email"
+          placeholder="funcionario@empresa.com" class="w-full" />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-text">Perfil de acesso *</label>
+        <p-select formControlName="role" [options]="roleOptions"
+          optionLabel="label" optionValue="value"
+          placeholder="Selecione o perfil" styleClass="w-full" />
+        <p class="text-xs text-text-muted mt-1">
+          <strong>Técnico:</strong> acessa OS, clientes, equipamentos e orçamentos.<br>
+          <strong>Vendedor:</strong> acessa vendas, caixa e devoluções.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-text">Vincular a funcionário existente <span class="text-text-muted font-normal">(opcional)</span></label>
+        <p-select formControlName="employeeId" [options]="employees()"
+          optionLabel="name" optionValue="id"
+          placeholder="Selecionar funcionário do cadastro"
+          [showClear]="true" [filter]="true" filterBy="name"
+          styleClass="w-full" />
+        <p class="text-xs text-text-muted mt-1">
+          Se selecionado, o login será vinculado ao cadastro de funcionário.
+        </p>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <a routerLink="/app/funcionarios" pButton label="Cancelar"
+          class="p-button-outlined p-button-sm"></a>
+        <button pButton type="submit" label="Enviar Convite"
+          icon="pi pi-envelope" class="p-button-sm"
+          [disabled]="form.invalid || sending()"></button>
+      </div>
+    </form>
+  </p-card>
+</div>

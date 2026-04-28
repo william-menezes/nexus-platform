@@ -1,0 +1,22 @@
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page">
+  <h1 class="text-2xl font-bold mb-4 text-text">Configurações</h1>
+  <p-tabs>
+    <p-tablist>
+      <p-tab value="general">Geral</p-tab>
+      <p-tab value="statuses">Status Personalizados</p-tab>
+      <p-tab value="permissions">Permissões</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="general">
+        <app-general-settings />
+      </p-tabpanel>
+      <p-tabpanel value="statuses">
+        <app-custom-statuses />
+      </p-tabpanel>
+      <p-tabpanel value="permissions">
+        <app-permissions />
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>

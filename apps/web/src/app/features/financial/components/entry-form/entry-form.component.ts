@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -8,7 +8,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MessageService, MenuItem } from 'primeng/api';
 import { FinancialEntry } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 
@@ -17,52 +18,22 @@ import { FinancialService } from '../../financial.service';
   selector: 'app-entry-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule, TextareaModule,
-    InputNumberModule, SelectModule, ButtonModule, ToastModule,
+    InputNumberModule, SelectModule, ButtonModule, ToastModule, BreadcrumbModule,
   ],
   providers: [MessageService],
-  template: `
-    <p-toast />
-    <div class="nx-page max-w-lg">
-      <div class="flex items-center gap-2 mb-4">
-        <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
-        <h1 class="text-2xl font-bold">Novo Lançamento</h1>
-      </div>
-      <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3">
-        <div class="flex flex-col gap-1">
-          <label>Tipo *</label>
-          <p-select formControlName="type" [options]="typeOptions" optionLabel="label" optionValue="value" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Descrição *</label>
-          <input pInputText formControlName="description" />
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div class="flex flex-col gap-1">
-            <label>Valor Total *</label>
-            <p-inputNumber formControlName="totalAmount" mode="currency" currency="BRL" locale="pt-BR" />
-          </div>
-          <div class="flex flex-col gap-1">
-            <label>Vencimento *</label>
-            <input pInputText formControlName="dueDate" type="date" />
-          </div>
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Parcelas</label>
-          <p-inputNumber formControlName="installmentCount" [min]="1" [max]="60" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label>Observações</label>
-          <textarea pTextarea formControlName="notes" rows="2"></textarea>
-        </div>
-        <div class="flex gap-2 mt-2">
-          <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
-          <a routerLink="/app/financeiro" pButton class="p-button-secondary" label="Cancelar"></a>
-        </div>
-      </form>
-    </div>
-  `,
+  templateUrl: './entry-form.component.html',
 })
 export class EntryFormComponent {
+  private readonly route = inject(ActivatedRoute);
+  readonly isEdit = signal(!!this.route.snapshot.paramMap.get('id'));
+  get breadcrumbs(): MenuItem[] {
+    return [
+      { label: 'Lançamentos', routerLink: '/app/financeiro/lancamentos' },
+      { label: this.isEdit() ? 'Editar Lançamento' : 'Novo Lançamento' },
+    ];
+  }
+  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
+
   private svc = inject(FinancialService);
   private router = inject(Router);
   private msg = inject(MessageService);

@@ -1,0 +1,30 @@
+<p-toast />
+<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page max-w-lg">
+  <div class="flex items-center gap-2 mb-4">
+    <a routerLink="/app/equipamentos" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
+    <h1 class="text-2xl font-bold text-text">{{ isEdit ? 'Editar Equipamento' : 'Novo Equipamento' }}</h1>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3">
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Tipo de Equipamento *</label>
+      <p-select formControlName="equipmentTypeId" [options]="types()" optionLabel="name" optionValue="id" placeholder="Selecione..." styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Marca</label>
+      <input pInputText formControlName="brand" class="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Modelo</label>
+      <input pInputText formControlName="model" class="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-text">Observações</label>
+      <textarea pTextarea formControlName="notes" rows="3" class="w-full"></textarea>
+    </div>
+    <div class="flex gap-2 mt-2">
+      <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
+      <a routerLink="/app/equipamentos" pButton class="p-button-secondary" label="Cancelar"></a>
+    </div>
+  </form>
+</div>

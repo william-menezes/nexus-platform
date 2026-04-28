@@ -1,0 +1,44 @@
+<p-toast />
+<p-card header="Matriz de Permissões">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-surface-light">
+          <th class="text-left p-3 font-semibold border-b border-surface-border">Módulo</th>
+          <th class="text-left p-3 font-semibold border-b border-surface-border">Ação</th>
+          @for (role of roles; track role) {
+            <th class="text-center p-3 font-semibold border-b border-surface-border min-w-[120px]">{{ role }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.module) {
+          @for (action of row.allActions; track action; let first = $first; let last = $last) {
+            <tr class="hover:bg-surface-light border-b border-surface-border"
+              [class.border-b-2]="last">
+              @if (first) {
+                <td class="p-3 font-medium text-text" [attr.rowspan]="row.allActions.length">
+                  {{ row.moduleLabel }}
+                </td>
+              }
+              <td class="p-3 text-text-secondary">{{ action }}</td>
+              @for (role of roles; track role) {
+                <td class="text-center p-3">
+                  <p-checkbox
+                    [ngModel]="hasPermission(row, role, action)"
+                    (ngModelChange)="togglePermission(row, role, action, $event)"
+                    [binary]="true"
+                    [disabled]="role === 'TENANT_ADMIN'" />
+                </td>
+              }
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="flex justify-end mt-4">
+    <button pButton label="Salvar Permissões" icon="pi pi-check"
+      class="p-button-sm" [disabled]="saving()" (click)="save()"></button>
+  </div>
+</p-card>
