@@ -8,7 +8,7 @@
       <p class="nx-page-subtitle">Acompanhe as ordens de serviço em andamento</p>
     </div>
     <a routerLink="nova">
-      <p-button label="Nova OS" icon="pi pi-plus" />
+      <p-button label="Nova OS" icon="pi pi-plus"  styleClass="p-button-sm"/>
     </a>
   </div>
 
@@ -57,10 +57,10 @@
         <td>
           <div style="display:flex; gap:0.5rem;">
             <a [routerLink]="os.id">
-              <p-button icon="pi pi-eye" severity="secondary" [outlined]="true" size="small" pTooltip="Ver detalhes" />
+              <p-button icon="pi pi-eye" severity="secondary" [outlined]="true" size="small" pTooltip="Ver detalhes"  styleClass="p-button-sm"/>
             </a>
             <a [routerLink]="[os.id, 'editar']">
-              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" pTooltip="Editar" />
+              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" pTooltip="Editar"  styleClass="p-button-sm"/>
             </a>
           </div>
         </td>

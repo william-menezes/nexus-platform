@@ -6,7 +6,7 @@
       <p class="nx-page-subtitle">Preencha os dados do produto</p>
     </div>
     <a routerLink="/app/estoque">
-      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
     </a>
   </div>
 
@@ -84,9 +84,9 @@
         icon="pi pi-check"
         [loading]="loading"
         [disabled]="form.invalid"
-      />
+       styleClass="p-button-sm"/>
       <a routerLink="/app/estoque">
-        <p-button label="Cancelar" severity="secondary" [outlined]="true" />
+        <p-button label="Cancelar" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
       </a>
     </div>
 

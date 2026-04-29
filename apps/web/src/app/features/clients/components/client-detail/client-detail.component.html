@@ -19,9 +19,9 @@
       </div>
       <div style="display:flex; gap:0.5rem;">
         <a [routerLink]="['editar']">
-          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" />
+          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
         </a>
-        <p-button label="Excluir" icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="delete()" />
+        <p-button label="Excluir" icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="delete()"  styleClass="p-button-sm"/>
       </div>
     </div>
 
@@ -72,7 +72,7 @@
 
     <div style="margin-top:2rem;">
       <a routerLink="/app/clientes">
-        <p-button label="Voltar para lista" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+        <p-button label="Voltar para lista" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
       </a>
     </div>
 

@@ -24,7 +24,7 @@
           <p-inputNumber formControlName="openingAmount" mode="currency" currency="BRL" locale="pt-BR" />
         </div>
         <button pButton type="submit" label="Abrir Caixa" icon="pi pi-unlock"
-          [loading]="acting()" [disabled]="openForm.invalid"></button>
+          [loading]="acting()" [disabled]="openForm.invalid" class="p-button-sm"></button>
       </form>
     </div>
   } @else {
@@ -57,7 +57,7 @@
           <input pInputText formControlName="description" class="w-full" />
         </div>
         <div class="col-span-1 sm:col-span-3 flex justify-end">
-          <button pButton type="submit" label="Registrar" [loading]="acting()" [disabled]="movForm.invalid"></button>
+          <button pButton type="submit" label="Registrar" [loading]="acting()" [disabled]="movForm.invalid" class="p-button-sm"></button>
         </div>
       </form>
     </div>
@@ -104,7 +104,7 @@
           <label>Observações</label>
           <input pInputText formControlName="notes" class="w-full" />
         </div>
-        <button pButton type="submit" label="Fechar Caixa" icon="pi pi-lock" class="p-button-danger"
+        <button pButton type="submit" label="Fechar Caixa" icon="pi pi-lock" class="p-button-danger p-button-sm"
           [loading]="acting()" [disabled]="closeForm.invalid"></button>
       </form>
     </div>

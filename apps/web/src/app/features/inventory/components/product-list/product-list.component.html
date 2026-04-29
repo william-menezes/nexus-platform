@@ -11,10 +11,10 @@
     </div>
     <div style="display:flex; gap:0.75rem;">
       <a routerLink="nfe-import">
-        <p-button label="Importar NF-e" icon="pi pi-upload" severity="secondary" [outlined]="true" />
+        <p-button label="Importar NF-e" icon="pi pi-upload" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
       </a>
       <a routerLink="novo">
-        <p-button label="Novo produto" icon="pi pi-plus" />
+        <p-button label="Novo produto" icon="pi pi-plus"  styleClass="p-button-sm"/>
       </a>
     </div>
   </div>
@@ -64,9 +64,9 @@
         <td>
           <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
             <a [routerLink]="[p.id, 'editar']">
-              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" />
+              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small"  styleClass="p-button-sm"/>
             </a>
-            <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" (click)="remove(p.id)" />
+            <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" (click)="remove(p.id)"  styleClass="p-button-sm"/>
           </div>
         </td>
       </tr>

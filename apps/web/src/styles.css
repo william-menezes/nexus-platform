@@ -195,6 +195,13 @@ a:hover {
   text-decoration: underline;
 }
 
+a[pbutton]:hover,
+a[pButton]:hover,
+a.p-button:hover,
+a:has(> .p-button):hover {
+  text-decoration: none;
+}
+
 label {
   font-size: 14px;
   color: var(--text-secondary);

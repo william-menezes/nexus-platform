@@ -8,7 +8,7 @@
       <p class="nx-page-subtitle">Ponto de Venda — registre vendas rapidamente</p>
     </div>
     <a routerLink="/app/vendas/vendas">
-      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" />
+      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
     </a>
   </div>
 
@@ -45,7 +45,7 @@
           [outlined]="true"
           size="small"
           (click)="addItem()"
-        />
+         styleClass="p-button-sm"/>
       </div>
 
       <div formArrayName="items">
@@ -97,7 +97,7 @@
                 size="small"
                 [disabled]="items.length === 1"
                 (click)="removeItem($index)"
-              />
+               styleClass="p-button-sm"/>
             </div>
 
           </div>
@@ -148,7 +148,7 @@
           [outlined]="true"
           size="small"
           (click)="addPayment()"
-        />
+         styleClass="p-button-sm"/>
       </div>
 
       <div formArrayName="payments">
@@ -189,7 +189,7 @@
                 size="small"
                 [disabled]="payments.length === 1"
                 (click)="removePayment($index)"
-              />
+               styleClass="p-button-sm"/>
             </div>
 
           </div>
@@ -214,6 +214,7 @@
         icon="pi pi-check"
         [loading]="loading"
         [disabled]="form.invalid || remaining > 0.01"
+        styleClass="p-button-sm"
       />
     </div>
 

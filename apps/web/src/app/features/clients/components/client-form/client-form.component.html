@@ -11,7 +11,7 @@
     </p>
   </div>
   <a routerLink="/app/clientes">
-    <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+    <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
   </a>
 </div>
 
@@ -129,9 +129,9 @@
         icon="pi pi-check"
         [loading]="saving"
         [disabled]="form.invalid"
-      />
+       styleClass="p-button-sm"/>
       <a routerLink="/app/clientes">
-        <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" />
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button"  styleClass="p-button-sm"/>
       </a>
     </div>
 

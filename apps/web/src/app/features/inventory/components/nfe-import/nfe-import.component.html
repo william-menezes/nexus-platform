@@ -6,7 +6,7 @@
       <p class="nx-page-subtitle">Importe notas fiscais eletrônicas de fornecedores</p>
     </div>
     <a routerLink="/app/estoque">
-      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
     </a>
   </div>
 
@@ -25,14 +25,14 @@
         label="Importar outra NF-e"
         icon="pi pi-upload"
         (click)="result = null; file = null; fileName = ''"
-      />
+       styleClass="p-button-sm"/>
       <p-button
         label="Ver estoque"
         icon="pi pi-box"
         severity="secondary"
         [outlined]="true"
         (click)="goBack()"
-      />
+       styleClass="p-button-sm"/>
     </div>
   } @else {
 
@@ -71,7 +71,7 @@
               label="Importar NF-e"
               icon="pi pi-cloud-upload"
               (click)="import()"
-            />
+             styleClass="p-button-sm"/>
           </div>
         }
 

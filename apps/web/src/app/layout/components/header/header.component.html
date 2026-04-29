@@ -10,7 +10,7 @@
     aria-label="Alternar menu"
     pTooltip="Alternar menu"
     tooltipPosition="bottom"
-  />
+   styleClass="p-button-sm"/>
 
 </div>
 
@@ -27,7 +27,7 @@
     [attr.aria-label]="theme.isDark() ? 'Ativar modo claro' : 'Ativar modo escuro'"
     [pTooltip]="theme.isDark() ? 'Modo claro' : 'Modo escuro'"
     tooltipPosition="bottom"
-  />
+   styleClass="p-button-sm"/>
 
   <!-- User avatar + menu -->
   <p-menu #userMenu [model]="userMenuItems" [popup]="true" appendTo="body" />

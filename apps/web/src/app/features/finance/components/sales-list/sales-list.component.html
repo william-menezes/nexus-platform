@@ -9,10 +9,10 @@
     </div>
     <div style="display:flex; gap:0.75rem;">
       <a routerLink="../dre">
-        <p-button label="DRE" icon="pi pi-chart-bar" severity="secondary" [outlined]="true" />
+        <p-button label="DRE" icon="pi pi-chart-bar" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
       </a>
       <a routerLink="../pdv">
-        <p-button label="Nova venda (PDV)" icon="pi pi-plus" />
+        <p-button label="Nova venda (PDV)" icon="pi pi-plus"  styleClass="p-button-sm"/>
       </a>
     </div>
   </div>
@@ -63,7 +63,7 @@
               [outlined]="true"
               size="small"
               (click)="cancel(sale.id)"
-            />
+             styleClass="p-button-sm"/>
           }
         </td>
       </tr>

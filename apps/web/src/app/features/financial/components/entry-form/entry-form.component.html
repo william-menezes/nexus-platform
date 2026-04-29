@@ -36,8 +36,8 @@
       <textarea pTextarea formControlName="notes" rows="2"></textarea>
     </div>
     <div class="flex gap-2 mt-2">
-      <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid"></button>
-      <a routerLink="/app/financeiro" pButton class="p-button-secondary" label="Cancelar"></a>
+      <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid" class="p-button-sm"></button>
+      <a routerLink="/app/financeiro" pButton class="p-button-secondary p-button-sm" label="Cancelar"></a>
     </div>
   </form>
 </div>

@@ -28,7 +28,7 @@
             icon="pi pi-arrow-right"
             iconPos="right"
             (click)="advance()"
-          />
+           styleClass="p-button-sm"/>
         }
         @if (os.status !== 'cancelled' && os.status !== 'done') {
           <p-button
@@ -37,13 +37,13 @@
             severity="danger"
             [outlined]="true"
             (click)="cancelOs()"
-          />
+           styleClass="p-button-sm"/>
         }
         <a [routerLink]="[os.id, 'editar']">
-          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" />
+          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
         </a>
         <a routerLink="/app/os">
-          <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
+          <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
         </a>
       </div>
     </div>
