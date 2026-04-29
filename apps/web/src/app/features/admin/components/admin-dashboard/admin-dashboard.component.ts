@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CardModule } from 'primeng/card';
@@ -12,6 +12,7 @@ import { AdminService, AdminMetrics } from '../../admin.service';
   selector: 'app-admin-dashboard',
   imports: [CommonModule, RouterLink, CardModule, ButtonModule, BreadcrumbModule],
   templateUrl: './admin-dashboard.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDashboardComponent implements OnInit {
   private readonly svc = inject(AdminService);

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -13,11 +13,13 @@ import { AuthService } from '../../../core/auth/auth.service';
   imports: [ReactiveFormsModule, ButtonModule, InputTextModule, MessageModule, SelectModule],
   templateUrl: './company-setup.component.html',
   host: { style: 'display: contents;' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CompanySetupComponent {
   private readonly fb     = inject(FormBuilder);
   private readonly auth   = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly cdr    = inject(ChangeDetectorRef);
 
   loading = false;
   error   = '';
@@ -53,6 +55,7 @@ export class CompanySetupComponent {
       const msg = err instanceof Error ? err.message : '';
       this.error = msg.includes('já possui') ? msg : 'Erro ao criar empresa. Tente novamente.';
       this.loading = false;
+      this.cdr.markForCheck();
     }
   }
 }

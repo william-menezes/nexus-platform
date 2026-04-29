@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TagModule } from 'primeng/tag';
@@ -25,6 +25,7 @@ const STATUS_FLOW: Record<string, string> = {
   imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink, TagModule, ButtonModule, CardModule, SkeletonModule, ConfirmDialogModule, ToastModule, MessageModule, BreadcrumbModule],
   providers: [ConfirmationService, MessageService],
   templateUrl: './os-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OsDetailComponent implements OnInit {
   private readonly svc         = inject(ServiceOrdersService);
@@ -32,6 +33,7 @@ export class OsDetailComponent implements OnInit {
   private readonly router      = inject(Router);
   private readonly confirm     = inject(ConfirmationService);
   private readonly toast       = inject(MessageService);
+  private readonly cdr         = inject(ChangeDetectorRef);
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
   get breadcrumbs(): MenuItem[] {
@@ -74,8 +76,8 @@ export class OsDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.svc.getOne(id).subscribe({
-      next: (data) => { this.os = data; this.loading = false; },
-      error: () => { this.error = 'OS não encontrada.'; this.loading = false; },
+      next: (data) => { this.os = data; this.loading = false; this.cdr.markForCheck(); },
+      error: () => { this.error = 'OS não encontrada.'; this.loading = false; this.cdr.markForCheck(); },
     });
   }
 
@@ -85,6 +87,7 @@ export class OsDetailComponent implements OnInit {
       next: (updated) => {
         this.os = updated;
         this.toast.add({ severity: 'success', summary: 'Status atualizado', life: 3000 });
+        this.cdr.markForCheck();
       },
     });
   }

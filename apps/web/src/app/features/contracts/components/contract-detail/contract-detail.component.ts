@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -35,6 +35,7 @@ const BILLING_STATUS: Record<string, string> = {
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './contract-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContractDetailComponent implements OnInit {
   private readonly svc = inject(ContractsService);

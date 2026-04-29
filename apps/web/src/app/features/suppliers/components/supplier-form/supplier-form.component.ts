@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -21,6 +21,7 @@ import { SuppliersService } from '../../suppliers.service';
   ],
   providers: [MessageService],
   templateUrl: './supplier-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplierFormComponent implements OnInit {
   private readonly svc = inject(SuppliersService);

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -28,6 +28,7 @@ import {
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './equipment-type-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EquipmentTypeListComponent implements OnInit {
   private svc = inject(EquipmentsService);

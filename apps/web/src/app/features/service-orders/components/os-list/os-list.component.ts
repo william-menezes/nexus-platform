@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -23,6 +23,7 @@ import {
   selector: 'app-os-list',
   imports: [DatePipe, RouterLink, ButtonModule, MessageModule, TableModule, TagModule, TooltipModule, BreadcrumbModule],
   templateUrl: './os-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OsListComponent implements OnInit {
   private readonly svc = inject(ServiceOrdersService);

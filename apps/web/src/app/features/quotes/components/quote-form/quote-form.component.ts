@@ -1,7 +1,10 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -34,6 +37,7 @@ const ITEM_TYPES = [
   ],
   providers: [MessageService],
   templateUrl: './quote-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuoteFormComponent implements OnInit {
   private readonly svc        = inject(QuotesService);
@@ -42,6 +46,8 @@ export class QuoteFormComponent implements OnInit {
   private readonly route      = inject(ActivatedRoute);
   private readonly msg        = inject(MessageService);
   private readonly fb         = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr        = inject(ChangeDetectorRef);
 
   isEdit = false;
   editId = '';
@@ -49,8 +55,9 @@ export class QuoteFormComponent implements OnInit {
   itemTypes = ITEM_TYPES;
 
   /** Autocomplete de cliente */
-  selectedClient: Client | null = null;
-  clientSuggestions: Client[]   = [];
+  selectedClient: Client | null    = null;
+  clientSuggestions: Client[]      = [];
+  private readonly clientSearch$   = new Subject<string>();
 
   form = this.fb.group({
     clientId:       ['', Validators.required],
@@ -71,6 +78,16 @@ export class QuoteFormComponent implements OnInit {
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
 
   ngOnInit() {
+    this.clientSearch$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => this.clientsSvc.getAll(query)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next:  list => { this.clientSuggestions = list; this.cdr.markForCheck(); },
+      error: ()   => { this.clientSuggestions = []; this.cdr.markForCheck(); },
+    });
+
     this.editId = this.route.snapshot.params['id'];
     if (this.editId) {
       this.isEdit = true;
@@ -89,16 +106,14 @@ export class QuoteFormComponent implements OnInit {
             unitPrice:   item.unitPrice,
           }));
         });
+        this.cdr.markForCheck();
       });
     }
   }
 
-  /** Pesquisa clientes pelo texto digitado */
+  /** Pesquisa clientes pelo texto digitado — emite para stream com debounce */
   searchClients(event: AutoCompleteCompleteEvent) {
-    this.clientsSvc.getAll(event.query).subscribe({
-      next:  (list) => { this.clientSuggestions = list; },
-      error: ()     => { this.clientSuggestions = []; },
-    });
+    this.clientSearch$.next(event.query);
   }
 
   /** Ao selecionar um cliente, preenche o clientId no form */
@@ -150,6 +165,7 @@ export class QuoteFormComponent implements OnInit {
       error: () => {
         this.saving.set(false);
         this.msg.add({ severity: 'error', summary: 'Erro ao salvar orçamento' });
+        this.cdr.markForCheck();
       },
     });
   }

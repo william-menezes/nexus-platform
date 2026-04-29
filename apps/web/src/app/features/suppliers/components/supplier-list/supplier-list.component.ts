@@ -1,7 +1,10 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -30,31 +33,43 @@ import {
   templateUrl: './supplier-list.component.html',
 })
 export class SupplierListComponent implements OnInit {
-  private readonly svc = inject(SuppliersService);
-  private readonly confirm = inject(ConfirmationService);
-  private readonly msg = inject(MessageService);
+  private readonly svc        = inject(SuppliersService);
+  private readonly confirm    = inject(ConfirmationService);
+  private readonly msg        = inject(MessageService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
   readonly breadcrumbs: MenuItem[] = [{ label: 'Fornecedores', routerLink: '/app/fornecedores' }];
 
-  readonly suppliers = signal<Supplier[]>([]);
-  readonly loading = signal(false);
-  readonly tablePage = signal(createInitialTablePageState());
+  readonly suppliers        = signal<Supplier[]>([]);
+  readonly loading          = signal(false);
+  readonly tablePage        = signal(createInitialTablePageState());
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search = '';
+  private readonly search$  = new Subject<string | undefined>();
 
-  ngOnInit() { this.load(); }
+  ngOnInit() {
+    this.search$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(q => {
+        this.loading.set(true);
+        return this.svc.findAll(q);
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next:  data => { this.suppliers.set(data); this.loading.set(false); },
+      error: ()   => { this.loading.set(false); },
+    });
+    this.search$.next(undefined);
+  }
+
+  onSearchInput() {
+    this.search$.next(this.search || undefined);
+  }
 
   onPageChange(event: { first?: number; rows?: number }) {
     this.tablePage.update((current) => updateTablePageState(current, event));
-  }
-
-  load() {
-    this.loading.set(true);
-    this.svc.findAll(this.search || undefined).subscribe({
-      next: data => { this.suppliers.set(data); this.loading.set(false); },
-      error: () => { this.loading.set(false); },
-    });
   }
 
   tableSummary() {
@@ -73,7 +88,7 @@ export class SupplierListComponent implements OnInit {
         this.svc.remove(s.id).subscribe({
           next: () => {
             this.msg.add({ severity: 'success', summary: 'Exclu?do', detail: s.name });
-            this.load();
+            this.search$.next(this.search || undefined);
           },
           error: () => this.msg.add({ severity: 'error', summary: 'Erro ao excluir' }),
         });

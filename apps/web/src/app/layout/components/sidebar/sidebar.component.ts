@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TenantService } from '../../../core/tenant/tenant.service';
 import { LayoutService } from '../../../core/layout/layout.service';
 import { SidebarNavComponent } from './sidebar-nav.component';
@@ -12,6 +12,7 @@ import { SidebarNavComponent } from './sidebar-nav.component';
     class: 'nx-sidebar',
     '[class.open]': 'layout.sidebarVisible()',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
   readonly layout = inject(LayoutService);

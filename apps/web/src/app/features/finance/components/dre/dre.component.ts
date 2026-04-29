@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CurrencyPipe, PercentPipe } from '@angular/common';
@@ -18,10 +18,12 @@ import { FinanceService } from '../../finance.service';
   selector: 'app-dre',
   imports: [ReactiveFormsModule, RouterLink, CurrencyPipe, PercentPipe, ButtonModule, CardModule, TableModule, MessageModule, DividerModule, DatePickerModule, BreadcrumbModule],
   templateUrl: './dre.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DreComponent {
   private readonly fb  = inject(FormBuilder);
   private readonly svc = inject(FinanceService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
   readonly breadcrumbs: MenuItem[] = [
@@ -56,8 +58,8 @@ export class DreComponent {
     this.loading = true;
     this.error   = '';
     this.svc.getDre(fmt(from), fmt(to)).subscribe({
-      next: (data) => { this.entries = data; this.loading = false; },
-      error: ()    => { this.error = 'Erro ao carregar DRE.'; this.loading = false; },
+      next: (data) => { this.entries = data; this.loading = false; this.cdr.markForCheck(); },
+      error: ()    => { this.error = 'Erro ao carregar DRE.'; this.loading = false; this.cdr.markForCheck(); },
     });
   }
 

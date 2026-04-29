@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
@@ -27,6 +27,7 @@ import {
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './chart-of-accounts.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartOfAccountsComponent implements OnInit {
   private svc = inject(FinancialService);

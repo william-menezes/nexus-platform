@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +41,7 @@ const TYPE_LABELS: Record<string, string> = {
   ],
   providers: [MessageService],
   templateUrl: './return-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReturnListComponent implements OnInit {
   private readonly svc = inject(ReturnsService);

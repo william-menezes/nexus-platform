@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -16,12 +16,14 @@ import { ClientsService } from '../../clients.service';
   imports: [DatePipe, RouterLink, ButtonModule, TagModule, MessageModule, ConfirmDialogModule, BreadcrumbModule],
   providers: [ConfirmationService],
   templateUrl: './client-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientDetailComponent implements OnInit {
   private readonly svc     = inject(ClientsService);
   private readonly router  = inject(Router);
   private readonly route   = inject(ActivatedRoute);
   private readonly confirm = inject(ConfirmationService);
+  private readonly cdr     = inject(ChangeDetectorRef);
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
   get breadcrumbs(): MenuItem[] {
@@ -41,8 +43,8 @@ export class ClientDetailComponent implements OnInit {
 
   ngOnInit() {
     this.svc.getOne(this.clientId).subscribe({
-      next: (c) => { this.client = c; this.loading = false; },
-      error: () => { this.error = 'Erro ao carregar cliente.'; this.loading = false; },
+      next: (c) => { this.client = c; this.loading = false; this.cdr.markForCheck(); },
+      error: () => { this.error = 'Erro ao carregar cliente.'; this.loading = false; this.cdr.markForCheck(); },
     });
   }
 
@@ -54,7 +56,7 @@ export class ClientDetailComponent implements OnInit {
       accept: () => {
         this.svc.remove(this.clientId).subscribe({
           next: () => this.router.navigate(['/app/clientes']),
-          error: () => { this.error = 'Erro ao remover cliente.'; },
+          error: () => { this.error = 'Erro ao remover cliente.'; this.cdr.markForCheck(); },
         });
       },
     });

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
@@ -33,12 +33,14 @@ const METHOD_OPTIONS = [
     ButtonModule, InputTextModule, InputNumberModule, SelectModule, DividerModule, MessageModule, CardModule, BreadcrumbModule,
   ],
   templateUrl: './pdv.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PdvComponent implements OnInit {
   private readonly fb      = inject(FormBuilder);
   private readonly svc     = inject(FinanceService);
   private readonly invSvc  = inject(InventoryService);
   private readonly router  = inject(Router);
+  private readonly cdr     = inject(ChangeDetectorRef);
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
   readonly breadcrumbs: MenuItem[] = [
@@ -106,6 +108,7 @@ export class PdvComponent implements OnInit {
       next: (p) => {
         this.products = p;
         this.productOptions = p.map(prod => ({ label: prod.name, value: prod.id }));
+        this.cdr.markForCheck();
       },
     });
   }
@@ -125,6 +128,7 @@ export class PdvComponent implements OnInit {
       error: (err) => {
         this.error = err?.error?.message ?? 'Erro ao finalizar venda.';
         this.loading = false;
+        this.cdr.markForCheck();
       },
     });
   }

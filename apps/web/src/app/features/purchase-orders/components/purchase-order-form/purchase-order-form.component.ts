@@ -1,7 +1,16 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -17,7 +26,6 @@ import { SuppliersService } from '../../../suppliers/suppliers.service';
 import { Supplier } from '@nexus-platform/shared-types';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { firstValueFrom } from 'rxjs';
 
 interface ProductOption {
   id: string;
@@ -36,14 +44,16 @@ interface ProductOption {
   ],
   providers: [MessageService],
   templateUrl: './purchase-order-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseOrderFormComponent implements OnInit {
-  private readonly svc = inject(PurchaseOrdersService);
+  private readonly svc          = inject(PurchaseOrdersService);
   private readonly suppliersSvc = inject(SuppliersService);
-  private readonly http = inject(HttpClient);
-  private readonly router = inject(Router);
-  private readonly msg = inject(MessageService);
-  private readonly fb = inject(FormBuilder);
+  private readonly http         = inject(HttpClient);
+  private readonly router       = inject(Router);
+  private readonly msg          = inject(MessageService);
+  private readonly fb           = inject(FormBuilder);
+  private readonly destroyRef   = inject(DestroyRef);
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
   readonly breadcrumbs: MenuItem[] = [
@@ -51,22 +61,25 @@ export class PurchaseOrderFormComponent implements OnInit {
     { label: 'Novo Pedido' },
   ];
 
-  readonly suppliers = signal<Supplier[]>([]);
-  readonly products = signal<ProductOption[]>([]);
-  readonly saving = signal(false);
-
-  readonly subtotal = signal(0);
-  readonly total = signal(0);
+  readonly suppliers   = signal<Supplier[]>([]);
+  readonly products    = signal<ProductOption[]>([]);
+  readonly saving      = signal(false);
+  readonly subtotal    = signal(0);
+  readonly total       = signal(0);
+  readonly itemTotals  = signal<number[]>([]);
 
   readonly form = this.fb.group({
-    supplierId: ['', Validators.required],
-    expectedAt: [null as Date | null],
-    discount: [0],
+    supplierId:   ['', Validators.required],
+    expectedAt:   [null as Date | null],
+    discount:     [0],
     shippingCost: [0],
-    nfeNumber: [''],
-    notes: [''],
-    items: this.fb.array([]),
+    nfeNumber:    [''],
+    notes:        [''],
+    items:        this.fb.array([]),
   });
+
+  readonly discountValue  = toSignal(this.form.get('discount')!.valueChanges,     { initialValue: 0 });
+  readonly shippingValue  = toSignal(this.form.get('shippingCost')!.valueChanges, { initialValue: 0 });
 
   get itemsArray() { return this.form.get('items') as FormArray; }
 
@@ -75,41 +88,47 @@ export class PurchaseOrderFormComponent implements OnInit {
     this.http.get<ProductOption[]>(`${environment.apiUrl}/inventory/products`).subscribe(
       p => this.products.set(p),
     );
+
+    this.form.valueChanges.pipe(
+      debounceTime(150),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => this.recalcAll());
   }
 
   addItem() {
     this.itemsArray.push(this.fb.group({
       productId: ['', Validators.required],
-      quantity: [1, [Validators.required, Validators.min(0.001)]],
-      unitCost: [0, [Validators.required, Validators.min(0)]],
+      quantity:  [1, [Validators.required, Validators.min(0.001)]],
+      unitCost:  [0, [Validators.required, Validators.min(0)]],
     }));
+    this.itemTotals.update(t => [...t, 0]);
   }
 
   removeItem(i: number) {
     this.itemsArray.removeAt(i);
-    this.recalc();
+    this.recalcAll();
   }
 
   onProductSelect(i: number, event: any) {
     const product = this.products().find(p => p.id === event.value);
     if (product) {
       this.itemsArray.at(i).patchValue({ unitCost: product.costPrice });
-      this.recalc();
+      this.recalcAll();
     }
   }
 
-  itemTotal(i: number): number {
-    const ctrl = this.itemsArray.at(i);
-    const qty = ctrl.get('quantity')?.value ?? 0;
-    const cost = ctrl.get('unitCost')?.value ?? 0;
-    return qty * cost;
-  }
-
-  recalc() {
+  private recalcAll() {
+    const totals: number[] = [];
     let sub = 0;
     for (let i = 0; i < this.itemsArray.length; i++) {
-      sub += this.itemTotal(i);
+      const ctrl  = this.itemsArray.at(i);
+      const qty   = ctrl.get('quantity')?.value ?? 0;
+      const cost  = ctrl.get('unitCost')?.value ?? 0;
+      const total = qty * cost;
+      totals.push(total);
+      sub += total;
     }
+    this.itemTotals.set(totals);
     this.subtotal.set(sub);
     const disc = this.form.get('discount')?.value ?? 0;
     const ship = this.form.get('shippingCost')?.value ?? 0;
@@ -121,16 +140,18 @@ export class PurchaseOrderFormComponent implements OnInit {
     this.saving.set(true);
     const raw = this.form.getRawValue();
     const payload: any = {
-      supplierId: raw.supplierId,
-      discount: raw.discount ?? 0,
+      supplierId:   raw.supplierId,
+      discount:     raw.discount     ?? 0,
       shippingCost: raw.shippingCost ?? 0,
-      nfeNumber: raw.nfeNumber || undefined,
-      notes: raw.notes || undefined,
-      expectedAt: raw.expectedAt ? (raw.expectedAt as Date).toISOString().split('T')[0] : undefined,
+      nfeNumber:    raw.nfeNumber  || undefined,
+      notes:        raw.notes      || undefined,
+      expectedAt:   raw.expectedAt
+        ? (raw.expectedAt as Date).toISOString().split('T')[0]
+        : undefined,
       items: (raw.items as any[]).map(i => ({
         productId: i.productId,
-        quantity: i.quantity,
-        unitCost: i.unitCost,
+        quantity:  i.quantity,
+        unitCost:  i.unitCost,
       })),
     };
 

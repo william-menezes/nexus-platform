@@ -122,13 +122,21 @@ export class QuotesService {
       [tenantId, osCode, quote.clientId, quote.employeeId ?? null, quote.description ?? ''],
     );
 
-    for (const item of quote.items ?? []) {
+    const items = quote.items ?? [];
+    if (items.length > 0) {
+      const placeholders = items.map((_, i) => {
+        const b = i * 10;
+        return `($${b+1},$${b+2},$${b+3},$${b+4},$${b+5},$${b+6},$${b+7},$${b+8},$${b+9},$${b+10})`;
+      }).join(',');
+      const params = items.flatMap(item => [
+        os.id, item.itemType, item.productId ?? null, item.serviceId ?? null,
+        item.description, item.quantity, item.unitPrice, item.discount, item.totalPrice, item.sortOrder,
+      ]);
       await this.dataSource.query(
         `INSERT INTO public.so_items
          (service_order_id, item_type, product_id, service_id, description, quantity, unit_price, discount, total_price, sort_order)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-        [os.id, item.itemType, item.productId ?? null, item.serviceId ?? null,
-         item.description, item.quantity, item.unitPrice, item.discount, item.totalPrice, item.sortOrder],
+         VALUES ${placeholders}`,
+        params,
       );
     }
 

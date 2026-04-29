@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -46,6 +46,7 @@ const STATUS_SEVERITY: Record<string, string> = {
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './purchase-order-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseOrderListComponent implements OnInit {
   private readonly svc = inject(PurchaseOrdersService);

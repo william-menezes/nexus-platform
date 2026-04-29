@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
@@ -33,6 +33,7 @@ const STATUS_SEVERITY: Record<string, string> = {
   ],
   providers: [MessageService],
   templateUrl: './purchase-order-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseOrderDetailComponent implements OnInit {
   private readonly svc = inject(PurchaseOrdersService);

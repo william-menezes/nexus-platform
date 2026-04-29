@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabsModule } from 'primeng/tabs';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
@@ -15,6 +15,7 @@ import { PermissionsComponent } from './components/permissions/permissions.compo
     GeneralSettingsComponent, CustomStatusesComponent, PermissionsComponent,
   ],
   templateUrl: './settings.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent {
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };

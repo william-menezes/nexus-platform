@@ -1,13 +1,13 @@
 <p-toast />
 
 <!-- ── Breadcrumb & Título (fora do card) ── -->
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" />
+<p-breadcrumb [model]="breadcrumbs()" [home]="homeItem" />
 
 <div class="nx-page-header">
   <div>
-    <h1 class="nx-page-title">{{ isEdit ? 'Editar Cliente' : 'Novo Cliente' }}</h1>
+    <h1 class="nx-page-title">{{ isEdit() ? 'Editar Cliente' : 'Novo Cliente' }}</h1>
     <p class="nx-page-subtitle">
-      {{ isEdit ? 'Atualize os dados do cliente abaixo' : 'Preencha os dados para cadastrar um novo cliente' }}
+      {{ isEdit() ? 'Atualize os dados do cliente abaixo' : 'Preencha os dados para cadastrar um novo cliente' }}
     </p>
   </div>
   <a routerLink="/app/clientes">
@@ -15,8 +15,8 @@
   </a>
 </div>
 
-@if (error) {
-  <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+@if (error()) {
+  <p-message severity="error" [text]="error()" styleClass="w-full mb-4" />
 }
 
 <!-- ── Card envolve apenas o formulário ── -->
@@ -41,10 +41,10 @@
         pInputText
         id="cf-name"
         formControlName="name"
-        placeholder="{{ form.get('type')?.value === 'company' ? 'Razão social' : 'Nome completo' }}"
+        [placeholder]="namePlaceholder()"
         class="w-full"
       />
-      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+      @if (form.controls.name.invalid && form.controls.name.touched) {
         <small class="p-error">Nome é obrigatório.</small>
       }
     </div>
@@ -52,13 +52,13 @@
     <!-- CPF / CNPJ (máscara dinâmica) -->
     <div class="nx-form-group">
       <label class="nx-form-label" for="cf-cpfCnpj">
-        {{ form.get('type')?.value === 'company' ? 'CNPJ' : 'CPF' }}
+        {{ cpfCnpjLabel() }}
       </label>
       <p-inputmask
         inputId="cf-cpfCnpj"
         formControlName="cpfCnpj"
-        [mask]="cpfCnpjMask"
-        [placeholder]="cpfCnpjPlaceholder"
+        [mask]="cpfCnpjMask()"
+        [placeholder]="cpfCnpjPlaceholder()"
         styleClass="w-full"
         inputStyleClass="w-full"
       />
@@ -101,7 +101,7 @@
         placeholder="cliente@email.com"
         class="w-full"
       />
-      @if (form.get('email')?.invalid && form.get('email')?.touched) {
+      @if (form.controls.email.invalid && form.controls.email.touched) {
         <small class="p-error">E-mail inválido.</small>
       }
     </div>
@@ -125,9 +125,9 @@
     <div class="nx-form-actions">
       <p-button
         type="submit"
-        [label]="isEdit ? 'Salvar alterações' : 'Criar cliente'"
+        [label]="isEdit() ? 'Salvar alterações' : 'Criar cliente'"
         icon="pi pi-check"
-        [loading]="saving"
+        [loading]="saving()"
         [disabled]="form.invalid"
        styleClass="p-button-sm"/>
       <a routerLink="/app/clientes">

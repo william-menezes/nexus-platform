@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -60,6 +60,7 @@ const ENTITY_LABELS: Record<string, string> = {
   ],
   providers: [DatePipe],
   templateUrl: './audit-logs.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuditLogsComponent implements OnInit {
   private readonly http = inject(HttpClient);

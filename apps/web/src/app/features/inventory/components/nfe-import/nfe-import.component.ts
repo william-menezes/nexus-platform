@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -11,10 +11,12 @@ import { InventoryService } from '../../inventory.service';
   selector: 'app-nfe-import',
   imports: [RouterLink, ButtonModule, CardModule, MessageModule, ProgressSpinnerModule],
   templateUrl: './nfe-import.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NfeImportComponent {
   private readonly svc    = inject(InventoryService);
   private readonly router = inject(Router);
+  private readonly cdr    = inject(ChangeDetectorRef);
 
   file: File | null = null;
   fileName = '';
@@ -34,10 +36,11 @@ export class NfeImportComponent {
     if (!this.file) return;
     this.loading = true;
     this.svc.importNfe(this.file).subscribe({
-      next: (res) => { this.result = res; this.loading = false; },
+      next: (res) => { this.result = res; this.loading = false; this.cdr.markForCheck(); },
       error: (err) => {
         this.error = err?.error?.message ?? 'Erro ao importar NF-e.';
         this.loading = false;
+        this.cdr.markForCheck();
       },
     });
   }

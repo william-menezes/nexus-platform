@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -28,6 +28,7 @@ type NullableString = string | null;
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './custom-statuses.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomStatusesComponent implements OnInit {
   private readonly svc = inject(SettingsService);

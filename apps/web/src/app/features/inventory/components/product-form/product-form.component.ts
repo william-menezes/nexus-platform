@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -12,12 +12,14 @@ import { InventoryService } from '../../inventory.service';
   selector: 'app-product-form',
   imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, InputNumberModule, MessageModule],
   templateUrl: './product-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFormComponent implements OnInit {
   private readonly fb     = inject(FormBuilder);
   private readonly svc    = inject(InventoryService);
   private readonly route  = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly cdr    = inject(ChangeDetectorRef);
 
   editId: string | null = null;
   loading  = false;
@@ -37,7 +39,7 @@ export class ProductFormComponent implements OnInit {
   ngOnInit() {
     this.editId = this.route.snapshot.paramMap.get('id');
     if (this.editId) {
-      this.svc.getProduct(this.editId).subscribe((p) => this.form.patchValue(p as never));
+      this.svc.getProduct(this.editId).subscribe((p) => { this.form.patchValue(p as never); this.cdr.markForCheck(); });
     }
   }
 
@@ -51,7 +53,7 @@ export class ProductFormComponent implements OnInit {
 
     req.subscribe({
       next: () => { void this.router.navigate(['/app/estoque']); },
-      error: () => { this.error = 'Erro ao salvar produto.'; this.loading = false; },
+      error: () => { this.error = 'Erro ao salvar produto.'; this.loading = false; this.cdr.markForCheck(); },
     });
   }
 }

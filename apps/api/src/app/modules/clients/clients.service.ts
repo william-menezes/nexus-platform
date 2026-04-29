@@ -23,6 +23,7 @@ export class ClientsService {
           { ...where, phone: ILike(`%${search}%`) },
         ],
         order: { name: 'ASC' },
+        take: 20,
       });
     }
     return this.repo.find({ where, order: { name: 'ASC' } });

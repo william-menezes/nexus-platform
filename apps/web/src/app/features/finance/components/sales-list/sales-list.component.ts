@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DatePipe, SlicePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -31,6 +31,7 @@ const STATUS_CLASS: Record<string, string> = {
   selector: 'app-sales-list',
   imports: [DatePipe, CurrencyPipe, SlicePipe, RouterLink, ButtonModule, TableModule, TagModule, BreadcrumbModule],
   templateUrl: './sales-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesListComponent implements OnInit {
   private readonly svc = inject(FinanceService);

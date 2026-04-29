@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -22,6 +22,7 @@ import { ServicesCatalogService } from '../../services-catalog.service';
   ],
   providers: [MessageService],
   templateUrl: './service-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServiceFormComponent implements OnInit {
   private svc = inject(ServicesCatalogService);

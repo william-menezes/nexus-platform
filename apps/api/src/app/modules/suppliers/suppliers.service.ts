@@ -14,7 +14,7 @@ export class SuppliersService {
   findAll(tenantId: string, search?: string) {
     const where: any = { tenantId, deletedAt: IsNull() };
     if (search) where.name = ILike(`%${search}%`);
-    return this.repo.find({ where, order: { name: 'ASC' } });
+    return this.repo.find({ where, order: { name: 'ASC' }, ...(search ? { take: 20 } : {}) });
   }
 
   async findOne(tenantId: string, id: string) {

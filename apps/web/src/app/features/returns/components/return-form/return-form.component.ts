@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
@@ -28,6 +28,7 @@ interface SaleItemOption { id: string; productId: string; productName: string; q
   ],
   providers: [MessageService],
   templateUrl: './return-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReturnFormComponent implements OnInit {
   private readonly svc = inject(ReturnsService);

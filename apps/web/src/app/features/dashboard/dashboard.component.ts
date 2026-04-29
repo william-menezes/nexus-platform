@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
@@ -9,6 +9,7 @@ import { ServiceOrdersService } from '../service-orders/service-orders.service';
   selector: 'app-dashboard',
   imports: [RouterLink, BreadcrumbModule],
   templateUrl: './dashboard.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   private readonly osSvc = inject(ServiceOrdersService);

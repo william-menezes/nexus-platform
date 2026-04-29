@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -22,6 +22,7 @@ import { FinancialService } from '../../financial.service';
   ],
   providers: [MessageService],
   templateUrl: './entry-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryFormComponent {
   private readonly route = inject(ActivatedRoute);

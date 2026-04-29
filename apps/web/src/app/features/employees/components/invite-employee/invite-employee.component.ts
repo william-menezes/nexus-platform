@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -23,6 +23,7 @@ import { EmployeesService } from '../../employees.service';
   ],
   providers: [MessageService],
   templateUrl: './invite-employee.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InviteEmployeeComponent implements OnInit {
   private readonly svc = inject(EmployeesService);

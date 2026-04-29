@@ -70,21 +70,19 @@
           <div class="col-span-4 md:col-span-2 flex flex-col gap-1">
             <label class="text-sm font-medium text-text">Qtd *</label>
             <p-inputNumber formControlName="quantity" [min]="0.001"
-              [minFractionDigits]="0" [maxFractionDigits]="3" styleClass="w-full"
-              (onInput)="recalc()" />
+              [minFractionDigits]="0" [maxFractionDigits]="3" styleClass="w-full" />
           </div>
 
           <div class="col-span-5 md:col-span-3 flex flex-col gap-1">
             <label class="text-sm font-medium text-text">Custo unit. *</label>
             <p-inputNumber formControlName="unitCost" mode="currency" currency="BRL"
-              locale="pt-BR" [minFractionDigits]="2" styleClass="w-full"
-              (onInput)="recalc()" />
+              locale="pt-BR" [minFractionDigits]="2" styleClass="w-full" />
           </div>
 
           <div class="col-span-10 md:col-span-1 flex flex-col gap-1">
             <label class="text-sm font-medium text-text">Total</label>
             <span class="font-medium py-2">
-              {{ itemTotal(i) | currency:'BRL':'symbol':'1.2-2' }}
+              {{ itemTotals()[i] | currency:'BRL':'symbol':'1.2-2' }}
             </span>
           </div>
 
@@ -104,13 +102,13 @@
           <span class="text-text-secondary">Subtotal:</span>
           <span class="font-medium">{{ subtotal() | currency:'BRL':'symbol':'1.2-2' }}</span>
         </div>
-        <div class="flex gap-4 text-red-500" *ngIf="form.get('discount')?.value">
+        <div class="flex gap-4 text-red-500" *ngIf="discountValue()">
           <span>Desconto:</span>
-          <span>- {{ form.get('discount')?.value | currency:'BRL':'symbol':'1.2-2' }}</span>
+          <span>- {{ discountValue() | currency:'BRL':'symbol':'1.2-2' }}</span>
         </div>
-        <div class="flex gap-4" *ngIf="form.get('shippingCost')?.value">
+        <div class="flex gap-4" *ngIf="shippingValue()">
           <span class="text-text-secondary">Frete:</span>
-          <span class="font-medium">{{ form.get('shippingCost')?.value | currency:'BRL':'symbol':'1.2-2' }}</span>
+          <span class="font-medium">{{ shippingValue() | currency:'BRL':'symbol':'1.2-2' }}</span>
         </div>
         <div class="flex gap-4 text-lg font-bold border-t pt-2">
           <span>Total:</span>

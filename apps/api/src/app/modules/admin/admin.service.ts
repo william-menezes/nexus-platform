@@ -27,7 +27,8 @@ export class AdminService {
       `SELECT id, name, slug, plan, is_active, trial_ends_at, created_at, segment, cnpj, phone
        FROM public.tenants
        WHERE ($1 = '' OR name ILIKE '%' || $1 || '%')
-       ORDER BY created_at DESC`,
+       ORDER BY created_at DESC
+       ${search ? 'LIMIT 20' : ''}`,
       [search ?? ''],
     );
   }

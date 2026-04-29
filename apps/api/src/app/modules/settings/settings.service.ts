@@ -52,9 +52,9 @@ export class SettingsService {
   }
 
   async reorderStatuses(tenantId: string, items: { id: string; sortOrder: number }[]) {
-    for (const item of items) {
-      await this.statuses.update({ id: item.id, tenantId }, { sortOrder: item.sortOrder });
-    }
+    await Promise.all(
+      items.map(item => this.statuses.update({ id: item.id, tenantId }, { sortOrder: item.sortOrder })),
+    );
     return this.findStatuses(tenantId);
   }
 
@@ -86,16 +86,10 @@ export class SettingsService {
   }
 
   async upsertPermissions(tenantId: string, perms: { role: string; module: string; actions: string[] }[]) {
-    for (const p of perms) {
-      const existing = await this.permissions.findOne({
-        where: { tenantId, role: p.role, module: p.module },
-      });
-      if (existing) {
-        await this.permissions.update({ id: existing.id }, { actions: p.actions });
-      } else {
-        await this.permissions.save({ tenantId, role: p.role, module: p.module, actions: p.actions });
-      }
-    }
+    await this.permissions.upsert(
+      perms.map(p => ({ tenantId, role: p.role, module: p.module, actions: p.actions })),
+      { conflictPaths: ['tenantId', 'role', 'module'], skipUpdateIfNoValuesChanged: true },
+    );
     return this.findPermissions(tenantId);
   }
 
@@ -151,15 +145,11 @@ export class SettingsService {
       { name: 'Cancelada', color: '#EF4444', sortOrder: 2, isDefault: false, isFinal: true, isSystem: true },
     ];
 
-    for (const s of soStatuses) {
-      await this.statuses.save({ ...s, tenantId, entityType: 'service_order' as const });
-    }
-    for (const s of quoteStatuses) {
-      await this.statuses.save({ ...s, tenantId, entityType: 'quote' as const });
-    }
-    for (const s of saleStatuses) {
-      await this.statuses.save({ ...s, tenantId, entityType: 'sale' as const });
-    }
+    await this.statuses.save([
+      ...soStatuses.map(s => ({ ...s, tenantId, entityType: 'service_order' as const })),
+      ...quoteStatuses.map(s => ({ ...s, tenantId, entityType: 'quote' as const })),
+      ...saleStatuses.map(s => ({ ...s, tenantId, entityType: 'sale' as const })),
+    ]);
 
     // Seed default permissions
     const defaultPerms = [
@@ -178,9 +168,7 @@ export class SettingsService {
       { role: 'VENDEDOR', module: 'services_catalog', actions: ['read'] },
       { role: 'VENDEDOR', module: 'inventory', actions: ['read'] },
     ];
-    for (const p of defaultPerms) {
-      await this.permissions.save({ ...p, tenantId });
-    }
+    await this.permissions.save(defaultPerms.map(p => ({ ...p, tenantId })));
 
     // Seed tenant settings
     await this.settings.save({ tenantId });

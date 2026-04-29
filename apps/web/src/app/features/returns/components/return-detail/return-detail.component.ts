@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -34,6 +34,7 @@ const TYPE_LABELS: Record<string, string> = {
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './return-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReturnDetailComponent implements OnInit {
   private readonly svc = inject(ReturnsService);

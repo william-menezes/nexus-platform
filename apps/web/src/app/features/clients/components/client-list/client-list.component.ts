@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -21,6 +21,7 @@ import {
   selector: 'app-client-list',
   imports: [FormsModule, RouterLink, DatePipe, BreadcrumbModule, ButtonModule, TableModule],
   templateUrl: './client-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientListComponent implements OnInit {
   private readonly svc = inject(ClientsService);

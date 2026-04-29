@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -17,6 +17,7 @@ interface NavItem  { label: string; icon: string; route: string; }
   imports: [RouterLink, RouterLinkActive, AvatarModule, ButtonModule, TooltipModule],
   templateUrl: './sidebar-nav.component.html',
   host: { class: 'flex flex-col flex-1 min-h-0 overflow-hidden' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarNavComponent {
   readonly layout = inject(LayoutService);

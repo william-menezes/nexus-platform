@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -13,11 +13,13 @@ import { MessageModule } from 'primeng/message';
   imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule, MessageModule],
   templateUrl: './login.component.html',
   host: { style: 'display: contents;' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   private readonly fb     = inject(FormBuilder);
   private readonly auth   = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly cdr    = inject(ChangeDetectorRef);
 
   loading  = false;
   error    = '';
@@ -44,6 +46,7 @@ export class LoginComponent {
       const msg = err instanceof Error ? err.message : '';
       this.error = this.translateError(msg);
       this.loading = false;
+      this.cdr.markForCheck();
     }
   }
 

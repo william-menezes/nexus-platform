@@ -25,7 +25,7 @@ export class EmployeesService {
     const where: any = { tenantId, deletedAt: IsNull() };
     if (activeOnly) where.isActive = true;
     if (search) where.name = ILike(`%${search}%`);
-    return this.repo.find({ where, order: { name: 'ASC' } });
+    return this.repo.find({ where, order: { name: 'ASC' }, ...(search ? { take: 20 } : {}) });
   }
 
   async findOne(tenantId: string, id: string) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, race, timer } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -20,6 +20,7 @@ import { AuthService } from '../../../core/auth/auth.service';
       </div>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthCallbackComponent implements OnInit {
   private readonly auth   = inject(AuthService);

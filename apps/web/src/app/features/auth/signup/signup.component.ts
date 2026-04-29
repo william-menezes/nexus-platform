@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -21,11 +21,13 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule, MessageModule],
   templateUrl: './signup.component.html',
   host: { style: 'display: contents;' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignupComponent {
   private readonly fb     = inject(FormBuilder);
   private readonly auth   = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly cdr    = inject(ChangeDetectorRef);
 
   loading      = false;
   error        = '';
@@ -64,11 +66,13 @@ export class SignupComponent {
         // Email confirmation required — show success screen
         this.success = true;
         this.loading = false;
+        this.cdr.markForCheck();
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
       this.error = this.translateError(msg);
       this.loading = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -77,10 +81,10 @@ export class SignupComponent {
     this.error         = '';
     try {
       await this.auth.signInWithGoogle();
-      // Page will redirect to /auth/callback via Supabase OAuth
     } catch {
       this.error         = 'Não foi possível conectar com o Google. Tente novamente.';
       this.googleLoading = false;
+      this.cdr.markForCheck();
     }
   }
 

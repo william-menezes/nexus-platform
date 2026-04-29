@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MenuItem } from 'primeng/api';
@@ -16,6 +16,7 @@ import { AuthService } from '../../../core/auth/auth.service';
   imports: [ButtonModule, AvatarModule, MenuModule, TooltipModule],
   templateUrl: './header.component.html',
   host: { class: 'nx-header' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
   readonly layout = inject(LayoutService);

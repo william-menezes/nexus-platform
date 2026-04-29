@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -49,6 +49,7 @@ const ROLES = ['TENANT_ADMIN', 'TECNICO', 'VENDEDOR'];
   ],
   providers: [MessageService],
   templateUrl: './permissions.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PermissionsComponent implements OnInit {
   private readonly svc = inject(SettingsService);

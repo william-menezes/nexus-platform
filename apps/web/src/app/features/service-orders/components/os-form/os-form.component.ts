@@ -1,7 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputMaskModule } from 'primeng/inputmask';
@@ -29,6 +32,7 @@ import { ClientsService } from '../../../clients/clients.service';
   ],
   providers: [MessageService],
   templateUrl: './os-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OsFormComponent implements OnInit {
   private readonly fb         = inject(FormBuilder);
@@ -36,14 +40,17 @@ export class OsFormComponent implements OnInit {
   private readonly clientsSvc = inject(ClientsService);
   private readonly router     = inject(Router);
   private readonly route      = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr        = inject(ChangeDetectorRef);
 
   editId:     string | null = null;
   submitting  = false;
   error       = '';
 
   /** Autocomplete de cliente (fora do FormGroup) */
-  selectedClient: Client | null = null;
-  clientSuggestions: Client[]   = [];
+  selectedClient: Client | null  = null;
+  clientSuggestions: Client[]    = [];
+  private readonly clientSearch$ = new Subject<string>();
 
   form = this.fb.group({
     clientId:    [''],
@@ -64,21 +71,28 @@ export class OsFormComponent implements OnInit {
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
 
   ngOnInit() {
+    this.clientSearch$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => this.clientsSvc.getAll(query)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next:  list => { this.clientSuggestions = list; this.cdr.markForCheck(); },
+      error: ()   => { this.clientSuggestions = []; this.cdr.markForCheck(); },
+    });
+
     this.editId = this.route.snapshot.paramMap.get('id');
     if (this.editId) {
       this.svc.getOne(this.editId).subscribe({
-        next:  (os) => this.form.patchValue(os as never),
-        error: ()   => { this.error = 'OS não encontrada.'; },
+        next:  (os) => { this.form.patchValue(os as never); this.cdr.markForCheck(); },
+        error: ()   => { this.error = 'OS não encontrada.'; this.cdr.markForCheck(); },
       });
     }
   }
 
-  /** Pesquisa clientes pelo texto digitado */
+  /** Pesquisa clientes pelo texto digitado — emite para stream com debounce */
   searchClients(event: AutoCompleteCompleteEvent) {
-    this.clientsSvc.getAll(event.query).subscribe({
-      next:  (list) => { this.clientSuggestions = list; },
-      error: ()     => { this.clientSuggestions = []; },
-    });
+    this.clientSearch$.next(event.query);
   }
 
   /** Ao selecionar um cliente no autocomplete, preenche os campos do form */
@@ -114,7 +128,7 @@ export class OsFormComponent implements OnInit {
 
     req.subscribe({
       next:  () => this.router.navigate(['/app/os']),
-      error: () => { this.error = 'Erro ao salvar OS.'; this.submitting = false; },
+      error: () => { this.error = 'Erro ao salvar OS.'; this.submitting = false; this.cdr.markForCheck(); },
     });
   }
 }

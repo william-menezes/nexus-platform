@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
@@ -30,6 +30,7 @@ const PLAN_SEVERITY: Record<string, string> = {
   ],
   providers: [MessageService],
   templateUrl: './tenant-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TenantDetailComponent implements OnInit {
   private readonly svc = inject(AdminService);

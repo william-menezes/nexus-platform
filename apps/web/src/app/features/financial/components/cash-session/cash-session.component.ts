@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -23,6 +23,7 @@ import { FinancialService } from '../../financial.service';
   ],
   providers: [MessageService],
   templateUrl: './cash-session.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CashSessionComponent implements OnInit {
   private svc = inject(FinancialService);

@@ -1,7 +1,10 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -30,28 +33,41 @@ const PLAN_SEVERITY: Record<string, string> = {
   templateUrl: './tenant-list.component.html',
 })
 export class TenantListComponent implements OnInit {
-  private readonly svc = inject(AdminService);
-  readonly tenants = signal<AdminTenant[]>([]);
-  readonly loading = signal(false);
-  readonly tablePage = signal(createInitialTablePageState());
+  private readonly svc        = inject(AdminService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly tenants          = signal<AdminTenant[]>([]);
+  readonly loading          = signal(false);
+  readonly tablePage        = signal(createInitialTablePageState());
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search = '';
+  private readonly search$  = new Subject<string | undefined>();
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/admin/dashboard' };
   readonly breadcrumbs: MenuItem[] = [{ label: 'Tenants', routerLink: '/admin/tenants' }];
 
-  ngOnInit() { this.load(); }
+  ngOnInit() {
+    this.search$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(q => {
+        this.loading.set(true);
+        return this.svc.findAllTenants(q);
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next:  data => { this.tenants.set(data); this.loading.set(false); },
+      error: ()   => { this.loading.set(false); },
+    });
+    this.search$.next(undefined);
+  }
+
+  onSearchInput() {
+    this.search$.next(this.search || undefined);
+  }
 
   onPageChange(event: { first?: number; rows?: number }) {
     this.tablePage.update((current) => updateTablePageState(current, event));
-  }
-
-  load() {
-    this.loading.set(true);
-    this.svc.findAllTenants(this.search || undefined).subscribe({
-      next: data => { this.tenants.set(data); this.loading.set(false); },
-      error: () => { this.loading.set(false); },
-    });
   }
 
   planSeverity(plan: string): any { return PLAN_SEVERITY[plan] ?? 'secondary'; }

@@ -54,46 +54,54 @@ export class NfeImportService {
     }
 
     const nfeNumber = infNFe.ide?.[0]?.nNF?.[0];
-    let imported = 0;
 
-    for (const det of dets) {
-      const prod = det.prod?.[0];
-      if (!prod) continue;
+    // Parse all items up-front, skip invalid dets
+    const parsedItems = dets
+      .map(det => {
+        const prod = det.prod?.[0];
+        if (!prod) return null;
+        return {
+          cProd: prod.cProd?.[0] ?? '',
+          xProd: prod.xProd?.[0] ?? 'Produto sem nome',
+          qty:   parseInt(prod.qCom?.[0]  ?? '1', 10) || 1,
+          cost:  parseFloat(prod.vUnCom?.[0] ?? '0') || 0,
+        };
+      })
+      .filter((i): i is NonNullable<typeof i> => i !== null);
 
-      const cProd = prod.cProd?.[0] ?? '';
-      const xProd = prod.xProd?.[0] ?? 'Produto sem nome';
-      const qty   = parseInt(prod.qCom?.[0] ?? '1', 10) || 1;
-      const cost  = parseFloat(prod.vUnCom?.[0] ?? '0') || 0;
+    if (parsedItems.length === 0) return { imported: 0 };
 
-      let product = await this.products.findOne({
-        where: { tenantId, externalRef: cProd, deletedAt: IsNull() },
-      });
+    // Load all matching products in one query instead of N individual lookups
+    const cProds = [...new Set(parsedItems.map(i => i.cProd).filter(Boolean))];
+    const existing = await this.products.find({
+      where: cProds.map(cProd => ({ tenantId, externalRef: cProd, deletedAt: IsNull() })),
+    });
+    const productMap = new Map(existing.map(p => [p.externalRef, p]));
 
-      if (!product) {
-        product = await this.products.save({
-          tenantId,
-          name: xProd,
-          externalRef: cProd,
-          costPrice: cost,
-          salePrice: cost,
-          minStock: 0,
-          currentStock: 0,
-        });
-      }
+    // Batch-create missing products (deduplicated by cProd)
+    const newDtos = parsedItems
+      .filter((i, idx, arr) => i.cProd && !productMap.has(i.cProd) && arr.findIndex(x => x.cProd === i.cProd) === idx)
+      .map(i => ({ tenantId, name: i.xProd, externalRef: i.cProd, costPrice: i.cost, salePrice: i.cost, minStock: 0, currentStock: 0 }));
 
-      await this.entries.save({
-        tenantId,
-        productId: product.id,
-        type: 'in' as const,
-        quantity: qty,
-        nfeNumber,
-        observation: `Importado via NF-e ${nfeNumber ?? ''}`.trim(),
-      });
-
-      imported++;
+    if (newDtos.length > 0) {
+      const created = await this.products.save(newDtos);
+      for (const p of created) productMap.set(p.externalRef!, p);
     }
 
-    return { imported };
+    // Batch insert all stock entries in one save call
+    const obs = `Importado via NF-e ${nfeNumber ?? ''}`.trim();
+    await this.entries.save(
+      parsedItems.map(i => ({
+        tenantId,
+        productId: productMap.get(i.cProd)!.id,
+        type: 'in' as const,
+        quantity: i.qty,
+        nfeNumber,
+        observation: obs,
+      })),
+    );
+
+    return { imported: parsedItems.length };
   }
 
   private extractInfNFe(parsed: NfeParsed): NfeInfNFe | undefined {

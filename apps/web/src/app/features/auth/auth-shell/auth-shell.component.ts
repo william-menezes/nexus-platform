@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -6,5 +6,6 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-auth-shell',
   imports: [RouterOutlet],
   templateUrl: './auth-shell.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthShellComponent {}

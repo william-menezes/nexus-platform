@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -28,6 +28,7 @@ interface ClientOption { id: string; name: string; }
   ],
   providers: [MessageService],
   templateUrl: './contract-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContractFormComponent implements OnInit {
   private readonly svc = inject(ContractsService);

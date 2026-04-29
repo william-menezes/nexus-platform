@@ -87,23 +87,20 @@ export class FinanceService {
       );
       await queryRunner.manager.save(items);
 
-      // Pagamentos + Asaas boleto
+      // Pagamentos: processar boletos externos sequencialmente, depois salvar tudo em lote
+      const paymentEntities: PaymentEntity[] = [];
       for (const p of dto.payments) {
         let asaasChargeId: string | undefined;
-
         if (p.method === 'boleto') {
           const charge = await this.asaas.createBoletoCharge({
-            customer: tenantId, // simplificado — em produção usar ID real do cliente
+            customer: tenantId,
             value: p.amount,
-            dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0],
+            dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             description: `Venda ${sale.id}`,
           });
           asaasChargeId = charge?.id;
         }
-
-        await queryRunner.manager.save(
+        paymentEntities.push(
           queryRunner.manager.create(PaymentEntity, {
             saleId: sale.id,
             method: p.method as PaymentEntity['method'],
@@ -112,6 +109,7 @@ export class FinanceService {
           }),
         );
       }
+      await queryRunner.manager.save(paymentEntities);
 
       await queryRunner.commitTransaction();
       return this.findOne(tenantId, sale.id);
