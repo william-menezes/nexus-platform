@@ -2,8 +2,11 @@
 <p-confirmDialog />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold text-text">Pedidos de Compra</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Pedidos de Compra</h1>
+      <p class="nx-page-subtitle">Gerencie pedidos de compra a fornecedores</p>
+    </div>
     <a routerLink="nova" pButton label="Novo Pedido" icon="pi pi-plus" class="p-button-sm"></a>
   </div>
 
@@ -15,15 +18,27 @@
   </div>
 
   <div class="overflow-x-auto">
-    <p-table [value]="orders()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="orders()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '900px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Código</th>
-          <th>Fornecedor</th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Previsão</th>
-          <th>Criado em</th>
+          <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+          <th pSortableColumn="supplier.name">Fornecedor <p-sortIcon field="supplier.name" /></th>
+          <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+          <th pSortableColumn="total">Total <p-sortIcon field="total" /></th>
+          <th pSortableColumn="expectedAt">Previsão <p-sortIcon field="expectedAt" /></th>
+          <th pSortableColumn="createdAt">Criado em <p-sortIcon field="createdAt" /></th>
           <th>Ações</th>
         </tr>
       </ng-template>
@@ -54,10 +69,17 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7" class="text-center text-text-secondary py-8">
-            Nenhum pedido de compra encontrado.
+          <td colspan="7">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-shopping-bag"></i></span>
+              <span class="nx-table-empty__title">Nenhum pedido de compra encontrado</span>
+              <div class="nx-table-empty__description">Crie pedidos para acompanhar compras e recebimentos.</div>
+            </div>
           </td>
         </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

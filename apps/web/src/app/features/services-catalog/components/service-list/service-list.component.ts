@@ -12,6 +12,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { ServiceCatalog } from '@nexus-platform/shared-types';
 import { ServicesCatalogService } from '../../services-catalog.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -33,9 +40,15 @@ export class ServiceListComponent implements OnInit {
 
   services = signal<ServiceCatalog[]>([]);
   loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search = '';
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -43,6 +56,13 @@ export class ServiceListComponent implements OnInit {
       next: data => { this.services.set(data); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.services().length, this.tablePage()),
+      this.services().length
+    );
   }
 
   confirmDelete(s: ServiceCatalog) {

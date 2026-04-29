@@ -3,11 +3,16 @@
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
 <div class="nx-page max-w-4xl mx-auto" *ngIf="ret(); else loadingTpl">
-  <div class="flex items-center gap-2 mb-4">
-    <a routerLink="/app/vendas/devolucoes" pButton icon="pi pi-arrow-left"
-      class="p-button-text p-button-sm" aria-label="Voltar"></a>
-    <h1 class="text-2xl font-bold text-text">{{ ret()!.code }}</h1>
-    <p-tag [value]="statusLabel(ret()!.status)" [severity]="statusSeverity(ret()!.status)" />
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">{{ ret()!.code }}</h1>
+      <p class="nx-page-subtitle">{{ ret()!.type }}</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <p-tag [value]="statusLabel(ret()!.status)" [severity]="statusSeverity(ret()!.status)" />
+      <a routerLink="/app/vendas/devolucoes" pButton icon="pi pi-arrow-left"
+        class="p-button-text p-button-sm" aria-label="Voltar"></a>
+    </div>
   </div>
 
   <!-- Actions -->

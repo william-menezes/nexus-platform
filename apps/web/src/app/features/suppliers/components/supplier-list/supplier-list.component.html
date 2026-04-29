@@ -4,8 +4,11 @@
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold text-text">Fornecedores</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Fornecedores</h1>
+      <p class="nx-page-subtitle">Cadastro de fornecedores</p>
+    </div>
     <a routerLink="novo" pButton label="Novo Fornecedor" icon="pi pi-plus" class="p-button-sm"></a>
   </div>
   <div class="mb-3">
@@ -13,14 +16,26 @@
       placeholder="Buscar por nome..." class="w-full md:w-1/3" />
   </div>
   <div class="overflow-x-auto">
-    <p-table [value]="suppliers()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="suppliers()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '760px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Nome</th>
-          <th>CNPJ</th>
-          <th>Contato</th>
-          <th>Telefone</th>
-          <th>Email</th>
+          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+          <th pSortableColumn="cnpj">CNPJ <p-sortIcon field="cnpj" /></th>
+          <th pSortableColumn="contact">Contato <p-sortIcon field="contact" /></th>
+          <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
           <th>Ações</th>
         </tr>
       </ng-template>
@@ -42,10 +57,17 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center text-text-secondary py-8">
-            Nenhum fornecedor encontrado.
+          <td colspan="6">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-truck"></i></span>
+              <span class="nx-table-empty__title">Nenhum fornecedor encontrado</span>
+              <div class="nx-table-empty__description">Cadastre fornecedores para organizar compras e reposições.</div>
+            </div>
           </td>
         </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

@@ -10,6 +10,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
 import { ServiceOrder } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -26,6 +33,8 @@ export class OsListComponent implements OnInit {
   orders  = signal<ServiceOrder[]>([]);
   loading = signal(false);
   error   = signal('');
+  readonly tablePage = signal(createInitialTablePageState(15));
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
 
   readonly statusLabel: Record<string, string> = {
     open:           'Aberta',
@@ -57,5 +66,16 @@ export class OsListComponent implements OnInit {
       next: (data) => { this.orders.set(data); this.loading.set(false); },
       error: () => { this.error.set('Erro ao carregar ordens.'); this.loading.set(false); },
     });
+  }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.orders().length, this.tablePage()),
+      this.orders().length
+    );
   }
 }

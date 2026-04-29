@@ -2,19 +2,32 @@
 <p-confirmDialog />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <div class="flex items-center gap-2">
-      <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
-      <h1 class="text-2xl font-bold text-text">Plano de Contas</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Plano de Contas</h1>
+      <p class="nx-page-subtitle">Estrutura contábil da empresa</p>
     </div>
+    <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm" aria-label="Voltar"></a>
   </div>
   <div class="overflow-x-auto">
-    <p-table [value]="accounts()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="accounts()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '720px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Código</th>
-          <th>Nome</th>
-          <th>Tipo</th>
+          <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+          <th pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
           <th>Sistema</th>
           <th>Ações</th>
         </tr>
@@ -37,7 +50,18 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="5" class="text-center py-8 text-text-muted">Nenhuma conta encontrada</td></tr>
+        <tr>
+          <td colspan="5">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-sitemap"></i></span>
+              <span class="nx-table-empty__title">Nenhuma conta encontrada</span>
+              <div class="nx-table-empty__description">A estrutura do plano de contas aparecerá aqui conforme for configurada.</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

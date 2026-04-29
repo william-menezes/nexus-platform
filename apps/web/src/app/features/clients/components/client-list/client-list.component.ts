@@ -4,14 +4,22 @@ import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
 import { MenuItem } from 'primeng/api';
 import { Client } from '@nexus-platform/shared-types';
 import { ClientsService } from '../../clients.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
   selector: 'app-client-list',
-  imports: [FormsModule, RouterLink, DatePipe, BreadcrumbModule, ButtonModule],
+  imports: [FormsModule, RouterLink, DatePipe, BreadcrumbModule, ButtonModule, TableModule],
   templateUrl: './client-list.component.html',
 })
 export class ClientListComponent implements OnInit {
@@ -23,9 +31,15 @@ export class ClientListComponent implements OnInit {
   clients = signal<Client[]>([]);
   loading = signal(false);
   error   = signal('');
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search  = '';
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -37,4 +51,15 @@ export class ClientListComponent implements OnInit {
   }
 
   onSearch() { this.load(); }
+
+  clientTypeLabel(type: Client['type']) {
+    return type === 'individual' ? 'Pessoa Fisica' : 'Pessoa Juridica';
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.clients().length, this.tablePage()),
+      this.clients().length
+    );
+  }
 }

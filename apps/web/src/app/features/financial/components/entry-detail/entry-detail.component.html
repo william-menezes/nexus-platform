@@ -1,11 +1,16 @@
 <p-toast />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page" *ngIf="entry() as e">
-  <div class="flex items-center gap-2 mb-4">
-    <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
-    <h1 class="text-2xl font-bold">{{ e.description }}</h1>
-    <p-tag [severity]="e.type === 'receivable' ? 'success' : 'danger'"
-      [value]="e.type === 'receivable' ? 'A Receber' : 'A Pagar'" />
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Lançamento</h1>
+      <p class="nx-page-subtitle">{{ e.description }}</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <p-tag [severity]="e.type === 'receivable' ? 'success' : 'danger'"
+        [value]="e.type === 'receivable' ? 'A Receber' : 'A Pagar'" />
+      <a routerLink="/app/financeiro" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm" aria-label="Voltar"></a>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">

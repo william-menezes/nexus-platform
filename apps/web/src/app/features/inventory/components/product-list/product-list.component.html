@@ -5,7 +5,10 @@
 <div class="nx-page">
 
   <div class="nx-page-header">
-    <h1 class="nx-page-title">Estoque</h1>
+    <div>
+      <h1 class="nx-page-title">Estoque</h1>
+      <p class="nx-page-subtitle">Controle o estoque de produtos</p>
+    </div>
     <div style="display:flex; gap:0.75rem;">
       <a routerLink="nfe-import">
         <p-button label="Importar NF-e" icon="pi pi-upload" severity="secondary" [outlined]="true" />
@@ -20,19 +23,23 @@
     [value]="products()"
     [loading]="loading()"
     [paginator]="true"
-    [rows]="15"
+    [rows]="tablePage().rows"
+    [first]="tablePage().first"
+    [rowsPerPageOptions]="rowsPerPageOptions"
     [rowHover]="true"
-    styleClass="p-datatable-sm"
+    sortMode="single"
+    styleClass="nx-data-table p-datatable-sm"
     [tableStyle]="{'min-width':'700px'}"
+    (onPage)="onPageChange($event)"
   >
     <ng-template pTemplate="header">
       <tr>
-        <th>Nome</th>
-        <th>SKU</th>
-        <th>Categoria</th>
-        <th style="text-align:right;">Custo</th>
-        <th style="text-align:right;">Venda</th>
-        <th style="text-align:right;">Estoque</th>
+        <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+        <th pSortableColumn="sku">SKU <p-sortIcon field="sku" /></th>
+        <th pSortableColumn="category">Categoria <p-sortIcon field="category" /></th>
+        <th pSortableColumn="costPrice" style="text-align:right;">Custo <p-sortIcon field="costPrice" /></th>
+        <th pSortableColumn="salePrice" style="text-align:right;">Venda <p-sortIcon field="salePrice" /></th>
+        <th pSortableColumn="currentStock" style="text-align:right;">Estoque <p-sortIcon field="currentStock" /></th>
         <th></th>
       </tr>
     </ng-template>
@@ -67,11 +74,17 @@
 
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="7" style="text-align:center; color:var(--p-text-muted-color); padding:3rem;">
-          <i class="pi pi-box" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
-          Nenhum produto cadastrado.
+        <td colspan="7">
+          <div class="nx-table-empty">
+            <span class="nx-table-empty__icon"><i class="pi pi-box"></i></span>
+            <span class="nx-table-empty__title">Nenhum produto cadastrado</span>
+            <div class="nx-table-empty__description">Cadastre produtos para controlar estoque, custo e precificação.</div>
+          </div>
         </td>
       </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <span class="nx-table-summary">{{ tableSummary() }}</span>
     </ng-template>
   </p-table>
 

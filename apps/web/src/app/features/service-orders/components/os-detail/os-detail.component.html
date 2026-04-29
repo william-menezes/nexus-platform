@@ -14,6 +14,7 @@
     <div class="nx-page-header">
       <div>
         <h1 class="nx-page-title">{{ os.code }}</h1>
+        <p class="nx-page-subtitle">{{ os.clientName ?? '' }}</p>
         <p-tag
           [value]="statusLabel[os.status]"
           [severity]="statusSeverity[os.status]"

@@ -8,6 +8,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
 import { Sale } from '@nexus-platform/shared-types';
 import { FinanceService } from '../../finance.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 const STATUS_LABEL: Record<string, string> = {
   open: 'Aberta', paid: 'Paga', cancelled: 'Cancelada',
@@ -33,6 +40,8 @@ export class SalesListComponent implements OnInit {
 
   sales   = signal<Sale[]>([]);
   loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState(15));
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
 
   statusLabel = (s: string) => STATUS_LABEL[s] ?? s;
   statusClass = (s: string) => STATUS_CLASS[s] ?? 'bg-surface-muted text-text-secondary';
@@ -43,6 +52,17 @@ export class SalesListComponent implements OnInit {
       next: (data) => { this.sales.set(data); this.loading.set(false); },
       error: ()     => { this.loading.set(false); },
     });
+  }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.sales().length, this.tablePage()),
+      this.sales().length
+    );
   }
 
   cancel(id: string) {

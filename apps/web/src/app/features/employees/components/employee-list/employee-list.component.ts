@@ -12,6 +12,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Employee } from '@nexus-platform/shared-types';
 import { EmployeesService } from '../../employees.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -33,9 +40,15 @@ export class EmployeeListComponent implements OnInit {
 
   employees = signal<Employee[]>([]);
   loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search = '';
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -43,6 +56,13 @@ export class EmployeeListComponent implements OnInit {
       next: data => { this.employees.set(data); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.employees().length, this.tablePage()),
+      this.employees().length
+    );
   }
 
   confirmDelete(e: Employee) {

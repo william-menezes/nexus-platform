@@ -4,8 +4,11 @@
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Contratos</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Contratos</h1>
+      <p class="nx-page-subtitle">Contratos e mensalidades de clientes</p>
+    </div>
     <a routerLink="novo" pButton label="Novo Contrato" icon="pi pi-plus" class="p-button-sm"></a>
   </div>
 
@@ -17,15 +20,27 @@
   </div>
 
   <div class="overflow-x-auto">
-    <p-table [value]="contracts()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="contracts()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '840px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Código</th>
-          <th>Cliente</th>
-          <th>Tipo</th>
-          <th>Status</th>
-          <th>Valor Mensal</th>
-          <th>Próximo Faturamento</th>
+          <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+          <th pSortableColumn="client.name">Cliente <p-sortIcon field="client.name" /></th>
+          <th pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
+          <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+          <th pSortableColumn="monthlyValue">Valor Mensal <p-sortIcon field="monthlyValue" /></th>
+          <th pSortableColumn="nextBillingAt">Próximo Faturamento <p-sortIcon field="nextBillingAt" /></th>
           <th>Ações</th>
         </tr>
       </ng-template>
@@ -63,10 +78,17 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7" class="text-center text-text-secondary py-8">
-            Nenhum contrato encontrado.
+          <td colspan="7">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-file"></i></span>
+              <span class="nx-table-empty__title">Nenhum contrato encontrado</span>
+              <div class="nx-table-empty__description">Crie o primeiro contrato para iniciar o faturamento recorrente.</div>
+            </div>
           </td>
         </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

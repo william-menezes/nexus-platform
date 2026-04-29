@@ -10,6 +10,13 @@ import { ToastModule } from 'primeng/toast';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MessageService, MenuItem } from 'primeng/api';
 import { AdminService, AdminTenant } from '../../admin.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 const PLAN_SEVERITY: Record<string, string> = {
   trial: 'warn', starter: 'info', pro: 'success', enterprise: 'contrast',
@@ -26,12 +33,18 @@ export class TenantListComponent implements OnInit {
   private readonly svc = inject(AdminService);
   readonly tenants = signal<AdminTenant[]>([]);
   readonly loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search = '';
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/admin/dashboard' };
   readonly breadcrumbs: MenuItem[] = [{ label: 'Tenants', routerLink: '/admin/tenants' }];
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -42,4 +55,11 @@ export class TenantListComponent implements OnInit {
   }
 
   planSeverity(plan: string): any { return PLAN_SEVERITY[plan] ?? 'secondary'; }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.tenants().length, this.tablePage()),
+      this.tenants().length
+    );
+  }
 }

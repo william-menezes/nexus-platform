@@ -3,7 +3,10 @@
 <div class="nx-page">
 
   <div class="nx-page-header">
-    <h1 class="nx-page-title">Vendas</h1>
+    <div>
+      <h1 class="nx-page-title">Vendas</h1>
+      <p class="nx-page-subtitle">Histórico e gestão de vendas</p>
+    </div>
     <div style="display:flex; gap:0.75rem;">
       <a routerLink="../dre">
         <p-button label="DRE" icon="pi pi-chart-bar" severity="secondary" [outlined]="true" />
@@ -18,18 +21,22 @@
     [value]="sales()"
     [loading]="loading()"
     [paginator]="true"
-    [rows]="15"
+    [rows]="tablePage().rows"
+    [first]="tablePage().first"
+    [rowsPerPageOptions]="rowsPerPageOptions"
     [rowHover]="true"
-    styleClass="p-datatable-sm"
+    sortMode="single"
+    styleClass="nx-data-table p-datatable-sm"
     [tableStyle]="{'min-width':'600px'}"
+    (onPage)="onPageChange($event)"
   >
     <ng-template pTemplate="header">
       <tr>
-        <th>Data</th>
+        <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
         <th>OS vinculada</th>
-        <th style="text-align:right;">Total</th>
-        <th style="text-align:right;">Pago</th>
-        <th>Status</th>
+        <th pSortableColumn="total" style="text-align:right;">Total <p-sortIcon field="total" /></th>
+        <th pSortableColumn="paidAmount" style="text-align:right;">Pago <p-sortIcon field="paidAmount" /></th>
+        <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
         <th></th>
       </tr>
     </ng-template>
@@ -64,11 +71,17 @@
 
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6" style="text-align:center; color:var(--p-text-muted-color); padding:3rem;">
-          <i class="pi pi-shopping-cart" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
-          Nenhuma venda registrada.
+        <td colspan="6">
+          <div class="nx-table-empty">
+            <span class="nx-table-empty__icon"><i class="pi pi-shopping-cart"></i></span>
+            <span class="nx-table-empty__title">Nenhuma venda registrada</span>
+            <div class="nx-table-empty__description">As vendas concluídas e pendentes aparecerão aqui.</div>
+          </div>
         </td>
       </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <span class="nx-table-summary">{{ tableSummary() }}</span>
     </ng-template>
   </p-table>
 

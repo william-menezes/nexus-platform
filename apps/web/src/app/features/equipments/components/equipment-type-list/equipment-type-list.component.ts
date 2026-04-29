@@ -11,6 +11,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -37,6 +44,8 @@ export class EquipmentTypeListComponent implements OnInit {
   types = signal<EquipmentType[]>([]);
   loading = signal(false);
   saving = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   dialogVisible = false;
   editId = '';
 
@@ -44,12 +53,23 @@ export class EquipmentTypeListComponent implements OnInit {
 
   ngOnInit() { this.load(); }
 
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
+
   load() {
     this.loading.set(true);
     this.svc.getAllTypes().subscribe({
       next: data => { this.types.set(data); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.types().length, this.tablePage()),
+      this.types().length
+    );
   }
 
   openDialog(t?: EquipmentType) {

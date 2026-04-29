@@ -113,6 +113,62 @@ html.dark {
   --active-bg: rgba(37, 99, 235, 0.25);
   --input-bg:    #1E293B;
   --input-border: #334155;
+
+  /* PrimeNG surface scale — Slate palette */
+  --p-surface-0:   #FFFFFF;
+  --p-surface-50:  #F8FAFC;
+  --p-surface-100: #F1F5F9;
+  --p-surface-200: #E2E8F0;
+  --p-surface-300: #CBD5E1;
+  --p-surface-400: #94A3B8;
+  --p-surface-500: #64748B;
+  --p-surface-600: #475569;
+  --p-surface-700: #334155;
+  --p-surface-800: #1E293B;
+  --p-surface-900: #0F172A;
+  --p-surface-950: #020617;
+
+  /* PrimeNG semantic surface tokens */
+  --p-surface-ground:   #0F172A;
+  --p-surface-section:  #0F172A;
+  --p-surface-card:     #1E293B;
+  --p-surface-overlay:  #1E293B;
+  --p-surface-border:   #334155;
+  --p-surface-hover:    rgba(37, 99, 235, 0.15);
+
+  /* Content */
+  --p-content-background:       #1E293B;
+  --p-content-border-color:     #334155;
+  --p-content-color:            #F1F5F9;
+  --p-content-hover-background: rgba(37, 99, 235, 0.15);
+
+  /* Card */
+  --p-card-background:   #1E293B;
+  --p-card-color:        #F1F5F9;
+  --p-card-border-color: #334155;
+
+/* DataTable */
+  --p-datatable-header-background:         #0F172A;
+  --p-datatable-body-row-background:        #1E293B;
+  --p-datatable-row-toggle-button-hover-background: rgba(37, 99, 235, 0.15);
+  --p-datatable-row-hover-background: rgba(37, 99, 235, 0.22);
+  --p-paginator-background: #0F172A;
+  --p-paginator-color: #94A3B8;
+  --p-paginator-border-color: #334155;
+
+  /* Input */
+  --p-inputtext-background:         #1E293B;
+  --p-inputtext-border-color:       #334155;
+  --p-inputtext-color:              #F1F5F9;
+  --p-inputtext-placeholder-color:  #64748B;
+
+  /* Select / Dropdown */
+  --p-select-background:         #1E293B;
+  --p-select-border-color:       #334155;
+  --p-select-overlay-background: #1E293B;
+
+  /* Breadcrumb */
+  --p-breadcrumb-background: transparent;
 }
 
 /* ── 2. RESET & BASE ── */
@@ -176,6 +232,7 @@ label {
 .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link) {
   background: var(--primary-color);
   border-color: var(--primary-color);
+  color: #FFFFFF;
 }
 
 .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):hover {
@@ -229,8 +286,8 @@ label {
 }
 
 .p-datatable thead th {
-  background: #F1F5F9;
-  color: #475569;
+  background: var(--p-datatable-header-background, #F1F5F9);
+  color: var(--text-secondary);
   font-weight: 600;
   border: none;
 }
@@ -241,6 +298,98 @@ label {
 
 .p-datatable tbody tr:hover {
   background: var(--hover-bg);
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.p-datatable .p-sortable-column:not(.p-highlight):hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.p-datatable .p-sortable-column.p-highlight {
+  color: var(--primary-color);
+}
+
+.p-datatable .p-paginator {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.75rem 1rem;
+  gap: 0.5rem;
+}
+
+.p-datatable .p-paginator .p-dropdown,
+.p-datatable .p-paginator .p-select {
+  min-width: 5.25rem;
+}
+
+.nx-data-table.p-datatable {
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.nx-data-table .p-datatable-thead > tr > th:first-child,
+.nx-data-table .p-datatable-tbody > tr > td:first-child {
+  padding-left: 1rem;
+}
+
+.nx-data-table .p-datatable-thead > tr > th:last-child,
+.nx-data-table .p-datatable-tbody > tr > td:last-child {
+  padding-right: 1rem;
+}
+
+.nx-data-table .p-datatable-tbody > tr {
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.nx-data-table .p-datatable-tbody > tr:hover > td {
+  background: var(--hover-bg);
+}
+
+.nx-table-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+}
+
+.nx-table-empty__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--hover-bg) 70%, transparent);
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.nx-table-empty__title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.nx-table-empty__description {
+  margin-top: 0.25rem;
+  color: var(--text-secondary);
+}
+
+.nx-table-summary {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 /* ── 8. PRIMENG: SIDEBAR / MENU ── */

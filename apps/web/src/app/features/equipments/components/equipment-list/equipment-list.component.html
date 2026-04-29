@@ -2,30 +2,44 @@
 <p-confirmDialog />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold text-text">Equipamentos</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Equipamentos</h1>
+      <p class="nx-page-subtitle">Equipamentos cadastrados</p>
+    </div>
     <div class="flex gap-2">
       <a routerLink="tipos" pButton label="Tipos" icon="pi pi-cog" class="p-button-sm p-button-secondary"></a>
       <a routerLink="novo" pButton label="Novo Equipamento" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
   </div>
   <div class="overflow-x-auto">
-    <p-table [value]="equipments()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="equipments()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '760px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th>Tipo</th>
-          <th>Marca</th>
-          <th>Modelo</th>
-          <th>Observações</th>
-          <th>Ações</th>
+          <th pSortableColumn="brand">Marca <p-sortIcon field="brand" /></th>
+          <th pSortableColumn="model">Modelo <p-sortIcon field="model" /></th>
+          <th>Observa??es</th>
+          <th>A??es</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-e>
         <tr>
           <td>{{ getTypeName(e.equipmentTypeId) }}</td>
-          <td>{{ e.brand || '—' }}</td>
-          <td>{{ e.model || '—' }}</td>
-          <td>{{ e.notes || '—' }}</td>
+          <td>{{ e.brand || '?' }}</td>
+          <td>{{ e.model || '?' }}</td>
+          <td>{{ e.notes || '?' }}</td>
           <td>
             <a [routerLink]="[e.id, 'editar']" pButton icon="pi pi-pencil" class="p-button-sm p-button-text mr-1"></a>
             <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(e)"></button>
@@ -33,7 +47,18 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="5" class="text-center py-8 text-text-muted">Nenhum equipamento encontrado</td></tr>
+        <tr>
+          <td colspan="5">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-desktop"></i></span>
+              <span class="nx-table-empty__title">Nenhum equipamento encontrado</span>
+              <div class="nx-table-empty__description">Associe equipamentos aos clientes para acelerar o fluxo das OS.</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

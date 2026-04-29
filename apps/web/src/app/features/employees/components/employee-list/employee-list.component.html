@@ -2,8 +2,11 @@
 <p-confirmDialog />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold text-text">Funcionários</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Funcionários</h1>
+      <p class="nx-page-subtitle">Gestão de funcionários e técnicos</p>
+    </div>
     <div class="flex gap-2">
       <a routerLink="convidar" pButton label="Convidar" icon="pi pi-envelope" class="p-button-sm p-button-outlined"></a>
       <a routerLink="novo" pButton label="Novo Funcionário" icon="pi pi-plus" class="p-button-sm"></a>
@@ -13,15 +16,27 @@
     <input pInputText [(ngModel)]="search" (ngModelChange)="load()" placeholder="Buscar por nome..." class="w-full md:w-1/3" />
   </div>
   <div class="overflow-x-auto">
-    <p-table [value]="employees()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="employees()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '820px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Nome</th>
-          <th>Cargo</th>
-          <th>Telefone</th>
-          <th>Email</th>
-          <th>Comissão</th>
-          <th>Status</th>
+          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+          <th pSortableColumn="roleLabel">Cargo <p-sortIcon field="roleLabel" /></th>
+          <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
+          <th pSortableColumn="commissionRate">Comissão <p-sortIcon field="commissionRate" /></th>
+          <th pSortableColumn="isActive">Status <p-sortIcon field="isActive" /></th>
           <th>Ações</th>
         </tr>
       </ng-template>
@@ -42,7 +57,18 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="7" class="text-center py-8 text-text-muted">Nenhum funcionário encontrado</td></tr>
+        <tr>
+          <td colspan="7">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-users"></i></span>
+              <span class="nx-table-empty__title">Nenhum funcionário encontrado</span>
+              <div class="nx-table-empty__description">Adicione ou convide membros para montar sua equipe.</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

@@ -12,6 +12,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { FinancialEntry } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
 
@@ -35,6 +42,8 @@ export class EntryListComponent implements OnInit {
 
   entries = signal<FinancialEntry[]>([]);
   loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   filterType = '';
   filterStatus = '';
 
@@ -54,6 +63,10 @@ export class EntryListComponent implements OnInit {
   ];
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -75,6 +88,13 @@ export class EntryListComponent implements OnInit {
       pending: 'warn', partial: 'info', paid: 'success', overdue: 'danger', cancelled: 'secondary',
     };
     return map[status] ?? 'secondary';
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.entries().length, this.tablePage()),
+      this.entries().length
+    );
   }
 
   confirmDelete(e: FinancialEntry) {

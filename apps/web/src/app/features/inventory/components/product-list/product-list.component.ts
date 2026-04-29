@@ -10,6 +10,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Product } from '@nexus-platform/shared-types';
 import { InventoryService } from '../../inventory.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -30,6 +37,8 @@ export class ProductListComponent implements OnInit {
 
   products    = signal<Product[]>([]);
   loading     = signal(false);
+  readonly tablePage = signal(createInitialTablePageState(15));
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
 
   ngOnInit() {
     this.loading.set(true);
@@ -39,17 +48,28 @@ export class ProductListComponent implements OnInit {
     });
   }
 
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.products().length, this.tablePage()),
+      this.products().length
+    );
+  }
+
   remove(id: string) {
     const product = this.products().find(p => p.id === id);
     this.confirm.confirm({
-      message: `Excluir produto "${product?.name ?? '—'}"?`,
-      header: 'Confirmar exclusão',
+      message: `Excluir produto "${product?.name ?? '?'}"?`,
+      header: 'Confirmar exclus?o',
       icon: 'pi pi-trash',
       accept: () => {
         this.svc.removeProduct(id).subscribe({
           next: () => {
             this.products.update(list => list.filter(p => p.id !== id));
-            this.msg.add({ severity: 'success', summary: 'Excluído', detail: product?.name ?? 'Produto removido' });
+            this.msg.add({ severity: 'success', summary: 'Exclu?do', detail: product?.name ?? 'Produto removido' });
           },
           error: () => this.msg.add({ severity: 'error', summary: 'Erro ao excluir' }),
         });

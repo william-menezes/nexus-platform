@@ -1,10 +1,13 @@
 <p-toast />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page max-w-4xl mx-auto">
-  <div class="flex items-center gap-2 mb-4">
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Novo Pedido de Compra</h1>
+      <p class="nx-page-subtitle">Preencha os dados do pedido</p>
+    </div>
     <a routerLink="/app/compras" pButton icon="pi pi-arrow-left"
       class="p-button-text p-button-sm" aria-label="Voltar"></a>
-    <h1 class="text-2xl font-bold text-text">Novo Pedido de Compra</h1>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="save()">

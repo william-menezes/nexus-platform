@@ -11,6 +11,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Supplier } from '@nexus-platform/shared-types';
 import { SuppliersService } from '../../suppliers.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -32,9 +39,15 @@ export class SupplierListComponent implements OnInit {
 
   readonly suppliers = signal<Supplier[]>([]);
   readonly loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search = '';
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -44,15 +57,22 @@ export class SupplierListComponent implements OnInit {
     });
   }
 
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.suppliers().length, this.tablePage()),
+      this.suppliers().length
+    );
+  }
+
   confirmDelete(s: Supplier) {
     this.confirm.confirm({
       message: `Excluir fornecedor "${s.name}"?`,
-      header: 'Confirmar exclusão',
+      header: 'Confirmar exclus?o',
       icon: 'pi pi-trash',
       accept: () => {
         this.svc.remove(s.id).subscribe({
           next: () => {
-            this.msg.add({ severity: 'success', summary: 'Excluído', detail: s.name });
+            this.msg.add({ severity: 'success', summary: 'Exclu?do', detail: s.name });
             this.load();
           },
           error: () => this.msg.add({ severity: 'error', summary: 'Erro ao excluir' }),

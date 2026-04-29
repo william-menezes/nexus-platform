@@ -10,6 +10,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Quote } from '@nexus-platform/shared-types';
 import { QuotesService } from '../../quotes.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -31,8 +38,14 @@ export class QuoteListComponent implements OnInit {
 
   quotes = signal<Quote[]>([]);
   loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -40,6 +53,13 @@ export class QuoteListComponent implements OnInit {
       next: data => { this.quotes.set(data); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.quotes().length, this.tablePage()),
+      this.quotes().length
+    );
   }
 
   confirmDelete(q: Quote) {

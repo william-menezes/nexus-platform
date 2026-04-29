@@ -12,6 +12,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Contract } from '@nexus-platform/shared-types';
 import { ContractsService } from '../../contracts.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Rascunho', active: 'Ativo', suspended: 'Suspenso',
@@ -44,6 +51,8 @@ export class ContractListComponent implements OnInit {
 
   readonly contracts = signal<Contract[]>([]);
   readonly loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   statusFilter: string | null = null;
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
@@ -59,6 +68,10 @@ export class ContractListComponent implements OnInit {
 
   ngOnInit() { this.load(); }
 
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
+
   load() {
     this.loading.set(true);
     this.svc.findAll(this.statusFilter ?? undefined).subscribe({
@@ -70,6 +83,12 @@ export class ContractListComponent implements OnInit {
   statusLabel(s: string) { return STATUS_LABELS[s] ?? s; }
   statusSeverity(s: string): any { return STATUS_SEVERITY[s] ?? 'secondary'; }
   typeLabel(t: string) { return TYPE_LABELS[t] ?? t; }
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.contracts().length, this.tablePage()),
+      this.contracts().length
+    );
+  }
 
   confirmDelete(c: Contract) {
     this.confirm.confirm({

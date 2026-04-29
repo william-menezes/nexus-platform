@@ -2,17 +2,32 @@
 <p-confirmDialog />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold text-text">Tipos de Equipamento</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Tipos de Equipamento</h1>
+      <p class="nx-page-subtitle">Categorias de equipamentos para OS</p>
+    </div>
     <button pButton label="Novo Tipo" icon="pi pi-plus" class="p-button-sm" (click)="openDialog()"></button>
   </div>
   <div class="overflow-x-auto">
-    <p-table [value]="types()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="types()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '640px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Nome</th>
+          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
           <th>Campos</th>
-          <th>Ações</th>
+          <th>A??es</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-t>
@@ -26,7 +41,18 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="3" class="text-center py-8 text-text-muted">Nenhum tipo encontrado</td></tr>
+        <tr>
+          <td colspan="3">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-cog"></i></span>
+              <span class="nx-table-empty__title">Nenhum tipo encontrado</span>
+              <div class="nx-table-empty__description">Crie tipos para padronizar os equipamentos aceitos no sistema.</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

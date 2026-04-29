@@ -1,4 +1,4 @@
-# Nexus Platform — Spec Completa (Spec-Driven Development)
+# SimplificaOS — Spec Completa (Spec-Driven Development)
 
 > **Versão:** 1.0 · **Data:** 2026-03-28
 > **Abordagem:** Spec-Driven Development + TDD
@@ -8,7 +8,7 @@
 
 ## 1. Visão Geral
 
-**Nexus Platform** é um SaaS multi-tenant para empresas de assistência técnica e serviços no Brasil.
+**SimplificaOS** é um SaaS multi-tenant para empresas de assistência técnica e serviços no Brasil.
 Gerencia o ciclo completo: cadastro de clientes → orçamento → aprovação → OS → execução → venda/faturamento → financeiro.
 
 ### Stack
@@ -135,7 +135,7 @@ Após pagamento:
 - Armazenada no Supabase Storage (bucket: `tenant-logos`)
 - Path: `{tenant_id}/logo.{ext}`
 - Usada em: PDFs de orçamento, OS, recibos, contratos
-- Fallback: logo genérica Nexus quando não há upload
+- Fallback: logo genérica SimplificaOS quando não há upload
 
 ---
 

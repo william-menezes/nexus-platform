@@ -2,27 +2,42 @@
 <p-confirmDialog />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Orçamentos</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Orçamentos</h1>
+      <p class="nx-page-subtitle">Crie e acompanhe orçamentos para seus clientes</p>
+    </div>
     <a routerLink="novo" pButton label="Novo Orçamento" icon="pi pi-plus" class="p-button-sm"></a>
   </div>
   <div class="overflow-x-auto">
-    <p-table [value]="quotes()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="quotes()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '860px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Código</th>
-          <th>Total</th>
+          <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+          <th pSortableColumn="total">Total <p-sortIcon field="total" /></th>
           <th>Enviado</th>
           <th>Aprovado</th>
           <th>Convertido em OS</th>
-          <th>Data</th>
+          <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
           <th>Ações</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-q>
         <tr>
           <td>
-            <a [routerLink]="[q.id]" class="text-blue-600 hover:underline font-mono">{{ q.code }}</a>
+            <a [routerLink]="[q.id]" class="text-primary hover:underline font-mono">{{ q.code }}</a>
           </td>
           <td>{{ q.total | currency:'BRL' }}</td>
           <td>
@@ -57,7 +72,18 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="7" class="text-center py-8 text-text-muted">Nenhum orçamento encontrado</td></tr>
+        <tr>
+          <td colspan="7">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-file-edit"></i></span>
+              <span class="nx-table-empty__title">Nenhum orçamento encontrado</span>
+              <div class="nx-table-empty__description">Crie orçamentos para acompanhar aprovações e conversões em OS.</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

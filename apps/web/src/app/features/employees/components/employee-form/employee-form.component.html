@@ -1,9 +1,12 @@
 <p-toast />
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page max-w-lg">
-  <div class="flex items-center gap-2 mb-4">
-    <a routerLink="/app/funcionarios" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm"></a>
-    <h1 class="text-2xl font-bold text-text">{{ isEdit ? 'Editar Funcionário' : 'Novo Funcionário' }}</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">{{ isEdit ? 'Editar Funcionário' : 'Novo Funcionário' }}</h1>
+      <p class="nx-page-subtitle">Preencha os dados do funcionário</p>
+    </div>
+    <a routerLink="/app/funcionarios" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm" aria-label="Voltar"></a>
   </div>
   <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-3">
     <div class="flex flex-col gap-1">

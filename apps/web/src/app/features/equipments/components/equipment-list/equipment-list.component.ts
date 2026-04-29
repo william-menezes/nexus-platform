@@ -9,6 +9,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { Equipment, EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 @Component({
   standalone: true,
@@ -30,10 +37,16 @@ export class EquipmentListComponent implements OnInit {
   equipments = signal<Equipment[]>([]);
   types = signal<EquipmentType[]>([]);
   loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
 
   ngOnInit() {
     this.svc.getAllTypes().subscribe(t => this.types.set(t));
     this.load();
+  }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
   }
 
   load() {
@@ -46,6 +59,13 @@ export class EquipmentListComponent implements OnInit {
 
   getTypeName(typeId: string) {
     return this.types().find(t => t.id === typeId)?.name ?? typeId;
+  }
+
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.equipments().length, this.tablePage()),
+      this.equipments().length
+    );
   }
 
   confirmDelete(e: Equipment) {

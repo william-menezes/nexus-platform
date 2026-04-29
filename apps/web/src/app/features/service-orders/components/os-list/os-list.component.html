@@ -3,7 +3,10 @@
 <div class="nx-page">
 
   <div class="nx-page-header">
-    <h1 class="nx-page-title">Ordens de Serviço</h1>
+    <div>
+      <h1 class="nx-page-title">Ordens de Serviço</h1>
+      <p class="nx-page-subtitle">Acompanhe as ordens de serviço em andamento</p>
+    </div>
     <a routerLink="nova">
       <p-button label="Nova OS" icon="pi pi-plus" />
     </a>
@@ -17,18 +20,22 @@
     [value]="orders()"
     [loading]="loading()"
     [paginator]="true"
-    [rows]="15"
+    [rows]="tablePage().rows"
+    [first]="tablePage().first"
+    [rowsPerPageOptions]="rowsPerPageOptions"
     [rowHover]="true"
-    styleClass="p-datatable-sm"
+    sortMode="single"
+    styleClass="nx-data-table p-datatable-sm"
     [tableStyle]="{'min-width':'600px'}"
+    (onPage)="onPageChange($event)"
   >
     <ng-template pTemplate="header">
       <tr>
-        <th>Código</th>
-        <th>Cliente</th>
+        <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+        <th pSortableColumn="clientName">Cliente <p-sortIcon field="clientName" /></th>
         <th>Descrição</th>
-        <th>Status</th>
-        <th>Data</th>
+        <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+        <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
         <th></th>
       </tr>
     </ng-template>
@@ -62,11 +69,17 @@
 
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6" style="text-align:center; color:var(--p-text-muted-color); padding:3rem;">
-          <i class="pi pi-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
-          Nenhuma OS encontrada.
+        <td colspan="6">
+          <div class="nx-table-empty">
+            <span class="nx-table-empty__icon"><i class="pi pi-inbox"></i></span>
+            <span class="nx-table-empty__title">Nenhuma OS encontrada</span>
+            <div class="nx-table-empty__description">As ordens de serviço aparecerão aqui conforme forem abertas.</div>
+          </div>
         </td>
       </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <span class="nx-table-summary">{{ tableSummary() }}</span>
     </ng-template>
   </p-table>
 

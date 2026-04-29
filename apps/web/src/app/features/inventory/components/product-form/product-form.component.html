@@ -1,7 +1,10 @@
 <div class="nx-page" style="max-width:640px;">
 
   <div class="nx-page-header">
-    <h1 class="nx-page-title">{{ isEdit ? 'Editar Produto' : 'Novo Produto' }}</h1>
+    <div>
+      <h1 class="nx-page-title">{{ isEdit ? 'Editar Produto' : 'Novo Produto' }}</h1>
+      <p class="nx-page-subtitle">Preencha os dados do produto</p>
+    </div>
     <a routerLink="/app/estoque">
       <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" />
     </a>

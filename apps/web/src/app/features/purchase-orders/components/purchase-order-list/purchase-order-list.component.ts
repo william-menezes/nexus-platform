@@ -12,6 +12,13 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
 import { PurchaseOrder } from '@nexus-platform/shared-types';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Rascunho',
@@ -50,6 +57,8 @@ export class PurchaseOrderListComponent implements OnInit {
 
   readonly orders = signal<PurchaseOrder[]>([]);
   readonly loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   statusFilter: string | null = null;
 
   readonly statusOptions = [
@@ -62,6 +71,10 @@ export class PurchaseOrderListComponent implements OnInit {
 
   ngOnInit() { this.load(); }
 
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
+
   load() {
     this.loading.set(true);
     this.svc.findAll(this.statusFilter ?? undefined).subscribe({
@@ -73,6 +86,12 @@ export class PurchaseOrderListComponent implements OnInit {
   statusLabel(status: string) { return STATUS_LABELS[status] ?? status; }
   statusSeverity(status: string): any { return STATUS_SEVERITY[status] ?? 'secondary'; }
   canDelete(status: string) { return status === 'draft' || status === 'cancelled'; }
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.orders().length, this.tablePage()),
+      this.orders().length
+    );
+  }
 
   confirmDelete(po: PurchaseOrder) {
     this.confirm.confirm({

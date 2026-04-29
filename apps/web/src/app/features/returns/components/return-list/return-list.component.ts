@@ -11,18 +11,25 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MessageService, MenuItem } from 'primeng/api';
 import { Return } from '@nexus-platform/shared-types';
 import { ReturnsService } from '../../returns.service';
+import {
+  createInitialTablePageState,
+  formatTableSummary,
+  getVisibleTableRecords,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+  updateTablePageState,
+} from '../../../../shared/utils/table-pagination.util';
 
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Pendente', approved: 'Aprovada',
-  completed: 'Concluída', rejected: 'Rejeitada',
+  completed: 'Conclu?da', rejected: 'Rejeitada',
 };
 const STATUS_SEVERITY: Record<string, string> = {
   pending: 'warn', approved: 'info',
   completed: 'success', rejected: 'danger',
 };
 const TYPE_LABELS: Record<string, string> = {
-  refund: 'Estorno', credit: 'Crédito', exchange: 'Troca',
+  refund: 'Estorno', credit: 'Cr?dito', exchange: 'Troca',
 };
 
 @Component({
@@ -41,6 +48,8 @@ export class ReturnListComponent implements OnInit {
 
   readonly returns = signal<Return[]>([]);
   readonly loading = signal(false);
+  readonly tablePage = signal(createInitialTablePageState());
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   statusFilter: string | null = null;
 
   readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
@@ -49,11 +58,15 @@ export class ReturnListComponent implements OnInit {
   readonly statusOptions = [
     { label: 'Pendente',   value: 'pending' },
     { label: 'Aprovada',   value: 'approved' },
-    { label: 'Concluída',  value: 'completed' },
+    { label: 'Conclu?da',  value: 'completed' },
     { label: 'Rejeitada',  value: 'rejected' },
   ];
 
   ngOnInit() { this.load(); }
+
+  onPageChange(event: { first?: number; rows?: number }) {
+    this.tablePage.update((current) => updateTablePageState(current, event));
+  }
 
   load() {
     this.loading.set(true);
@@ -66,4 +79,10 @@ export class ReturnListComponent implements OnInit {
   statusLabel(s: string) { return STATUS_LABELS[s] ?? s; }
   statusSeverity(s: string): any { return STATUS_SEVERITY[s] ?? 'secondary'; }
   typeLabel(t: string) { return TYPE_LABELS[t] ?? t; }
+  tableSummary() {
+    return formatTableSummary(
+      getVisibleTableRecords(this.returns().length, this.tablePage()),
+      this.returns().length
+    );
+  }
 }

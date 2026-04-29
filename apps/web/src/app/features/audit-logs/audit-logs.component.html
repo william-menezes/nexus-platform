@@ -1,9 +1,13 @@
 <div class="nx-page">
-  <h1 class="text-2xl font-bold mb-4 text-text">Logs de Auditoria</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Logs de Auditoria</h1>
+      <p class="nx-page-subtitle">Histórico de ações do sistema</p>
+    </div>
+  </div>
 
   <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
-  <!-- Filters -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
     <p-select [(ngModel)]="filterAction" [options]="actionOptions"
       optionLabel="label" optionValue="value" placeholder="Ação"
@@ -21,14 +25,27 @@
   </div>
 
   <div class="overflow-x-auto">
-    <p-table [value]="logs()" [loading]="loading()" stripedRows [paginator]="true"
-      [rows]="50" [totalRecords]="total()" [lazy]="true" (onLazyLoad)="onPage($event)">
+    <p-table
+      [value]="logs()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [totalRecords]="total()"
+      [lazy]="true"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '900px' }"
+      (onLazyLoad)="onPage($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Data/Hora</th>
-          <th>Usuário</th>
-          <th>Ação</th>
-          <th>Entidade</th>
+          <th pSortableColumn="createdAt">Data/Hora <p-sortIcon field="createdAt" /></th>
+          <th pSortableColumn="userId">Usuário <p-sortIcon field="userId" /></th>
+          <th pSortableColumn="action">Ação <p-sortIcon field="action" /></th>
+          <th pSortableColumn="entity">Entidade <p-sortIcon field="entity" /></th>
           <th>ID</th>
           <th>Detalhes</th>
         </tr>
@@ -56,16 +73,22 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center text-text-secondary py-8">
-            Nenhum log encontrado.
+          <td colspan="6">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-history"></i></span>
+              <span class="nx-table-empty__title">Nenhum log encontrado</span>
+              <div class="nx-table-empty__description">Ajuste os filtros ou aguarde novas ações auditáveis no sistema.</div>
+            </div>
           </td>
         </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>
 </div>
 
-<!-- Detail dialog -->
 <p-dialog [(visible)]="detailVisible" header="Detalhes da Alteração"
   [modal]="true" [style]="{ width: '600px' }">
   @if (selectedLog()) {

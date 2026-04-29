@@ -13,16 +13,28 @@
   </div>
 
   <div class="overflow-x-auto">
-    <p-table [value]="tenants()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="tenants()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '920px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Nome</th>
-          <th>Plano</th>
-          <th>Status</th>
-          <th>Segmento</th>
-          <th>Trial até</th>
-          <th>Criado em</th>
-          <th>Ações</th>
+          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+          <th pSortableColumn="plan">Plano <p-sortIcon field="plan" /></th>
+          <th pSortableColumn="is_active">Status <p-sortIcon field="is_active" /></th>
+          <th pSortableColumn="segment">Segmento <p-sortIcon field="segment" /></th>
+          <th pSortableColumn="trial_ends_at">Trial at? <p-sortIcon field="trial_ends_at" /></th>
+          <th pSortableColumn="created_at">Criado em <p-sortIcon field="created_at" /></th>
+          <th>A??es</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-t>
@@ -40,8 +52,8 @@
             <p-tag [value]="t.is_active ? 'Ativo' : 'Inativo'"
               [severity]="t.is_active ? 'success' : 'danger'" />
           </td>
-          <td class="capitalize">{{ t.segment || '—' }}</td>
-          <td>{{ t.trial_ends_at ? (t.trial_ends_at | date:'dd/MM/yyyy') : '—' }}</td>
+          <td class="capitalize">{{ t.segment || '?' }}</td>
+          <td>{{ t.trial_ends_at ? (t.trial_ends_at | date:'dd/MM/yyyy') : '?' }}</td>
           <td>{{ t.created_at | date:'dd/MM/yyyy' }}</td>
           <td>
             <a [routerLink]="[t.id]" pButton icon="pi pi-pencil"
@@ -51,8 +63,17 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7" class="text-center text-text-secondary py-8">Nenhum tenant encontrado.</td>
+          <td colspan="7">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-building"></i></span>
+              <span class="nx-table-empty__title">Nenhum tenant encontrado</span>
+              <div class="nx-table-empty__description">Os tenants cadastrados no ambiente aparecer?o aqui.</div>
+            </div>
+          </td>
         </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

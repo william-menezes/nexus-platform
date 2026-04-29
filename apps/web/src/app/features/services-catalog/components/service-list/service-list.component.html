@@ -4,22 +4,37 @@
 <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
 <div class="nx-page">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold text-text">Catálogo de Serviços</h1>
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Serviços</h1>
+      <p class="nx-page-subtitle">Catálogo de serviços oferecidos</p>
+    </div>
     <a routerLink="novo" pButton label="Novo Serviço" icon="pi pi-plus" class="p-button-sm"></a>
   </div>
   <div class="mb-3">
     <input pInputText [(ngModel)]="search" (ngModelChange)="load()" placeholder="Buscar serviço..." class="w-full md:w-1/3" />
   </div>
   <div class="overflow-x-auto">
-    <p-table [value]="services()" [loading]="loading()" stripedRows>
+    <p-table
+      [value]="services()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '860px' }"
+      (onPage)="onPageChange($event)"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th>Nome</th>
+          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
           <th>Descrição</th>
-          <th>Preço Padrão</th>
-          <th>Horas Est.</th>
-          <th>Status</th>
+          <th pSortableColumn="defaultPrice">Preço Padrão <p-sortIcon field="defaultPrice" /></th>
+          <th pSortableColumn="estimatedHours">Horas Est. <p-sortIcon field="estimatedHours" /></th>
+          <th pSortableColumn="isActive">Status <p-sortIcon field="isActive" /></th>
           <th>Ações</th>
         </tr>
       </ng-template>
@@ -40,8 +55,17 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center py-8 text-text-muted">Nenhum serviço encontrado</td>
+          <td colspan="6">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-briefcase"></i></span>
+              <span class="nx-table-empty__title">Nenhum serviço encontrado</span>
+              <div class="nx-table-empty__description">Monte o catálogo de serviços para usar em orçamentos e OS.</div>
+            </div>
+          </td>
         </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
   </div>

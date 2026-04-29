@@ -13,6 +13,12 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
 import { environment } from '../../../environments/environment';
 import type { TableLazyLoadEvent } from 'primeng/table';
+import {
+  DEFAULT_TABLE_ROWS,
+  createInitialTablePageState,
+  formatTableSummary,
+  TABLE_ROWS_PER_PAGE_OPTIONS,
+} from '../../shared/utils/table-pagination.util';
 
 interface AuditLog {
   id: string;
@@ -65,6 +71,8 @@ export class AuditLogsComponent implements OnInit {
   readonly loading = signal(false);
   readonly total = signal(0);
   readonly selectedLog = signal<AuditLog | null>(null);
+  readonly tablePage = signal(createInitialTablePageState(50));
+  readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   detailVisible = false;
 
   filterAction = '';
@@ -73,7 +81,7 @@ export class AuditLogsComponent implements OnInit {
   filterTo: Date | null = null;
 
   private currentOffset = 0;
-  private readonly pageSize = 50;
+  private pageSize = DEFAULT_TABLE_ROWS;
 
   readonly actionOptions = [
     { label: 'Criar', value: 'create' },
@@ -85,10 +93,18 @@ export class AuditLogsComponent implements OnInit {
 
   readonly entityOptions = Object.entries(ENTITY_LABELS).map(([value, label]) => ({ value, label }));
 
-  ngOnInit() { this.load(); }
+  ngOnInit() {
+    this.pageSize = this.tablePage().rows;
+    this.load();
+  }
 
   onPage(event: TableLazyLoadEvent) {
     this.currentOffset = event.first ?? 0;
+    this.pageSize = event.rows ?? this.pageSize;
+    this.tablePage.set({
+      first: this.currentOffset,
+      rows: this.pageSize,
+    });
     this.load();
   }
 
@@ -130,5 +146,9 @@ export class AuditLogsComponent implements OnInit {
 
   entityLabel(entity: string): string {
     return ENTITY_LABELS[entity] ?? entity;
+  }
+
+  tableSummary() {
+    return formatTableSummary(this.logs().length, this.total());
   }
 }
