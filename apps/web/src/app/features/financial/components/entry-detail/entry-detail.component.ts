@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
@@ -9,8 +9,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { FinancialEntry, Installment } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 
@@ -21,25 +21,18 @@ type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contr
   selector: 'app-entry-detail',
   imports: [
     CommonModule, RouterLink, TableModule, ButtonModule, TagModule,
-    DialogModule, InputNumberModule, SelectModule, ReactiveFormsModule, ToastModule, BreadcrumbModule,
+    DialogModule, InputNumberModule, SelectModule, ReactiveFormsModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './entry-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryDetailComponent implements OnInit {
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Lançamentos', routerLink: '/app/financeiro/lancamentos' },
-      { label: this.entry()?.description ?? '...' },
-    ];
-  }
-
   private svc = inject(FinancialService);
   private route = inject(ActivatedRoute);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   entry = signal<FinancialEntry | null>(null);
   payDialogVisible = false;
@@ -62,7 +55,13 @@ export class EntryDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    this.svc.getEntry(id).subscribe(e => this.entry.set(e));
+    this.svc.getEntry(id).subscribe(e => {
+      this.entry.set(e);
+      this.breadcrumbSvc.set([
+        { label: 'Lançamentos', routerLink: '/app/financeiro/lancamentos' },
+        { label: e.description },
+      ]);
+    });
   }
 
   openPayDialog(inst: Installment) {

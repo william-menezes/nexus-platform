@@ -8,15 +8,14 @@ import { TableModule } from 'primeng/table';
 import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
 import { DatePickerModule } from 'primeng/datepicker';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MenuItem } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { DreEntry } from '@nexus-platform/shared-types';
 import { FinanceService } from '../../finance.service';
 
 @Component({
   standalone: true,
   selector: 'app-dre',
-  imports: [ReactiveFormsModule, RouterLink, CurrencyPipe, PercentPipe, ButtonModule, CardModule, TableModule, MessageModule, DividerModule, DatePickerModule, BreadcrumbModule],
+  imports: [ReactiveFormsModule, RouterLink, CurrencyPipe, PercentPipe, ButtonModule, CardModule, TableModule, MessageModule, DividerModule, DatePickerModule],
   templateUrl: './dre.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -24,12 +23,14 @@ export class DreComponent {
   private readonly fb  = inject(FormBuilder);
   private readonly svc = inject(FinanceService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Financeiro', routerLink: '/app/financeiro' },
-    { label: 'DRE' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Financeiro', routerLink: '/app/financeiro' },
+      { label: 'DRE' },
+    ]);
+  }
 
   entries: DreEntry[] = [];
   loading = false;

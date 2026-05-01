@@ -1,88 +1,81 @@
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
-
 <div class="nx-page">
-
   <div class="nx-page-header">
     <div>
       <h1 class="nx-page-title">Vendas</h1>
       <p class="nx-page-subtitle">Histórico e gestão de vendas</p>
     </div>
-    <div style="display:flex; gap:0.75rem;">
-      <a routerLink="../dre">
-        <p-button label="DRE" icon="pi pi-chart-bar" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
-      </a>
-      <a routerLink="../pdv">
-        <p-button label="Nova venda (PDV)" icon="pi pi-plus"  styleClass="p-button-sm"/>
-      </a>
+    <div class="flex items-center gap-3">
+      <a routerLink="../dre" pButton label="DRE" icon="pi pi-chart-bar"
+        class="p-button-outlined p-button-secondary p-button-sm"></a>
+      <a routerLink="../pdv" pButton label="Nova venda (PDV)" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
   </div>
 
-  <p-table
-    [value]="sales()"
-    [loading]="loading()"
-    [paginator]="true"
-    [rows]="tablePage().rows"
-    [first]="tablePage().first"
-    [rowsPerPageOptions]="rowsPerPageOptions"
-    [rowHover]="true"
-    sortMode="single"
-    styleClass="nx-data-table p-datatable-sm"
-    [tableStyle]="{'min-width':'600px'}"
-    (onPage)="onPageChange($event)"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
-        <th>OS vinculada</th>
-        <th pSortableColumn="total" style="text-align:right;">Total <p-sortIcon field="total" /></th>
-        <th pSortableColumn="paidAmount" style="text-align:right;">Pago <p-sortIcon field="paidAmount" /></th>
-        <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
-        <th></th>
-      </tr>
-    </ng-template>
+  <p-card styleClass="w-full">
+    <div class="overflow-x-auto">
+    <p-table
+      [value]="sales()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{'min-width':'600px'}"
+      (onPage)="onPageChange($event)"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
+          <th>OS vinculada</th>
+          <th pSortableColumn="total" class="text-right">Total <p-sortIcon field="total" /></th>
+          <th pSortableColumn="paidAmount" class="text-right">Pago <p-sortIcon field="paidAmount" /></th>
+          <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
 
-    <ng-template pTemplate="body" let-sale>
-      <tr>
-        <td style="color:var(--p-text-muted-color);">{{ sale.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-        <td style="font-family:monospace; font-size:0.8em; color:var(--p-text-muted-color);">
-          {{ sale.serviceOrderId ? (sale.serviceOrderId | slice:0:8) + '…' : '—' }}
-        </td>
-        <td style="text-align:right; font-weight:600;">{{ sale.total | currency:'BRL' }}</td>
-        <td style="text-align:right;">{{ sale.paidAmount | currency:'BRL' }}</td>
-        <td>
-          <p-tag
-            [value]="statusLabel(sale.status)"
-            [severity]="sale.status === 'paid' ? 'success' : sale.status === 'open' ? 'warn' : 'danger'"
-          />
-        </td>
-        <td style="text-align:right;">
-          @if (sale.status === 'open') {
-            <p-button
-              label="Cancelar"
-              severity="danger"
-              [outlined]="true"
-              size="small"
-              (click)="cancel(sale.id)"
-             styleClass="p-button-sm"/>
-          }
-        </td>
-      </tr>
-    </ng-template>
+      <ng-template pTemplate="body" let-sale>
+        <tr>
+          <td class="text-text-muted">{{ sale.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td class="font-mono text-sm text-text-muted">
+            {{ sale.serviceOrderId ? (sale.serviceOrderId | slice:0:8) + '…' : '—' }}
+          </td>
+          <td class="text-right font-semibold">{{ sale.total | currency:'BRL' }}</td>
+          <td class="text-right">{{ sale.paidAmount | currency:'BRL' }}</td>
+          <td>
+            <p-tag
+              [value]="statusLabel(sale.status)"
+              [severity]="sale.status === 'paid' ? 'success' : sale.status === 'open' ? 'warn' : 'danger'"
+            />
+          </td>
+          <td>
+            @if (sale.status === 'open') {
+              <button pButton icon="pi pi-ban" label="Cancelar"
+                class="p-button-outlined p-button-danger p-button-sm"
+                (click)="cancel(sale.id)"></button>
+            }
+          </td>
+        </tr>
+      </ng-template>
 
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="6">
-          <div class="nx-table-empty">
-            <span class="nx-table-empty__icon"><i class="pi pi-shopping-cart"></i></span>
-            <span class="nx-table-empty__title">Nenhuma venda registrada</span>
-            <div class="nx-table-empty__description">As vendas concluídas e pendentes aparecerão aqui.</div>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="paginatorleft">
-      <span class="nx-table-summary">{{ tableSummary() }}</span>
-    </ng-template>
-  </p-table>
-
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-shopping-cart"></i></span>
+              <span class="nx-table-empty__title">Nenhuma venda registrada</span>
+              <div class="nx-table-empty__description">As vendas concluídas e pendentes aparecerão aqui.</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
+      </ng-template>
+    </p-table>
+    </div>
+  </p-card>
 </div>

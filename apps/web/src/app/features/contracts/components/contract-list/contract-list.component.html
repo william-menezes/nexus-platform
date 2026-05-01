@@ -1,8 +1,6 @@
 <p-toast />
 <p-confirmDialog />
 
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
-
 <div class="nx-page">
   <div class="nx-page-header">
     <div>
@@ -12,14 +10,15 @@
     <a routerLink="novo" pButton label="Novo Contrato" icon="pi pi-plus" class="p-button-sm"></a>
   </div>
 
-  <div class="mb-3">
-    <p-select [options]="statusOptions" [(ngModel)]="statusFilter"
-      optionLabel="label" optionValue="value"
-      placeholder="Todos os status" [showClear]="true"
-      (onChange)="load()" styleClass="w-48" />
-  </div>
+  <p-card styleClass="w-full">
+    <div class="mb-3">
+      <p-select [options]="statusOptions" [(ngModel)]="statusFilter"
+        optionLabel="label" optionValue="value"
+        placeholder="Todos os status" [showClear]="true"
+        (onChange)="load()" styleClass="w-48" />
+    </div>
 
-  <div class="overflow-x-auto">
+    <div class="overflow-x-auto">
     <p-table
       [value]="contracts()"
       [loading]="loading()"
@@ -91,5 +90,6 @@
         <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
-  </div>
+    </div>
+  </p-card>
 </div>

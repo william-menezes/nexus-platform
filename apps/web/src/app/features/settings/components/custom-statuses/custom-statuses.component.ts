@@ -11,9 +11,9 @@ import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { SettingsService, CustomStatus } from '../../settings.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 type EntityType = 'service_order' | 'sale' | 'quote';
 type NullableString = string | null;
@@ -24,7 +24,7 @@ type NullableString = string | null;
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, TableModule, ButtonModule,
     InputTextModule, ColorPickerModule, SelectModule, CheckboxModule,
-    DialogModule, TagModule, ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    DialogModule, TagModule, ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './custom-statuses.component.html',
@@ -35,12 +35,14 @@ export class CustomStatusesComponent implements OnInit {
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Configurações', routerLink: '/app/configuracoes' },
-    { label: 'Status Personalizados' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Configurações', routerLink: '/app/configuracoes' },
+      { label: 'Status Customizados' },
+    ]);
+  }
 
   readonly statuses = signal<CustomStatus[]>([]);
   readonly loading = signal(false);

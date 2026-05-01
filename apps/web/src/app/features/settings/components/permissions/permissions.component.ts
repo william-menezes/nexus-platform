@@ -6,9 +6,9 @@ import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { SettingsService, Permission } from '../../settings.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 interface PermissionRow {
   module: string;
@@ -45,7 +45,7 @@ const ROLES = ['TENANT_ADMIN', 'TECNICO', 'VENDEDOR'];
   selector: 'app-permissions',
   imports: [
     CommonModule, FormsModule, TableModule, ButtonModule,
-    CheckboxModule, CardModule, ToastModule, BreadcrumbModule,
+    CheckboxModule, CardModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './permissions.component.html',
@@ -54,12 +54,14 @@ const ROLES = ['TENANT_ADMIN', 'TECNICO', 'VENDEDOR'];
 export class PermissionsComponent implements OnInit {
   private readonly svc = inject(SettingsService);
   private readonly msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Configurações', routerLink: '/app/configuracoes' },
-    { label: 'Permissões' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Configurações', routerLink: '/app/configuracoes' },
+      { label: 'Permissões' },
+    ]);
+  }
 
   readonly rows = signal<PermissionRow[]>([]);
   readonly saving = signal(false);

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -7,8 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { SuppliersService } from '../../suppliers.service';
 
 @Component({
@@ -17,7 +17,6 @@ import { SuppliersService } from '../../suppliers.service';
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, TextareaModule, CardModule, ToastModule,
-    BreadcrumbModule,
   ],
   providers: [MessageService],
   templateUrl: './supplier-form.component.html',
@@ -29,17 +28,10 @@ export class SupplierFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly isEdit = signal(false);
   readonly saving = signal(false);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Fornecedores', routerLink: '/app/fornecedores' },
-      { label: this.isEdit() ? 'Editar Fornecedor' : 'Novo Fornecedor' },
-    ];
-  }
   private editId: string | null = null;
 
   readonly form = this.fb.group({
@@ -65,12 +57,21 @@ export class SupplierFormComponent implements OnInit {
     if (id) {
       this.isEdit.set(true);
       this.editId = id;
+      this.breadcrumbSvc.set([
+        { label: 'Fornecedores', routerLink: '/app/fornecedores' },
+        { label: 'Editar Fornecedor' },
+      ]);
       this.svc.findOne(id).subscribe(s => {
         this.form.patchValue({
           ...s,
           address: s.address as any,
         });
       });
+    } else {
+      this.breadcrumbSvc.set([
+        { label: 'Fornecedores', routerLink: '/app/fornecedores' },
+        { label: 'Novo Fornecedor' },
+      ]);
     }
   }
 

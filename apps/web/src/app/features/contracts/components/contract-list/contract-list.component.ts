@@ -4,12 +4,13 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Contract } from '@nexus-platform/shared-types';
 import { ContractsService } from '../../contracts.service';
 import {
@@ -38,8 +39,8 @@ const TYPE_LABELS: Record<string, string> = {
   selector: 'app-contract-list',
   imports: [
     CommonModule, RouterLink, FormsModule,
-    TableModule, ButtonModule, SelectModule, TagModule,
-    ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    TableModule, ButtonModule, CardModule, SelectModule, TagModule,
+    ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './contract-list.component.html',
@@ -49,15 +50,13 @@ export class ContractListComponent implements OnInit {
   private readonly svc = inject(ContractsService);
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly contracts = signal<Contract[]>([]);
   readonly loading = signal(false);
   readonly tablePage = signal(createInitialTablePageState());
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   statusFilter: string | null = null;
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Contratos', routerLink: '/app/contratos' }];
 
   readonly statusOptions = [
     { label: 'Rascunho',  value: 'draft' },
@@ -66,6 +65,10 @@ export class ContractListComponent implements OnInit {
     { label: 'Cancelado', value: 'cancelled' },
     { label: 'Expirado',  value: 'expired' },
   ];
+
+  constructor() {
+    this.breadcrumbSvc.set([{ label: 'Contratos' }]);
+  }
 
   ngOnInit() { this.load(); }
 

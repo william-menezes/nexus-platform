@@ -19,8 +19,8 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 import { SuppliersService } from '../../../suppliers/suppliers.service';
 import { Supplier } from '@nexus-platform/shared-types';
@@ -40,7 +40,7 @@ interface ProductOption {
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule, DatePickerModule,
-    SelectModule, TextareaModule, CardModule, ToastModule, BreadcrumbModule,
+    SelectModule, TextareaModule, CardModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './purchase-order-form.component.html',
@@ -54,12 +54,14 @@ export class PurchaseOrderFormComponent implements OnInit {
   private readonly msg          = inject(MessageService);
   private readonly fb           = inject(FormBuilder);
   private readonly destroyRef   = inject(DestroyRef);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Pedidos de Compra', routerLink: '/app/compras' },
-    { label: 'Novo Pedido' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Pedidos de Compra', routerLink: '/app/compras' },
+      { label: 'Novo Pedido' },
+    ]);
+  }
 
   readonly suppliers   = signal<Supplier[]>([]);
   readonly products    = signal<ProductOption[]>([]);

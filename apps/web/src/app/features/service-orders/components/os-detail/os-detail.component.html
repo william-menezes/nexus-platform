@@ -1,6 +1,5 @@
 <p-toast />
 <p-confirmdialog />
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
 <div class="nx-page" style="max-width:720px;">
 
@@ -12,14 +11,19 @@
   } @else {
 
     <div class="nx-page-header">
-      <div>
-        <h1 class="nx-page-title">{{ os.code }}</h1>
-        <p class="nx-page-subtitle">{{ os.clientName ?? '' }}</p>
-        <p-tag
-          [value]="statusLabel[os.status]"
-          [severity]="statusSeverity[os.status]"
-          styleClass="mt-1"
-        />
+      <div class="flex items-center gap-3">
+        <a routerLink="/app/os">
+          <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
+        </a>
+        <div>
+          <h1 class="nx-page-title">{{ os.code }}</h1>
+          <p class="nx-page-subtitle">{{ os.clientName ?? '' }}</p>
+          <p-tag
+            [value]="statusLabel[os.status]"
+            [severity]="statusSeverity[os.status]"
+            styleClass="mt-1"
+          />
+        </div>
       </div>
       <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
         @if (nextStatus) {
@@ -41,9 +45,6 @@
         }
         <a [routerLink]="[os.id, 'editar']">
           <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
-        </a>
-        <a routerLink="/app/os">
-          <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
         </a>
       </div>
     </div>

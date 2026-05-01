@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Return } from '@nexus-platform/shared-types';
 import { ReturnsService } from '../../returns.service';
 import {
@@ -37,7 +38,7 @@ const TYPE_LABELS: Record<string, string> = {
   selector: 'app-return-list',
   imports: [
     CommonModule, RouterLink, FormsModule,
-    TableModule, ButtonModule, SelectModule, TagModule, ToastModule, BreadcrumbModule,
+    TableModule, ButtonModule, CardModule, SelectModule, TagModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './return-list.component.html',
@@ -46,6 +47,7 @@ const TYPE_LABELS: Record<string, string> = {
 export class ReturnListComponent implements OnInit {
   private readonly svc = inject(ReturnsService);
   private readonly msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly returns = signal<Return[]>([]);
   readonly loading = signal(false);
@@ -53,8 +55,7 @@ export class ReturnListComponent implements OnInit {
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   statusFilter: string | null = null;
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Devoluções', routerLink: '/app/vendas/devolucoes' }];
+  constructor() { this.breadcrumbSvc.set([{ label: 'Devoluções' }]); }
 
   readonly statusOptions = [
     { label: 'Pendente',   value: 'pending' },

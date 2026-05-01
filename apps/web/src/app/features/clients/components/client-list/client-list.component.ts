@@ -2,12 +2,15 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
-import { MenuItem } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Client } from '@nexus-platform/shared-types';
 import { ClientsService } from '../../clients.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import {
   createInitialTablePageState,
   formatTableSummary,
@@ -19,15 +22,16 @@ import {
 @Component({
   standalone: true,
   selector: 'app-client-list',
-  imports: [FormsModule, RouterLink, DatePipe, BreadcrumbModule, ButtonModule, TableModule],
+  imports: [FormsModule, RouterLink, DatePipe, ButtonModule, CardModule, TableModule, ConfirmDialogModule, ToastModule],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './client-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientListComponent implements OnInit {
   private readonly svc = inject(ClientsService);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Clientes', routerLink: '/app/clientes' }];
+  private readonly confirm = inject(ConfirmationService);
+  private readonly msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   clients = signal<Client[]>([]);
   loading = signal(false);
@@ -35,6 +39,10 @@ export class ClientListComponent implements OnInit {
   readonly tablePage = signal(createInitialTablePageState());
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
   search  = '';
+
+  constructor() {
+    this.breadcrumbSvc.set([{ label: 'Clientes' }]);
+  }
 
   ngOnInit() { this.load(); }
 
@@ -52,6 +60,25 @@ export class ClientListComponent implements OnInit {
   }
 
   onSearch() { this.load(); }
+
+  confirmDelete(client: Client) {
+    this.confirm.confirm({
+      message: `Excluir cliente "${client.name}"?`,
+      header: 'Confirmar exclusão',
+      icon: 'pi pi-trash',
+      accept: () => {
+        this.svc.remove(client.id).subscribe({
+          next: () => {
+            this.msg.add({ severity: 'success', summary: 'Excluído', detail: client.name });
+            this.load();
+          },
+          error: (err) => this.msg.add({
+            severity: 'error', summary: 'Erro ao excluir', detail: err?.error?.message,
+          }),
+        });
+      },
+    });
+  }
 
   clientTypeLabel(type: Client['type']) {
     return type === 'individual' ? 'Pessoa Fisica' : 'Pessoa Juridica';

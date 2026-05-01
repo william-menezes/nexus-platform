@@ -1,5 +1,5 @@
 <p-toast />
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<p-confirmDialog />
 <div class="nx-page">
   <div class="flex items-center gap-2 mb-4">
     <a routerLink="/admin" pButton icon="pi pi-arrow-left"
@@ -58,6 +58,7 @@
           <td>
             <a [routerLink]="[t.id]" pButton icon="pi pi-pencil"
               class="p-button-sm p-button-text" aria-label="Editar tenant"></a>
+            <p-button icon="pi pi-trash" severity="danger" [text]="true" styleClass="p-button-sm" (onClick)="confirmDelete(t)" />
           </td>
         </tr>
       </ng-template>

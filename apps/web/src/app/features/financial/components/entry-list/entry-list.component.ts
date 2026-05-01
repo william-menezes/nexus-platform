@@ -4,12 +4,13 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { FinancialEntry } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 import {
@@ -27,19 +28,19 @@ type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contr
   selector: 'app-entry-list',
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
-    TagModule, SelectModule, ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    CardModule, TagModule, SelectModule, ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './entry-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryListComponent implements OnInit {
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Lançamentos', routerLink: '/app/financeiro/lancamentos' }];
-
   private svc = inject(FinancialService);
   private confirm = inject(ConfirmationService);
   private msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
+
+  constructor() { this.breadcrumbSvc.set([{ label: 'Lançamentos' }]); }
 
   entries = signal<FinancialEntry[]>([]);
   loading = signal(false);

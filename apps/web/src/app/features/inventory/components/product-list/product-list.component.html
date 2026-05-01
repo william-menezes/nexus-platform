@@ -1,6 +1,5 @@
-<p-toast />
+﻿<p-toast />
 <p-confirmDialog />
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 
 <div class="nx-page">
 
@@ -19,6 +18,7 @@
     </div>
   </div>
 
+  <p-card styleClass="w-full">
   <p-table
     [value]="products()"
     [loading]="loading()"
@@ -87,5 +87,6 @@
       <span class="nx-table-summary">{{ tableSummary() }}</span>
     </ng-template>
   </p-table>
+  </p-card>
 
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -6,9 +6,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Employee } from '@nexus-platform/shared-types';
 import { EmployeesService } from '../../employees.service';
 
@@ -17,7 +18,7 @@ import { EmployeesService } from '../../employees.service';
   selector: 'app-employee-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule,
-    InputNumberModule, ToggleButtonModule, ButtonModule, ToastModule, BreadcrumbModule,
+    InputNumberModule, ToggleButtonModule, ButtonModule, CardModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './employee-form.component.html',
@@ -29,19 +30,19 @@ export class EmployeeFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly isEditSignal = signal(!!this.route.snapshot.paramMap.get('id'));
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Funcionários', routerLink: '/app/funcionarios' },
-      { label: this.isEditSignal() ? 'Editar Funcionário' : 'Novo Funcionário' },
-    ];
-  }
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   isEdit = false;
   editId = '';
   saving = signal(false);
+
+  constructor() {
+    const isEdit = !!this.route.snapshot.paramMap.get('id');
+    this.breadcrumbSvc.set([
+      { label: 'Funcionários', routerLink: '/app/funcionarios' },
+      { label: isEdit ? 'Editar Funcionário' : 'Novo Funcionário' },
+    ]);
+  }
 
   form = this.fb.group({
     name: ['', Validators.required],

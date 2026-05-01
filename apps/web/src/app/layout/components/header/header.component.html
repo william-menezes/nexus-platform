@@ -1,4 +1,4 @@
-<!-- ══ LEFT — toggle ══ -->
+<!-- ══ LEFT — toggle + breadcrumb ══ -->
 <div class="flex items-center gap-1 flex-1 min-w-0">
 
   <p-button
@@ -11,6 +11,12 @@
     pTooltip="Alternar menu"
     tooltipPosition="bottom"
    styleClass="p-button-sm"/>
+
+  <p-breadcrumb
+    [model]="breadcrumb.items()"
+    [home]="breadcrumb.home()"
+    styleClass="nx-breadcrumb"
+  />
 
 </div>
 

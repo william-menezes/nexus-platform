@@ -1,18 +1,17 @@
 <p-toast />
 
-<!-- ── Breadcrumb & Título (fora do card) ── -->
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" />
-
 <div class="nx-page-header">
-  <div>
-    <h1 class="nx-page-title">{{ isEdit ? 'Editar Orçamento' : 'Novo Orçamento' }}</h1>
-    <p class="nx-page-subtitle">
-      {{ isEdit ? 'Atualize os dados do orçamento' : 'Crie um orçamento para envio ao cliente' }}
-    </p>
+  <div class="flex items-center gap-3">
+    <a routerLink="/app/orcamentos">
+      <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
+    </a>
+    <div>
+      <h1 class="nx-page-title">{{ isEdit ? 'Editar Orçamento' : 'Novo Orçamento' }}</h1>
+      <p class="nx-page-subtitle">
+        {{ isEdit ? 'Atualize os dados do orçamento' : 'Crie um orçamento para envio ao cliente' }}
+      </p>
+    </div>
   </div>
-  <a routerLink="/app/orcamentos">
-    <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
-  </a>
 </div>
 
 <form [formGroup]="form" (ngSubmit)="save()">
@@ -71,12 +70,12 @@
       <div class="nx-form-row cols-2">
         <div class="nx-form-group">
           <label class="nx-form-label" for="qf-validUntil">Válido até</label>
-          <input
-            pInputText
-            id="qf-validUntil"
+          <p-datepicker
+            inputId="qf-validUntil"
             formControlName="validUntil"
-            type="date"
-            class="w-full"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            styleClass="w-full"
           />
         </div>
         <div class="nx-form-group">
@@ -113,7 +112,7 @@
   <!-- ════════════════════════════════
        CARD 2 — Itens
        ════════════════════════════════ -->
-  <p-card styleClass="mb-4">
+  <p-card styleClass="w-full mb-4">
     <div formArrayName="items">
 
       <div class="flex items-center justify-between mb-4">
@@ -214,21 +213,21 @@
       }
 
     </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2">
+      <a routerLink="/app/orcamentos">
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
+      </a>
+      <p-button
+        [label]="isEdit ? 'Salvar alterações' : 'Criar orçamento'"
+        icon="pi pi-check"
+        [loading]="saving()"
+        [disabled]="form.invalid"
+        (onClick)="save()"
+        styleClass="p-button-sm" />
+    </div>
+  </ng-template>
   </p-card>
-
-
-  <!-- ── Ações (fora dos cards mas dentro do form) ── -->
-  <div class="nx-form-actions">
-    <p-button
-      type="submit"
-      [label]="isEdit ? 'Salvar alterações' : 'Criar orçamento'"
-      icon="pi pi-check"
-      [loading]="saving()"
-      [disabled]="form.invalid"
-     styleClass="p-button-sm"/>
-    <a routerLink="/app/orcamentos">
-      <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button"  styleClass="p-button-sm"/>
-    </a>
-  </div>
 
 </form>

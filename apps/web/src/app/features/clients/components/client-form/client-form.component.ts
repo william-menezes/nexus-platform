@@ -18,12 +18,13 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
 import { CardModule } from 'primeng/card';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { Client } from '@nexus-platform/shared-types';
 import { ClientsService } from '../../clients.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 @Component({
   standalone: true,
@@ -31,7 +32,7 @@ import { ClientsService } from '../../clients.service';
   imports: [
     ReactiveFormsModule, RouterLink,
     ButtonModule, InputTextModule, InputMaskModule, SelectButtonModule,
-    TextareaModule, MessageModule, CardModule, BreadcrumbModule, DividerModule, ToastModule,
+    TextareaModule, MessageModule, CardModule, DividerModule, ToastModule, TooltipModule,
   ],
   providers: [MessageService],
   templateUrl: './client-form.component.html',
@@ -45,6 +46,8 @@ export class ClientFormComponent implements OnInit {
   private readonly toast      = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
 
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
+
   readonly isEdit  = signal(false);
   readonly saving  = signal(false);
   readonly error   = signal('');
@@ -54,8 +57,6 @@ export class ClientFormComponent implements OnInit {
     { label: 'Pessoa Física',   value: 'individual' },
     { label: 'Pessoa Jurídica', value: 'company' },
   ];
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
 
   readonly form = this.fb.group({
     name:     ['', Validators.required],
@@ -88,14 +89,13 @@ export class ClientFormComponent implements OnInit {
     this.clientType() === 'company' ? 'Razão social' : 'Nome completo'
   );
 
-  readonly breadcrumbs = computed<MenuItem[]>(() => [
-    { label: 'Clientes', routerLink: '/app/clientes' },
-    { label: this.isEdit() ? 'Editar Cliente' : 'Novo Cliente' },
-  ]);
-
   ngOnInit() {
     this.clientId = this.route.snapshot.paramMap.get('id') ?? '';
     this.isEdit.set(!!this.clientId);
+    this.breadcrumbSvc.set([
+      { label: 'Clientes', routerLink: '/app/clientes' },
+      { label: this.isEdit() ? 'Editar Cliente' : 'Novo Cliente' },
+    ]);
     if (this.isEdit()) {
       this.svc.getOne(this.clientId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next:  (c) => this.form.patchValue(c as never),

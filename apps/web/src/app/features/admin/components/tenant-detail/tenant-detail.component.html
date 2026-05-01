@@ -1,13 +1,19 @@
 <p-toast />
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page max-w-3xl mx-auto" *ngIf="tenant(); else loadingTpl">
-  <div class="flex items-center gap-2 mb-4">
-    <a routerLink="/admin/tenants" pButton icon="pi pi-arrow-left"
-      class="p-button-text p-button-sm" aria-label="Voltar"></a>
-    <h1 class="text-2xl font-bold">{{ tenant()!.name }}</h1>
-    <p-tag [value]="tenant()!.plan" [severity]="planSeverity(tenant()!.plan)" />
-    <p-tag [value]="tenant()!.is_active ? 'Ativo' : 'Inativo'"
-      [severity]="tenant()!.is_active ? 'success' : 'danger'" />
+  <div class="nx-page-header">
+    <div class="flex items-center gap-3">
+      <a routerLink="/admin/tenants">
+        <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
+      </a>
+      <div>
+        <h1 class="nx-page-title">{{ tenant()!.name }}</h1>
+        <p class="nx-page-subtitle">
+          <p-tag [value]="tenant()!.plan" [severity]="planSeverity(tenant()!.plan)" class="mr-1" />
+          <p-tag [value]="tenant()!.is_active ? 'Ativo' : 'Inativo'"
+            [severity]="tenant()!.is_active ? 'success' : 'danger'" />
+        </p>
+      </div>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

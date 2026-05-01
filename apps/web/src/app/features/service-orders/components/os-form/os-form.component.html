@@ -1,18 +1,17 @@
 <p-toast />
 
-<!-- ── Breadcrumb & Título (fora do card) ── -->
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" />
-
 <div class="nx-page-header">
-  <div>
-    <h1 class="nx-page-title">{{ isEdit ? 'Editar OS' : 'Nova Ordem de Serviço' }}</h1>
-    <p class="nx-page-subtitle">
-      {{ isEdit ? 'Atualize os dados da ordem de serviço' : 'Preencha os dados para abrir uma nova OS' }}
-    </p>
+  <div class="flex items-center gap-3">
+    <a routerLink="/app/os">
+      <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
+    </a>
+    <div>
+      <h1 class="nx-page-title">{{ isEdit ? 'Editar OS' : 'Nova Ordem de Serviço' }}</h1>
+      <p class="nx-page-subtitle">
+        {{ isEdit ? 'Atualize os dados da ordem de serviço' : 'Preencha os dados para abrir uma nova OS' }}
+      </p>
+    </div>
   </div>
-  <a routerLink="/app/os">
-    <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
-  </a>
 </div>
 
 @if (error) {
@@ -20,7 +19,7 @@
 }
 
 <!-- ── Card envolve apenas o formulário ── -->
-<p-card styleClass="max-w-2xl">
+<p-card styleClass="w-full">
   <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
 
     <!-- ── Seção: Cliente ── -->
@@ -134,19 +133,20 @@
 
     <p-divider />
 
-    <!-- Ações -->
-    <div class="nx-form-actions">
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2">
+      <a routerLink="/app/os">
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
+      </a>
       <p-button
-        type="submit"
         [label]="isEdit ? 'Salvar alterações' : 'Abrir OS'"
         icon="pi pi-check"
         [loading]="submitting"
         [disabled]="form.invalid"
-       styleClass="p-button-sm"/>
-      <a routerLink="/app/os">
-        <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button"  styleClass="p-button-sm"/>
-      </a>
+        (onClick)="submit()"
+        styleClass="p-button-sm" />
     </div>
-
-  </form>
+  </ng-template>
 </p-card>

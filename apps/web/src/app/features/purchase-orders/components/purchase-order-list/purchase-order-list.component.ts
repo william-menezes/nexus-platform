@@ -4,12 +4,13 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { PurchaseOrder } from '@nexus-platform/shared-types';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 import {
@@ -41,8 +42,8 @@ const STATUS_SEVERITY: Record<string, string> = {
   selector: 'app-purchase-order-list',
   imports: [
     CommonModule, RouterLink, FormsModule,
-    TableModule, ButtonModule, SelectModule, TagModule,
-    ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    TableModule, ButtonModule, CardModule, SelectModule, TagModule,
+    ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './purchase-order-list.component.html',
@@ -53,8 +54,9 @@ export class PurchaseOrderListComponent implements OnInit {
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Pedidos de Compra', routerLink: '/app/compras' }];
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
+
+  constructor() { this.breadcrumbSvc.set([{ label: 'Pedidos de Compra' }]); }
 
   readonly orders = signal<PurchaseOrder[]>([]);
   readonly loading = signal(false);

@@ -10,9 +10,10 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { AdminService, AdminTenant } from '../../admin.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import {
   createInitialTablePageState,
   formatTableSummary,
@@ -28,13 +29,16 @@ const PLAN_SEVERITY: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-tenant-list',
-  imports: [CommonModule, RouterLink, FormsModule, TableModule, ButtonModule, InputTextModule, TagModule, ToastModule, BreadcrumbModule],
-  providers: [MessageService],
+  imports: [CommonModule, RouterLink, FormsModule, TableModule, ButtonModule, InputTextModule, TagModule, ToastModule, ConfirmDialogModule],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './tenant-list.component.html',
 })
 export class TenantListComponent implements OnInit {
   private readonly svc        = inject(AdminService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
+  private readonly confirm    = inject(ConfirmationService);
+  private readonly msg        = inject(MessageService);
 
   readonly tenants          = signal<AdminTenant[]>([]);
   readonly loading          = signal(false);
@@ -43,8 +47,9 @@ export class TenantListComponent implements OnInit {
   search = '';
   private readonly search$  = new Subject<string | undefined>();
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/admin/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Tenants', routerLink: '/admin/tenants' }];
+  constructor() {
+    this.breadcrumbSvc.set([{ label: 'Tenants' }]);
+  }
 
   ngOnInit() {
     this.search$.pipe(
@@ -71,6 +76,21 @@ export class TenantListComponent implements OnInit {
   }
 
   planSeverity(plan: string): any { return PLAN_SEVERITY[plan] ?? 'secondary'; }
+
+  confirmDelete(tenant: AdminTenant) {
+    this.confirm.confirm({
+      message: `Deseja excluir o tenant "${tenant.name}"?`,
+      accept: () => {
+        this.svc.deleteTenant(tenant.id).subscribe({
+          next: () => {
+            this.msg.add({ severity: 'success', summary: 'Tenant excluído' });
+            this.tenants.update(list => list.filter(t => t.id !== tenant.id));
+          },
+          error: err => this.msg.add({ severity: 'error', summary: 'Erro ao excluir', detail: err?.error?.message }),
+        });
+      },
+    });
+  }
 
   tableSummary() {
     return formatTableSummary(

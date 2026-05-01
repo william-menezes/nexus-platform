@@ -7,16 +7,16 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { SettingsService } from '../../settings.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 @Component({
   standalone: true,
   selector: 'app-general-settings',
   imports: [
     CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule,
-    InputNumberModule, SelectModule, CardModule, ToastModule, BreadcrumbModule,
+    InputNumberModule, SelectModule, CardModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './general-settings.component.html',
@@ -26,12 +26,14 @@ export class GeneralSettingsComponent implements OnInit {
   private readonly svc = inject(SettingsService);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Configurações', routerLink: '/app/configuracoes' },
-    { label: 'Geral' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Configurações', routerLink: '/app/configuracoes' },
+      { label: 'Geral' },
+    ]);
+  }
 
   readonly saving = signal(false);
 

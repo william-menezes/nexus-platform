@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -7,9 +7,10 @@ import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { ServiceCatalog } from '@nexus-platform/shared-types';
 import { ServicesCatalogService } from '../../services-catalog.service';
 
@@ -18,7 +19,7 @@ import { ServicesCatalogService } from '../../services-catalog.service';
   selector: 'app-service-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule,
-    TextareaModule, InputNumberModule, ToggleButtonModule, ButtonModule, ToastModule, BreadcrumbModule,
+    TextareaModule, InputNumberModule, ToggleButtonModule, ButtonModule, CardModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './service-form.component.html',
@@ -30,15 +31,7 @@ export class ServiceFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly isEditSignal = signal(false);
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Serviços', routerLink: '/app/servicos' },
-      { label: this.isEditSignal() ? 'Editar Serviço' : 'Novo Serviço' },
-    ];
-  }
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   isEdit = false;
   editId = '';
@@ -56,8 +49,16 @@ export class ServiceFormComponent implements OnInit {
     this.editId = this.route.snapshot.params['id'];
     if (this.editId) {
       this.isEdit = true;
-      this.isEditSignal.set(true);
+      this.breadcrumbSvc.set([
+        { label: 'Serviços', routerLink: '/app/servicos' },
+        { label: 'Editar Serviço' },
+      ]);
       this.svc.getOne(this.editId).subscribe(s => this.form.patchValue(s as any));
+    } else {
+      this.breadcrumbSvc.set([
+        { label: 'Serviços', routerLink: '/app/servicos' },
+        { label: 'Novo Serviço' },
+      ]);
     }
   }
 

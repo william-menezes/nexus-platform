@@ -6,12 +6,12 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { ServiceOrder } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 const STATUS_FLOW: Record<string, string> = {
   open:            'in_progress',
@@ -22,26 +22,19 @@ const STATUS_FLOW: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-os-detail',
-  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink, TagModule, ButtonModule, CardModule, SkeletonModule, ConfirmDialogModule, ToastModule, MessageModule, BreadcrumbModule],
+  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink, TagModule, ButtonModule, CardModule, SkeletonModule, ConfirmDialogModule, ToastModule, MessageModule],
   providers: [ConfirmationService, MessageService],
   templateUrl: './os-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OsDetailComponent implements OnInit {
-  private readonly svc         = inject(ServiceOrdersService);
-  private readonly route       = inject(ActivatedRoute);
-  private readonly router      = inject(Router);
-  private readonly confirm     = inject(ConfirmationService);
-  private readonly toast       = inject(MessageService);
-  private readonly cdr         = inject(ChangeDetectorRef);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Ordens de Serviço', routerLink: '/app/os' },
-      { label: this.os?.code ?? '...' },
-    ];
-  }
+  private readonly svc           = inject(ServiceOrdersService);
+  private readonly route         = inject(ActivatedRoute);
+  private readonly router        = inject(Router);
+  private readonly confirm       = inject(ConfirmationService);
+  private readonly toast         = inject(MessageService);
+  private readonly cdr           = inject(ChangeDetectorRef);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   os: ServiceOrder | null = null;
   loading = true;
@@ -76,7 +69,15 @@ export class OsDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.svc.getOne(id).subscribe({
-      next: (data) => { this.os = data; this.loading = false; this.cdr.markForCheck(); },
+      next: (data) => {
+        this.os = data;
+        this.loading = false;
+        this.breadcrumbSvc.set([
+          { label: 'Ordens de Serviço', routerLink: '/app/os' },
+          { label: data.code ?? data.id },
+        ]);
+        this.cdr.markForCheck();
+      },
       error: () => { this.error = 'OS não encontrada.'; this.loading = false; this.cdr.markForCheck(); },
     });
   }

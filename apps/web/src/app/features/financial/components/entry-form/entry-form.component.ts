@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -6,10 +6,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { FinancialEntry } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 
@@ -18,7 +20,7 @@ import { FinancialService } from '../../financial.service';
   selector: 'app-entry-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule, TextareaModule,
-    InputNumberModule, SelectModule, ButtonModule, ToastModule, BreadcrumbModule,
+    InputNumberModule, SelectModule, DatePickerModule, ButtonModule, CardModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './entry-form.component.html',
@@ -26,19 +28,20 @@ import { FinancialService } from '../../financial.service';
 })
 export class EntryFormComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly svc = inject(FinancialService);
+  private readonly router = inject(Router);
+  private readonly msg = inject(MessageService);
+  private readonly fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
+
   readonly isEdit = signal(!!this.route.snapshot.paramMap.get('id'));
-  get breadcrumbs(): MenuItem[] {
-    return [
+
+  constructor() {
+    this.breadcrumbSvc.set([
       { label: 'Lançamentos', routerLink: '/app/financeiro/lancamentos' },
       { label: this.isEdit() ? 'Editar Lançamento' : 'Novo Lançamento' },
-    ];
+    ]);
   }
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-
-  private svc = inject(FinancialService);
-  private router = inject(Router);
-  private msg = inject(MessageService);
-  private fb = inject(FormBuilder);
 
   saving = signal(false);
 

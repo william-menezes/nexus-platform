@@ -10,13 +10,14 @@ import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputMaskModule } from 'primeng/inputmask';
 import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { DividerModule } from 'primeng/divider';
 import { AutoCompleteModule, AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { ToastModule } from 'primeng/toast';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Client, Quote } from '@nexus-platform/shared-types';
 import { QuotesService } from '../../quotes.service';
 import { ClientsService } from '../../../clients/clients.service';
@@ -32,7 +33,7 @@ const ITEM_TYPES = [
   imports: [
     ReactiveFormsModule, FormsModule, RouterLink,
     InputTextModule, TextareaModule, InputNumberModule, InputMaskModule,
-    SelectModule, ButtonModule, CardModule, BreadcrumbModule, DividerModule,
+    SelectModule, DatePickerModule, ButtonModule, CardModule, DividerModule,
     AutoCompleteModule, ToastModule,
   ],
   providers: [MessageService],
@@ -40,14 +41,15 @@ const ITEM_TYPES = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuoteFormComponent implements OnInit {
-  private readonly svc        = inject(QuotesService);
-  private readonly clientsSvc = inject(ClientsService);
-  private readonly router     = inject(Router);
-  private readonly route      = inject(ActivatedRoute);
-  private readonly msg        = inject(MessageService);
-  private readonly fb         = inject(FormBuilder);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr        = inject(ChangeDetectorRef);
+  private readonly svc           = inject(QuotesService);
+  private readonly clientsSvc    = inject(ClientsService);
+  private readonly router        = inject(Router);
+  private readonly route         = inject(ActivatedRoute);
+  private readonly msg           = inject(MessageService);
+  private readonly fb            = inject(FormBuilder);
+  private readonly destroyRef    = inject(DestroyRef);
+  private readonly cdr           = inject(ChangeDetectorRef);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   isEdit = false;
   editId = '';
@@ -69,14 +71,6 @@ export class QuoteFormComponent implements OnInit {
 
   get itemsArray() { return this.form.get('items') as FormArray; }
 
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Orçamentos', routerLink: '/app/orcamentos' },
-      { label: this.isEdit ? 'Editar Orçamento' : 'Novo Orçamento' },
-    ];
-  }
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-
   ngOnInit() {
     this.clientSearch$.pipe(
       debounceTime(300),
@@ -89,8 +83,12 @@ export class QuoteFormComponent implements OnInit {
     });
 
     this.editId = this.route.snapshot.params['id'];
+    this.isEdit = !!this.editId;
+    this.breadcrumbSvc.set([
+      { label: 'Orçamentos', routerLink: '/app/orcamentos' },
+      { label: this.isEdit ? 'Editar Orçamento' : 'Novo Orçamento' },
+    ]);
     if (this.editId) {
-      this.isEdit = true;
       this.svc.getOne(this.editId).subscribe(q => {
         this.form.patchValue({
           clientId:       q.clientId,

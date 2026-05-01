@@ -259,6 +259,14 @@ label {
 }
 
 /* ── 5. PRIMENG: INPUTS ── */
+textarea {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg) !important;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
 .p-inputtext,
 .p-password input {
   width: 100%;
@@ -282,9 +290,9 @@ label {
   transition: transform var(--transition-fast);
 }
 
-.p-card:hover {
+/* .p-card:hover {
   transform: translateY(-2px);
-}
+} */
 
 /* ── 7. PRIMENG: DATATABLE ── */
 .p-datatable {
@@ -606,6 +614,22 @@ label {
   color: var(--text-primary);
   font-weight: 600;
   pointer-events: none;
+}
+
+/* Mobile: trunca itens intermediários com ellipsis; último item sempre completo */
+@media (max-width: 639px) {
+  .nx-breadcrumb.p-breadcrumb .p-breadcrumb-item:not(:last-child) .p-breadcrumb-item-link {
+    max-width: 6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .nx-breadcrumb.p-breadcrumb .p-breadcrumb-item:last-child .p-breadcrumb-item-link {
+    white-space: nowrap;
+  }
 }
 
 /* Nav links */

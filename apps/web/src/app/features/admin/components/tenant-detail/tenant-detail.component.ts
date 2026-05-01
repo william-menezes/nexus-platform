@@ -11,9 +11,10 @@ import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';
 import { AdminService, AdminTenant } from '../../admin.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 const PLAN_SEVERITY: Record<string, string> = {
   trial: 'warn', starter: 'info', pro: 'success', enterprise: 'contrast',
@@ -25,8 +26,7 @@ const PLAN_SEVERITY: Record<string, string> = {
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, SelectModule, ToggleSwitchModule,
-    DatePickerModule, CardModule, TagModule, DividerModule, ToastModule,
-    BreadcrumbModule,
+    DatePickerModule, CardModule, TagModule, DividerModule, ToastModule, TooltipModule,
   ],
   providers: [MessageService],
   templateUrl: './tenant-detail.component.html',
@@ -37,17 +37,10 @@ export class TenantDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly tenant = signal<AdminTenant | null>(null);
   readonly saving = signal(false);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/admin/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Tenants', routerLink: '/admin/tenants' },
-      { label: this.tenant()?.name ?? '...' },
-    ];
-  }
 
   readonly planOptions = [
     { label: 'Trial',      value: 'trial' },
@@ -66,6 +59,10 @@ export class TenantDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.svc.findOneTenant(id).subscribe(t => {
       this.tenant.set(t);
+      this.breadcrumbSvc.set([
+        { label: 'Tenants', routerLink: '/admin/tenants' },
+        { label: t.name },
+      ]);
       this.form.patchValue({
         plan: t.plan,
         isActive: t.is_active,

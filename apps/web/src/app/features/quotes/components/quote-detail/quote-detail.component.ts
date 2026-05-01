@@ -6,8 +6,8 @@ import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Quote } from '@nexus-platform/shared-types';
 import { QuotesService } from '../../quotes.service';
 
@@ -16,32 +16,30 @@ import { QuotesService } from '../../quotes.service';
   selector: 'app-quote-detail',
   imports: [
     CommonModule, RouterLink, ButtonModule, TagModule, TableModule, ToastModule, ConfirmDialogModule,
-    BreadcrumbModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './quote-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuoteDetailComponent implements OnInit {
-  private svc = inject(QuotesService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private msg = inject(MessageService);
-  private confirm = inject(ConfirmationService);
+  private svc            = inject(QuotesService);
+  private route          = inject(ActivatedRoute);
+  private router         = inject(Router);
+  private msg            = inject(MessageService);
+  private confirm        = inject(ConfirmationService);
+  private breadcrumbSvc  = inject(BreadcrumbService);
 
   quote = signal<Quote | null>(null);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Orçamentos', routerLink: '/app/orcamentos' },
-      { label: this.quote()?.code ?? '...' },
-    ];
-  }
-
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    this.svc.getOne(id).subscribe(q => this.quote.set(q));
+    this.svc.getOne(id).subscribe(q => {
+      this.quote.set(q);
+      this.breadcrumbSvc.set([
+        { label: 'Orçamentos', routerLink: '/app/orcamentos' },
+        { label: q.code ?? q.id },
+      ]);
+    });
   }
 
   send(q: Quote) {

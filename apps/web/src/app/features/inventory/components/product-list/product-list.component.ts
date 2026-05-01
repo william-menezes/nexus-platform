@@ -3,11 +3,12 @@ import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Product } from '@nexus-platform/shared-types';
 import { InventoryService } from '../../inventory.service';
 import {
@@ -22,7 +23,7 @@ import {
   standalone: true,
   selector: 'app-product-list',
   imports: [
-    CurrencyPipe, RouterLink, TableModule, ButtonModule, TagModule, ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    CurrencyPipe, RouterLink, TableModule, ButtonModule, CardModule, TagModule, ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './product-list.component.html',
@@ -32,9 +33,9 @@ export class ProductListComponent implements OnInit {
   private readonly svc = inject(InventoryService);
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Estoque', routerLink: '/app/estoque' }];
+  constructor() { this.breadcrumbSvc.set([{ label: 'Estoque' }]); }
 
   products    = signal<Product[]>([]);
   loading     = signal(false);

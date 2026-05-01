@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -8,8 +8,8 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Contract, ContractBilling } from '@nexus-platform/shared-types';
 import { ContractsService } from '../../contracts.service';
 
@@ -31,7 +31,7 @@ const BILLING_STATUS: Record<string, string> = {
   imports: [
     CommonModule, RouterLink,
     ButtonModule, TagModule, CardModule, TableModule,
-    ToastModule, ConfirmDialogModule, DividerModule, BreadcrumbModule,
+    ToastModule, ConfirmDialogModule, DividerModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './contract-detail.component.html',
@@ -42,16 +42,11 @@ export class ContractDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly contract = signal<Contract | null>(null);
   readonly billing = signal<ContractBilling[]>([]);
   readonly loadingBilling = signal(false);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs = computed<MenuItem[]>(() => [
-    { label: 'Contratos', routerLink: '/app/contratos' },
-    { label: this.contract()?.code ?? '...' },
-  ]);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
@@ -60,7 +55,13 @@ export class ContractDetailComponent implements OnInit {
   }
 
   load(id: string) {
-    this.svc.findOne(id).subscribe(c => this.contract.set(c));
+    this.svc.findOne(id).subscribe(c => {
+      this.contract.set(c);
+      this.breadcrumbSvc.set([
+        { label: 'Contratos', routerLink: '/app/contratos' },
+        { label: c.code },
+      ]);
+    });
   }
 
   loadBilling(id: string) {

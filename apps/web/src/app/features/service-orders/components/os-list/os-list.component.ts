@@ -2,14 +2,17 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MenuItem } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ServiceOrder } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import {
   createInitialTablePageState,
   formatTableSummary,
@@ -21,15 +24,16 @@ import {
 @Component({
   standalone: true,
   selector: 'app-os-list',
-  imports: [DatePipe, RouterLink, ButtonModule, MessageModule, TableModule, TagModule, TooltipModule, BreadcrumbModule],
+  imports: [DatePipe, RouterLink, ButtonModule, CardModule, MessageModule, TableModule, TagModule, TooltipModule, ConfirmDialogModule, ToastModule],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './os-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OsListComponent implements OnInit {
-  private readonly svc = inject(ServiceOrdersService);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Ordens de Serviço', routerLink: '/app/os' }];
+  private readonly svc             = inject(ServiceOrdersService);
+  private readonly breadcrumbSvc   = inject(BreadcrumbService);
+  private readonly confirm         = inject(ConfirmationService);
+  private readonly msg             = inject(MessageService);
 
   orders  = signal<ServiceOrder[]>([]);
   loading = signal(false);
@@ -62,6 +66,7 @@ export class OsListComponent implements OnInit {
   };
 
   ngOnInit() {
+    this.breadcrumbSvc.set([{ label: 'Ordens de Serviço' }]);
     this.loading.set(true);
     this.svc.getAll().subscribe({
       next: (data) => { this.orders.set(data); this.loading.set(false); },
@@ -78,5 +83,22 @@ export class OsListComponent implements OnInit {
       getVisibleTableRecords(this.orders().length, this.tablePage()),
       this.orders().length
     );
+  }
+
+  confirmDelete(os: ServiceOrder) {
+    this.confirm.confirm({
+      message: `Excluir OS "${os.code}"?`,
+      header: 'Confirmar exclusão',
+      icon: 'pi pi-trash',
+      accept: () => {
+        this.svc.remove(os.id).subscribe({
+          next: () => {
+            this.msg.add({ severity: 'success', summary: 'OS excluída', detail: os.code });
+            this.orders.update(list => list.filter(o => o.id !== os.id));
+          },
+          error: (err) => this.msg.add({ severity: 'error', summary: 'Erro ao excluir', detail: err?.error?.message ?? '' }),
+        });
+      },
+    });
   }
 }

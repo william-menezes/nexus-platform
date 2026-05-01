@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MenuItem } from 'primeng/api';
 import { environment } from '../../../environments/environment';
+import { BreadcrumbService } from '../../core/breadcrumb/breadcrumb.service';
 import type { TableLazyLoadEvent } from 'primeng/table';
 import {
   DEFAULT_TABLE_ROWS,
@@ -55,8 +55,7 @@ const ENTITY_LABELS: Record<string, string> = {
   selector: 'app-audit-logs',
   imports: [
     CommonModule, FormsModule, TableModule, ButtonModule,
-    InputTextModule, SelectModule, DatePickerModule, TagModule, DialogModule,
-    BreadcrumbModule,
+    CardModule, InputTextModule, SelectModule, DatePickerModule, TagModule, DialogModule,
   ],
   providers: [DatePipe],
   templateUrl: './audit-logs.component.html',
@@ -64,9 +63,7 @@ const ENTITY_LABELS: Record<string, string> = {
 })
 export class AuditLogsComponent implements OnInit {
   private readonly http = inject(HttpClient);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Logs de Auditoria', routerLink: '/app/logs' }];
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly logs = signal<AuditLog[]>([]);
   readonly loading = signal(false);
@@ -93,6 +90,10 @@ export class AuditLogsComponent implements OnInit {
   ];
 
   readonly entityOptions = Object.entries(ENTITY_LABELS).map(([value, label]) => ({ value, label }));
+
+  constructor() {
+    this.breadcrumbSvc.set([{ label: 'Logs de Auditoria' }]);
+  }
 
   ngOnInit() {
     this.pageSize = this.tablePage().rows;

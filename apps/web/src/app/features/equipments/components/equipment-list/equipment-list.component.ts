@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Equipment, EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
 import {
@@ -21,7 +22,7 @@ import {
   standalone: true,
   selector: 'app-equipment-list',
   imports: [
-    CommonModule, RouterLink, TableModule, ButtonModule, ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    CommonModule, RouterLink, TableModule, ButtonModule, CardModule, ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './equipment-list.component.html',
@@ -31,9 +32,9 @@ export class EquipmentListComponent implements OnInit {
   private svc = inject(EquipmentsService);
   private confirm = inject(ConfirmationService);
   private msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Equipamentos', routerLink: '/app/equipamentos' }];
+  constructor() { this.breadcrumbSvc.set([{ label: 'Equipamentos' }]); }
 
   equipments = signal<Equipment[]>([]);
   types = signal<EquipmentType[]>([]);

@@ -3,9 +3,9 @@ import { CurrencyPipe, DatePipe, SlicePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MenuItem } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Sale } from '@nexus-platform/shared-types';
 import { FinanceService } from '../../finance.service';
 import {
@@ -29,15 +29,15 @@ const STATUS_CLASS: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-sales-list',
-  imports: [DatePipe, CurrencyPipe, SlicePipe, RouterLink, ButtonModule, TableModule, TagModule, BreadcrumbModule],
+  imports: [DatePipe, CurrencyPipe, SlicePipe, RouterLink, ButtonModule, CardModule, TableModule, TagModule],
   templateUrl: './sales-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesListComponent implements OnInit {
   private readonly svc = inject(FinanceService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Vendas', routerLink: '/app/vendas' }];
+  constructor() { this.breadcrumbSvc.set([{ label: 'Vendas' }]); }
 
   sales   = signal<Sale[]>([]);
   loading = signal(false);

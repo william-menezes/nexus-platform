@@ -13,13 +13,13 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { AutoCompleteModule, AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { MessageModule } from 'primeng/message';
 import { CardModule } from 'primeng/card';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { Client } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
 import { ClientsService } from '../../../clients/clients.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 @Component({
   standalone: true,
@@ -28,20 +28,21 @@ import { ClientsService } from '../../../clients/clients.service';
     ReactiveFormsModule, FormsModule, RouterLink,
     ButtonModule, InputTextModule, InputMaskModule, TextareaModule,
     InputNumberModule, AutoCompleteModule, MessageModule,
-    CardModule, BreadcrumbModule, DividerModule, ToastModule,
+    CardModule, DividerModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './os-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OsFormComponent implements OnInit {
-  private readonly fb         = inject(FormBuilder);
-  private readonly svc        = inject(ServiceOrdersService);
-  private readonly clientsSvc = inject(ClientsService);
-  private readonly router     = inject(Router);
-  private readonly route      = inject(ActivatedRoute);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr        = inject(ChangeDetectorRef);
+  private readonly fb             = inject(FormBuilder);
+  private readonly svc            = inject(ServiceOrdersService);
+  private readonly clientsSvc     = inject(ClientsService);
+  private readonly router         = inject(Router);
+  private readonly route          = inject(ActivatedRoute);
+  private readonly destroyRef     = inject(DestroyRef);
+  private readonly cdr            = inject(ChangeDetectorRef);
+  private readonly breadcrumbSvc  = inject(BreadcrumbService);
 
   editId:     string | null = null;
   submitting  = false;
@@ -62,14 +63,6 @@ export class OsFormComponent implements OnInit {
 
   get isEdit() { return !!this.editId; }
 
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Ordens de Serviço', routerLink: '/app/os' },
-      { label: this.isEdit ? 'Editar OS' : 'Nova OS' },
-    ];
-  }
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-
   ngOnInit() {
     this.clientSearch$.pipe(
       debounceTime(300),
@@ -82,6 +75,10 @@ export class OsFormComponent implements OnInit {
     });
 
     this.editId = this.route.snapshot.paramMap.get('id');
+    this.breadcrumbSvc.set([
+      { label: 'Ordens de Serviço', routerLink: '/app/os' },
+      { label: this.editId ? 'Editar OS' : 'Nova OS' },
+    ]);
     if (this.editId) {
       this.svc.getOne(this.editId).subscribe({
         next:  (os) => { this.form.patchValue(os as never); this.cdr.markForCheck(); },

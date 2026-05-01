@@ -5,33 +5,27 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService } from 'primeng/api';
 import { Client } from '@nexus-platform/shared-types';
 import { ClientsService } from '../../clients.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 @Component({
   standalone: true,
   selector: 'app-client-detail',
-  imports: [DatePipe, RouterLink, ButtonModule, TagModule, MessageModule, ConfirmDialogModule, BreadcrumbModule],
+  imports: [DatePipe, RouterLink, ButtonModule, TagModule, MessageModule, ConfirmDialogModule, TooltipModule],
   providers: [ConfirmationService],
   templateUrl: './client-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientDetailComponent implements OnInit {
-  private readonly svc     = inject(ClientsService);
-  private readonly router  = inject(Router);
-  private readonly route   = inject(ActivatedRoute);
-  private readonly confirm = inject(ConfirmationService);
-  private readonly cdr     = inject(ChangeDetectorRef);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Clientes', routerLink: '/app/clientes' },
-      { label: this.client?.name ?? '...' },
-    ];
-  }
+  private readonly svc          = inject(ClientsService);
+  private readonly router       = inject(Router);
+  private readonly route        = inject(ActivatedRoute);
+  private readonly confirm      = inject(ConfirmationService);
+  private readonly cdr          = inject(ChangeDetectorRef);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   client: Client | null = null;
   loading = true;
@@ -43,7 +37,15 @@ export class ClientDetailComponent implements OnInit {
 
   ngOnInit() {
     this.svc.getOne(this.clientId).subscribe({
-      next: (c) => { this.client = c; this.loading = false; this.cdr.markForCheck(); },
+      next: (c) => {
+        this.client = c;
+        this.loading = false;
+        this.breadcrumbSvc.set([
+          { label: 'Clientes', routerLink: '/app/clientes' },
+          { label: c.name },
+        ]);
+        this.cdr.markForCheck();
+      },
       error: () => { this.error = 'Erro ao carregar cliente.'; this.loading = false; this.cdr.markForCheck(); },
     });
   }

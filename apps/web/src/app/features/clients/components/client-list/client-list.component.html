@@ -1,6 +1,7 @@
-<div class="nx-page">
+<p-toast />
+<p-confirmDialog />
 
-  <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
+<div class="nx-page">
 
   <div class="nx-page-header">
     <div>
@@ -12,30 +13,32 @@
     </a>
   </div>
 
-  <div class="mb-4">
-    <div class="relative max-w-sm">
-      <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm pointer-events-none"></i>
-      <input
-        type="text"
-        placeholder="Buscar por nome ou CPF/CNPJ…"
-        [(ngModel)]="search"
-        (keyup.enter)="onSearch()"
-        class="block w-full rounded-lg border border-surface-border bg-surface pl-9 pr-3 py-2.5 text-sm text-text
-               placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500
-               focus:outline-none transition-colors"
-        aria-label="Buscar clientes"
-      />
-    </div>
-  </div>
+  <p-card styleClass="w-full">
 
-  @if (error()) {
-    <div role="alert" class="mb-4 flex items-center gap-3 rounded-lg border border-danger-500 bg-danger-50 px-4 py-3 text-sm text-danger-700">
-      <i class="pi pi-exclamation-circle shrink-0"></i>
-      {{ error() }}
+    <div class="mb-4">
+      <div class="relative max-w-sm">
+        <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm pointer-events-none"></i>
+        <input
+          type="text"
+          placeholder="Buscar por nome ou CPF/CNPJ…"
+          [(ngModel)]="search"
+          (keyup.enter)="onSearch()"
+          class="block w-full rounded-lg border border-surface-border bg-surface pl-9 pr-3 py-2.5 text-sm text-text
+                 placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500
+                 focus:outline-none transition-colors"
+          aria-label="Buscar clientes"
+        />
+      </div>
     </div>
-  }
 
-  <div class="overflow-x-auto">
+    @if (error()) {
+      <div role="alert" class="mb-4 flex items-center gap-3 rounded-lg border border-danger-500 bg-danger-50 px-4 py-3 text-sm text-danger-700">
+        <i class="pi pi-exclamation-circle shrink-0"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="overflow-x-auto">
     <p-table
       [value]="clients()"
       [loading]="loading()"
@@ -72,6 +75,7 @@
             <div class="flex items-center justify-end gap-1">
               <a [routerLink]="client.id" pButton icon="pi pi-eye" class="p-button-sm p-button-text" aria-label="Ver detalhes do cliente"></a>
               <a [routerLink]="[client.id, 'editar']" pButton icon="pi pi-pencil" class="p-button-sm p-button-text" aria-label="Editar cliente"></a>
+              <p-button icon="pi pi-trash" severity="danger" [text]="true" styleClass="p-button-sm" (onClick)="confirmDelete(client)" />
             </div>
           </td>
         </tr>
@@ -91,6 +95,8 @@
         <span class="nx-table-summary">{{ tableSummary() }}</span>
       </ng-template>
     </p-table>
-  </div>
+    </div>
+
+  </p-card>
 
 </div>

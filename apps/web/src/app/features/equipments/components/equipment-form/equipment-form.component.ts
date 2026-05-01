@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -6,9 +6,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Equipment, EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
 
@@ -17,7 +18,7 @@ import { EquipmentsService } from '../../equipments.service';
   selector: 'app-equipment-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule,
-    TextareaModule, SelectModule, ButtonModule, ToastModule, BreadcrumbModule,
+    TextareaModule, SelectModule, ButtonModule, CardModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './equipment-form.component.html',
@@ -29,20 +30,20 @@ export class EquipmentFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly isEditSignal = signal(!!this.route.snapshot.paramMap.get('id'));
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Equipamentos', routerLink: '/app/equipamentos' },
-      { label: this.isEditSignal() ? 'Editar Equipamento' : 'Novo Equipamento' },
-    ];
-  }
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   isEdit = false;
   editId = '';
   saving = signal(false);
   types = signal<EquipmentType[]>([]);
+
+  constructor() {
+    const isEdit = !!this.route.snapshot.paramMap.get('id');
+    this.breadcrumbSvc.set([
+      { label: 'Equipamentos', routerLink: '/app/equipamentos' },
+      { label: isEdit ? 'Editar Equipamento' : 'Novo Equipamento' },
+    ]);
+  }
 
   form = this.fb.group({
     equipmentTypeId: ['', Validators.required],

@@ -10,8 +10,9 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { ContractsService } from '../../contracts.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -24,7 +25,7 @@ interface ClientOption { id: string; name: string; }
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule, DatePickerModule,
-    SelectModule, TextareaModule, CardModule, ToastModule, BreadcrumbModule,
+    SelectModule, TextareaModule, CardModule, ToastModule, TooltipModule,
   ],
   providers: [MessageService],
   templateUrl: './contract-form.component.html',
@@ -38,16 +39,12 @@ export class ContractFormComponent implements OnInit {
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
 
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
+
   readonly clients = signal<ClientOption[]>([]);
   readonly isEdit = signal(!!this.route.snapshot.paramMap.get('id'));
   readonly saving = signal(false);
   private editId: string | null = null;
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs = computed<MenuItem[]>(() => [
-    { label: 'Contratos', routerLink: '/app/contratos' },
-    { label: this.isEdit() ? (this.contractData()?.code ?? 'Editar Contrato') : 'Novo Contrato' },
-  ]);
 
   readonly contractData = signal<{ code: string } | null>(null);
 

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
@@ -9,8 +9,8 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { DividerModule } from 'primeng/divider';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { PurchaseOrder, PurchaseItem, ReceivePurchaseOrderPayload } from '@nexus-platform/shared-types';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 
@@ -29,7 +29,7 @@ const STATUS_SEVERITY: Record<string, string> = {
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputNumberModule, TagModule, CardModule,
-    TableModule, ToastModule, DividerModule, BreadcrumbModule,
+    TableModule, ToastModule, DividerModule,
   ],
   providers: [MessageService],
   templateUrl: './purchase-order-detail.component.html',
@@ -40,14 +40,7 @@ export class PurchaseOrderDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Pedidos de Compra', routerLink: '/app/compras' },
-      { label: this.po()?.code ?? '...' },
-    ];
-  }
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly po = signal<PurchaseOrder | null>(null);
   readonly receiving = signal(false);
@@ -64,6 +57,10 @@ export class PurchaseOrderDetailComponent implements OnInit {
     this.svc.findOne(id).subscribe(po => {
       this.po.set(po);
       this.buildReceiveForm(po.items);
+      this.breadcrumbSvc.set([
+        { label: 'Pedidos de Compra', routerLink: '/app/compras' },
+        { label: po.code },
+      ]);
     });
   }
 

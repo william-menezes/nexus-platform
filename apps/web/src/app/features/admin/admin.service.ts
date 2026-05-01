@@ -45,4 +45,8 @@ export class AdminService {
   updateTenant(id: string, payload: { plan?: string; isActive?: boolean; trialEndsAt?: string }) {
     return this.http.patch<AdminTenant>(`${this.base}/tenants/${id}`, payload);
   }
+
+  deleteTenant(id: string) {
+    return this.http.delete<void>(`${this.base}/tenants/${id}`);
+  }
 }

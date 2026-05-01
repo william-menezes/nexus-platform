@@ -9,8 +9,8 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { CashSession, CashRegister, CashMovement } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 
@@ -19,7 +19,7 @@ import { FinancialService } from '../../financial.service';
   selector: 'app-cash-session',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputNumberModule,
-    InputTextModule, SelectModule, ButtonModule, TagModule, TableModule, ToastModule, BreadcrumbModule,
+    InputTextModule, SelectModule, ButtonModule, TagModule, TableModule, ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './cash-session.component.html',
@@ -29,12 +29,14 @@ export class CashSessionComponent implements OnInit {
   private svc = inject(FinancialService);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Caixa', routerLink: '/app/financeiro/caixa' },
-    { label: 'Sessão Atual' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Financeiro', routerLink: '/app/financeiro' },
+      { label: 'Caixa' },
+    ]);
+  }
 
   session = signal<CashSession | null>(null);
   registers = signal<CashRegister[]>([]);

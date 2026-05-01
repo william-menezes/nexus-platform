@@ -7,8 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
 import {
@@ -24,7 +24,7 @@ import {
   selector: 'app-equipment-type-list',
   imports: [
     CommonModule, TableModule, ButtonModule, DialogModule,
-    InputTextModule, ReactiveFormsModule, ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    InputTextModule, ReactiveFormsModule, ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './equipment-type-list.component.html',
@@ -35,12 +35,14 @@ export class EquipmentTypeListComponent implements OnInit {
   private confirm = inject(ConfirmationService);
   private msg = inject(MessageService);
   private fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Equipamentos', routerLink: '/app/equipamentos' },
-    { label: 'Tipos de Equipamento' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Equipamentos', routerLink: '/app/equipamentos' },
+      { label: 'Tipos de Equipamento' },
+    ]);
+  }
 
   types = signal<EquipmentType[]>([]);
   loading = signal(false);

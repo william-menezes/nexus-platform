@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -7,8 +7,8 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Return } from '@nexus-platform/shared-types';
 import { ReturnsService } from '../../returns.service';
 
@@ -30,7 +30,7 @@ const TYPE_LABELS: Record<string, string> = {
   imports: [
     CommonModule, RouterLink,
     ButtonModule, TagModule, CardModule, TableModule,
-    ToastModule, ConfirmDialogModule, BreadcrumbModule,
+    ToastModule, ConfirmDialogModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './return-detail.component.html',
@@ -41,14 +41,7 @@ export class ReturnDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly confirm = inject(ConfirmationService);
   private readonly msg = inject(MessageService);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  get breadcrumbs(): MenuItem[] {
-    return [
-      { label: 'Devoluções', routerLink: '/app/devolucoes' },
-      { label: this.ret()?.code ?? '...' },
-    ];
-  }
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   readonly ret = signal<Return | null>(null);
 
@@ -58,7 +51,13 @@ export class ReturnDetailComponent implements OnInit {
   }
 
   load(id: string) {
-    this.svc.findOne(id).subscribe(r => this.ret.set(r));
+    this.svc.findOne(id).subscribe(r => {
+      this.ret.set(r);
+      this.breadcrumbSvc.set([
+        { label: 'Devoluções', routerLink: '/app/vendas/devolucoes' },
+        { label: r.code },
+      ]);
+    });
   }
 
   statusLabel(s: string) { return STATUS_LABELS[s] ?? s; }

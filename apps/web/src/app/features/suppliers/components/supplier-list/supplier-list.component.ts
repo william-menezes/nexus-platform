@@ -7,11 +7,12 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { Supplier } from '@nexus-platform/shared-types';
 import { SuppliersService } from '../../suppliers.service';
 import {
@@ -27,7 +28,7 @@ import {
   selector: 'app-supplier-list',
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
-    InputTextModule, ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    CardModule, InputTextModule, ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './supplier-list.component.html',
@@ -38,8 +39,9 @@ export class SupplierListComponent implements OnInit {
   private readonly msg        = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Fornecedores', routerLink: '/app/fornecedores' }];
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
+
+  constructor() { this.breadcrumbSvc.set([{ label: 'Fornecedores' }]); }
 
   readonly suppliers        = signal<Supplier[]>([]);
   readonly loading          = signal(false);

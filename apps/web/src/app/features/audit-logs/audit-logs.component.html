@@ -6,8 +6,7 @@
     </div>
   </div>
 
-  <p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
-
+  <p-card styleClass="w-full">
   <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
     <p-select [(ngModel)]="filterAction" [options]="actionOptions"
       optionLabel="label" optionValue="value" placeholder="Ação"
@@ -87,6 +86,7 @@
       </ng-template>
     </p-table>
   </div>
+  </p-card>
 </div>
 
 <p-dialog [(visible)]="detailVisible" header="Detalhes da Alteração"

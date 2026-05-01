@@ -6,21 +6,24 @@ import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { LayoutService } from '../../../core/layout/layout.service';
 import { ThemeService } from '../../../core/theme/theme.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { BreadcrumbService } from '../../../core/breadcrumb/breadcrumb.service';
 
 @Component({
   standalone: true,
   selector: 'app-header',
-  imports: [ButtonModule, AvatarModule, MenuModule, TooltipModule],
+  imports: [ButtonModule, AvatarModule, MenuModule, TooltipModule, BreadcrumbModule],
   templateUrl: './header.component.html',
   host: { class: 'nx-header' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  readonly layout = inject(LayoutService);
-  readonly theme  = inject(ThemeService);
+  readonly layout     = inject(LayoutService);
+  readonly theme      = inject(ThemeService);
+  readonly breadcrumb = inject(BreadcrumbService);
   private readonly auth   = inject(AuthService);
   private readonly router = inject(Router);
 

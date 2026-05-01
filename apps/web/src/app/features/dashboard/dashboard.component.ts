@@ -1,26 +1,27 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MenuItem } from 'primeng/api';
 import { ServiceOrdersService } from '../service-orders/service-orders.service';
+import { BreadcrumbService } from '../../core/breadcrumb/breadcrumb.service';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard',
-  imports: [RouterLink, BreadcrumbModule],
+  imports: [RouterLink],
   templateUrl: './dashboard.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   private readonly osSvc = inject(ServiceOrdersService);
-
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [{ label: 'Dashboard', routerLink: '/app/dashboard' }];
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   loading          = signal(false);
   openOrders       = signal(0);
   inProgressOrders = signal(0);
   doneToday        = signal(0);
+
+  constructor() {
+    this.breadcrumbSvc.set([]);
+  }
 
   ngOnInit() {
     this.loading.set(true);

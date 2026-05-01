@@ -7,19 +7,20 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { MessageService, MenuItem } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Employee } from '@nexus-platform/shared-types';
 import { EmployeesService } from '../../employees.service';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
 @Component({
   standalone: true,
   selector: 'app-invite-employee',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
-    ButtonModule, InputTextModule, SelectModule, CardModule, ToastModule, BreadcrumbModule,
+    ButtonModule, InputTextModule, SelectModule, CardModule, ToastModule, TooltipModule,
   ],
   providers: [MessageService],
   templateUrl: './invite-employee.component.html',
@@ -30,12 +31,14 @@ export class InviteEmployeeComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Funcionários', routerLink: '/app/funcionarios' },
-    { label: 'Convidar Funcionário' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Funcionários', routerLink: '/app/funcionarios' },
+      { label: 'Convidar Funcionário' },
+    ]);
+  }
 
   readonly employees = signal<Employee[]>([]);
   readonly sending = signal(false);

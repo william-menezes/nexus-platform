@@ -1,6 +1,5 @@
 <p-toast />
 <p-confirmDialog />
-<p-breadcrumb [model]="breadcrumbs" [home]="homeItem" styleClass="nx-breadcrumb mb-4" />
 <div class="nx-page">
   <div class="nx-page-header">
     <div>
@@ -14,7 +13,8 @@
     </div>
   </div>
 
-  <div class="flex gap-3 mb-4">
+  <p-card styleClass="w-full">
+    <div class="flex gap-3 mb-4">
     <p-select [(ngModel)]="filterType" [options]="typeOptions" optionLabel="label" optionValue="value"
       placeholder="Tipo" (onChange)="load()" [style]="{ width: '150px' }" />
     <p-select [(ngModel)]="filterStatus" [options]="statusOptions" optionLabel="label" optionValue="value"
@@ -79,4 +79,5 @@
       </ng-template>
     </p-table>
   </div>
+  </p-card>
 </div>

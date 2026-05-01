@@ -6,8 +6,8 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { ChartOfAccount } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 import {
@@ -23,7 +23,7 @@ import {
   selector: 'app-chart-of-accounts',
   imports: [
     CommonModule, RouterLink, TableModule, ButtonModule, TagModule,
-    ConfirmDialogModule, ToastModule, BreadcrumbModule,
+    ConfirmDialogModule, ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './chart-of-accounts.component.html',
@@ -33,12 +33,14 @@ export class ChartOfAccountsComponent implements OnInit {
   private svc = inject(FinancialService);
   private confirm = inject(ConfirmationService);
   private msg = inject(MessageService);
+  private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly homeItem: MenuItem = { icon: 'pi pi-home', routerLink: '/app/dashboard' };
-  readonly breadcrumbs: MenuItem[] = [
-    { label: 'Configurações', routerLink: '/app/configuracoes' },
-    { label: 'Plano de Contas' },
-  ];
+  constructor() {
+    this.breadcrumbSvc.set([
+      { label: 'Financeiro', routerLink: '/app/financeiro' },
+      { label: 'Plano de Contas' },
+    ]);
+  }
 
   accounts = signal<ChartOfAccount[]>([]);
   loading = signal(false);
