@@ -4,7 +4,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json nx.json tsconfig.base.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 COPY apps/api ./apps/api
 COPY libs     ./libs
