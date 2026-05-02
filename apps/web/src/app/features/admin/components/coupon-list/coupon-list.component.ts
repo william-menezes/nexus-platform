@@ -56,7 +56,7 @@ export class CouponListComponent implements OnInit {
     this.tablePage.update(current => updateTablePageState(current, event));
   }
 
-  couponStatus(coupon: AdminCoupon): { label: string; severity: string } {
+  couponStatus(coupon: AdminCoupon): { label: string; severity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' } {
     if (coupon.max_uses !== null && coupon.uses_count >= coupon.max_uses) {
       return { label: 'Esgotado', severity: 'danger' };
     }
