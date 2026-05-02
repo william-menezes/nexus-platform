@@ -144,30 +144,8 @@ export const appRoutes: Routes = [
     canActivate: [adminGuard],
     loadComponent: () =>
       import('./layout/admin-shell/admin-shell.component').then(m => m.AdminShellComponent),
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./features/admin/components/admin-dashboard/admin-dashboard.component').then(
-            m => m.AdminDashboardComponent,
-          ),
-      },
-      {
-        path: 'tenants',
-        loadComponent: () =>
-          import('./features/admin/components/tenant-list/tenant-list.component').then(
-            m => m.TenantListComponent,
-          ),
-      },
-      {
-        path: 'tenants/:id',
-        loadComponent: () =>
-          import('./features/admin/components/tenant-detail/tenant-detail.component').then(
-            m => m.TenantDetailComponent,
-          ),
-      },
-    ],
+    loadChildren: () =>
+      import('./features/admin/admin.routes').then(m => m.routes),
   },
   { path: '**', redirectTo: '' },
 ];

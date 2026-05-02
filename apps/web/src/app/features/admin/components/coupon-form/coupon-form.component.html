@@ -1,0 +1,86 @@
+<p-toast />
+<div class="nx-page max-w-xl mx-auto">
+  <div class="nx-page-header">
+    <div class="flex items-center gap-2">
+      <a routerLink="/admin/cupons">
+        <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary"
+          pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
+      </a>
+      <div>
+        <h1 class="nx-page-title">{{ couponId() ? 'Editar Cupom' : 'Novo Cupom' }}</h1>
+        <p class="nx-page-subtitle">{{ couponId() ? 'Atualize as informações do cupom' : 'Preencha os dados do novo cupom' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="flex justify-center py-12">
+    <i class="pi pi-spin pi-spinner text-3xl text-text-muted"></i>
+  </div>
+
+  <form *ngIf="!loading()" [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-5">
+
+    <!-- Código -->
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Código <span class="text-red-500">*</span></label>
+      <input pInputText formControlName="code" placeholder="Ex: PROMO2026"
+        class="w-full font-mono uppercase tracking-wider" />
+      <small class="text-text-muted text-xs">O código será exibido em maiúsculas.</small>
+      <small class="text-red-500" *ngIf="form.controls.code.invalid && form.controls.code.touched">
+        Informe um código com pelo menos 3 caracteres.
+      </small>
+    </div>
+
+    <!-- Tipo e Valor -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Tipo <span class="text-red-500">*</span></label>
+        <p-select formControlName="type" [options]="typeOptions"
+          optionLabel="label" optionValue="value" styleClass="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Valor <span class="text-red-500">*</span></label>
+        <p-inputnumber formControlName="value"
+          [mode]="form.controls.type.value === 'fixed' ? 'currency' : 'decimal'"
+          [currency]="form.controls.type.value === 'fixed' ? 'BRL' : undefined"
+          [locale]="form.controls.type.value === 'fixed' ? 'pt-BR' : undefined"
+          [suffix]="form.controls.type.value === 'percentage' ? '%' : ''"
+          [min]="0.01" [maxFractionDigits]="2" styleClass="w-full" />
+        <small class="text-red-500" *ngIf="form.controls.value.invalid && form.controls.value.touched">
+          Informe um valor maior que zero.
+        </small>
+      </div>
+    </div>
+
+    <!-- Validade e Máx. Usos -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Válido até</label>
+        <p-datepicker formControlName="valid_until" dateFormat="dd/mm/yy"
+          [showIcon]="true" [showClear]="true" styleClass="w-full"
+          placeholder="Sem limite de data" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Máximo de usos</label>
+        <p-inputnumber formControlName="max_uses" [min]="0" [showButtons]="true"
+          styleClass="w-full" placeholder="0 = ilimitado" />
+        <small class="text-text-muted text-xs">Deixe vazio ou 0 para ilimitado.</small>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="flex items-center gap-3">
+      <p-toggleswitch formControlName="is_active" />
+      <label class="text-sm font-medium">Cupom ativo</label>
+    </div>
+
+    <!-- Botões -->
+    <div class="flex justify-end gap-2 pt-2 border-t border-surface-border">
+      <a routerLink="/admin/cupons">
+        <p-button label="Cancelar" severity="secondary" [text]="true" />
+      </a>
+      <p-button type="submit" [label]="couponId() ? 'Salvar Alterações' : 'Criar Cupom'"
+        icon="pi pi-check" [loading]="saving()" />
+    </div>
+
+  </form>
+</div>

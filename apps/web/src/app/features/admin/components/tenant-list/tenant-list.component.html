@@ -7,9 +7,15 @@
     <h1 class="text-2xl font-bold">Tenants</h1>
   </div>
 
-  <div class="mb-3">
-    <input pInputText [(ngModel)]="search" (input)="onSearchInput()"
-      placeholder="Buscar por nome..." class="w-full md:w-1/3" />
+  <div class="flex flex-wrap gap-3 mb-3">
+    <input pInputText [(ngModel)]="search" (input)="onFilterChange()"
+      placeholder="Buscar por nome..." class="w-full md:w-64" />
+    <p-select [(ngModel)]="filterPlan" [options]="planOptions"
+      optionLabel="label" optionValue="value"
+      (onChange)="onFilterChange()" styleClass="w-full md:w-48" />
+    <p-select [(ngModel)]="filterStatus" [options]="statusOptions"
+      optionLabel="label" optionValue="value"
+      (onChange)="onFilterChange()" styleClass="w-full md:w-44" />
   </div>
 
   <div class="overflow-x-auto">
@@ -32,9 +38,9 @@
           <th pSortableColumn="plan">Plano <p-sortIcon field="plan" /></th>
           <th pSortableColumn="is_active">Status <p-sortIcon field="is_active" /></th>
           <th pSortableColumn="segment">Segmento <p-sortIcon field="segment" /></th>
-          <th pSortableColumn="trial_ends_at">Trial at? <p-sortIcon field="trial_ends_at" /></th>
+          <th pSortableColumn="trial_ends_at">Trial até <p-sortIcon field="trial_ends_at" /></th>
           <th pSortableColumn="created_at">Criado em <p-sortIcon field="created_at" /></th>
-          <th>A??es</th>
+          <th>Ações</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-t>
@@ -52,8 +58,8 @@
             <p-tag [value]="t.is_active ? 'Ativo' : 'Inativo'"
               [severity]="t.is_active ? 'success' : 'danger'" />
           </td>
-          <td class="capitalize">{{ t.segment || '?' }}</td>
-          <td>{{ t.trial_ends_at ? (t.trial_ends_at | date:'dd/MM/yyyy') : '?' }}</td>
+          <td class="capitalize">{{ t.segment || '—' }}</td>
+          <td>{{ t.trial_ends_at ? (t.trial_ends_at | date:'dd/MM/yyyy') : '—' }}</td>
           <td>{{ t.created_at | date:'dd/MM/yyyy' }}</td>
           <td>
             <a [routerLink]="[t.id]" pButton icon="pi pi-pencil"
@@ -68,7 +74,7 @@
             <div class="nx-table-empty">
               <span class="nx-table-empty__icon"><i class="pi pi-building"></i></span>
               <span class="nx-table-empty__title">Nenhum tenant encontrado</span>
-              <div class="nx-table-empty__description">Os tenants cadastrados no ambiente aparecer?o aqui.</div>
+              <div class="nx-table-empty__description">Os tenants cadastrados no ambiente aparecerão aqui.</div>
             </div>
           </td>
         </tr>

@@ -1,0 +1,91 @@
+<p-toast />
+<p-confirmDialog />
+<div class="nx-page">
+  <div class="nx-page-header">
+    <div class="flex items-center gap-2">
+      <a routerLink="/admin" pButton icon="pi pi-arrow-left"
+        class="p-button-text p-button-sm" aria-label="Voltar"></a>
+      <div>
+        <h1 class="nx-page-title">Planos</h1>
+        <p class="nx-page-subtitle">Gerencie os planos de assinatura disponíveis</p>
+      </div>
+    </div>
+    <a routerLink="/admin/planos/novo" pButton label="Novo Plano"
+      icon="pi pi-plus" class="p-button-sm"></a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <p-table
+      [value]="plans()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '900px' }"
+      (onPage)="onPageChange($event)"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="sort_order"># <p-sortIcon field="sort_order" /></th>
+          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+          <th pSortableColumn="slug">Slug <p-sortIcon field="slug" /></th>
+          <th pSortableColumn="price">Preço <p-sortIcon field="price" /></th>
+          <th>Módulos</th>
+          <th>Limites</th>
+          <th pSortableColumn="is_active">Status <p-sortIcon field="is_active" /></th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-p>
+        <tr>
+          <td class="text-text-muted text-xs">{{ p.sort_order }}</td>
+          <td class="font-medium">{{ p.name }}</td>
+          <td><code class="text-xs bg-surface-raised px-1 py-0.5 rounded">{{ p.slug }}</code></td>
+          <td>{{ p.price | currency:'BRL':'symbol':'1.2-2' }}</td>
+          <td>
+            <div class="flex flex-wrap gap-1">
+              <span *ngFor="let mod of p.modules"
+                class="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                {{ moduleLabel(mod) }}
+              </span>
+              <span *ngIf="!p.modules?.length" class="text-text-muted text-xs">Nenhum</span>
+            </div>
+          </td>
+          <td class="text-sm">
+            <span class="text-text-secondary">OS:</span> {{ limitLabel(p.limits?.max_os) }}
+            <span class="mx-1 text-text-muted">·</span>
+            <span class="text-text-secondary">Usuários:</span> {{ limitLabel(p.limits?.max_users) }}
+          </td>
+          <td>
+            <p-tag [value]="p.is_active ? 'Ativo' : 'Inativo'"
+              [severity]="p.is_active ? 'success' : 'secondary'" />
+          </td>
+          <td>
+            <a [routerLink]="['/admin/planos', p.id]" pButton icon="pi pi-pencil"
+              class="p-button-sm p-button-text" aria-label="Editar plano"></a>
+            <p-button icon="pi pi-trash" severity="danger" [text]="true"
+              styleClass="p-button-sm" (onClick)="confirmDelete(p)" />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-tag"></i></span>
+              <span class="nx-table-empty__title">Nenhum plano cadastrado</span>
+              <div class="nx-table-empty__description">Crie o primeiro plano clicando em "Novo Plano".</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

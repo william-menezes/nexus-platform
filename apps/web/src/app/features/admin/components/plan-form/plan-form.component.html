@@ -1,0 +1,107 @@
+<p-toast />
+<div class="nx-page max-w-2xl mx-auto">
+  <div class="nx-page-header">
+    <div class="flex items-center gap-2">
+      <a routerLink="/admin/planos">
+        <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary"
+          pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
+      </a>
+      <div>
+        <h1 class="nx-page-title">{{ planId() ? 'Editar Plano' : 'Novo Plano' }}</h1>
+        <p class="nx-page-subtitle">{{ planId() ? 'Atualize as informações do plano' : 'Preencha os dados para criar um novo plano' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="flex justify-center py-12">
+    <i class="pi pi-spin pi-spinner text-3xl text-text-muted"></i>
+  </div>
+
+  <form *ngIf="!loading()" [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-5">
+
+    <!-- Nome e Slug -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Nome <span class="text-red-500">*</span></label>
+        <input pInputText formControlName="name" placeholder="Ex: Pro" class="w-full" />
+        <small class="text-red-500" *ngIf="form.controls.name.invalid && form.controls.name.touched">
+          Campo obrigatório
+        </small>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Slug <span class="text-red-500">*</span></label>
+        <input pInputText formControlName="slug" placeholder="Ex: pro" class="w-full" />
+        <small class="text-red-500" *ngIf="form.controls.slug.invalid && form.controls.slug.touched">
+          Campo obrigatório
+        </small>
+      </div>
+    </div>
+
+    <!-- Descrição -->
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Descrição</label>
+      <textarea pTextarea formControlName="description" rows="2"
+        placeholder="Descrição opcional do plano" class="w-full resize-none"></textarea>
+    </div>
+
+    <!-- Preço e Ordem -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Preço (R$) <span class="text-red-500">*</span></label>
+        <p-inputnumber formControlName="price" mode="currency" currency="BRL" locale="pt-BR"
+          [min]="0" styleClass="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Ordem de exibição</label>
+        <p-inputnumber formControlName="sort_order" [min]="0" [showButtons]="true"
+          styleClass="w-full" />
+      </div>
+    </div>
+
+    <!-- Limites -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Máx. Ordens de Serviço</label>
+        <p-inputnumber formControlName="max_os" [min]="0" [showButtons]="true"
+          styleClass="w-full" />
+        <small class="text-text-muted text-xs">0 = ilimitado</small>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Máx. Usuários</label>
+        <p-inputnumber formControlName="max_users" [min]="0" [showButtons]="true"
+          styleClass="w-full" />
+        <small class="text-text-muted text-xs">0 = ilimitado</small>
+      </div>
+    </div>
+
+    <!-- Módulos -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium">Módulos incluídos</label>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 border border-surface-border rounded-lg bg-surface">
+        <div *ngFor="let mod of moduleOptions"
+          class="flex items-center gap-2 cursor-pointer select-none"
+          (click)="toggleModule(mod.value)">
+          <p-checkbox [ngModel]="isModuleSelected(mod.value)" [ngModelOptions]="{ standalone: true }"
+            [binary]="true" (onChange)="toggleModule(mod.value)" />
+          <span class="text-sm">{{ mod.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="flex items-center gap-3">
+      <p-toggleswitch formControlName="is_active" />
+      <label class="text-sm font-medium">Plano ativo</label>
+    </div>
+
+    <!-- Botões -->
+    <div class="flex justify-end gap-2 pt-2 border-t border-surface-border">
+      <a routerLink="/admin/planos">
+        <p-button label="Cancelar" severity="secondary" [text]="true" />
+      </a>
+      <p-button type="submit" [label]="planId() ? 'Salvar Alterações' : 'Criar Plano'"
+        icon="pi pi-check" [loading]="saving()" />
+    </div>
+
+  </form>
+</div>

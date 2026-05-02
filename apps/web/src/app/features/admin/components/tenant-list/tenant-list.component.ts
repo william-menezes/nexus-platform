@@ -3,11 +3,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -29,7 +30,7 @@ const PLAN_SEVERITY: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-tenant-list',
-  imports: [CommonModule, RouterLink, FormsModule, TableModule, ButtonModule, InputTextModule, TagModule, ToastModule, ConfirmDialogModule],
+  imports: [CommonModule, RouterLink, FormsModule, TableModule, ButtonModule, InputTextModule, SelectModule, TagModule, ToastModule, ConfirmDialogModule],
   providers: [ConfirmationService, MessageService],
   templateUrl: './tenant-list.component.html',
 })
@@ -44,31 +45,53 @@ export class TenantListComponent implements OnInit {
   readonly loading          = signal(false);
   readonly tablePage        = signal(createInitialTablePageState());
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
-  search = '';
-  private readonly search$  = new Subject<string | undefined>();
+
+  search       = '';
+  filterPlan   = '';
+  filterStatus = '';
+
+  private readonly filter$ = new Subject<void>();
+
+  readonly planOptions = [
+    { label: 'Todos os planos', value: '' },
+    { label: 'Trial',           value: 'trial' },
+    { label: 'Starter',         value: 'starter' },
+    { label: 'Pro',             value: 'pro' },
+    { label: 'Enterprise',      value: 'enterprise' },
+  ];
+
+  readonly statusOptions = [
+    { label: 'Todos os status', value: '' },
+    { label: 'Ativo',           value: 'active' },
+    { label: 'Inativo',         value: 'inactive' },
+  ];
 
   constructor() {
     this.breadcrumbSvc.set([{ label: 'Tenants' }]);
   }
 
   ngOnInit() {
-    this.search$.pipe(
+    this.filter$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(q => {
+      switchMap(() => {
         this.loading.set(true);
-        return this.svc.findAllTenants(q);
+        return this.svc.findAllTenants(
+          this.search || undefined,
+          this.filterPlan || undefined,
+          this.filterStatus || undefined,
+        );
       }),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe({
       next:  data => { this.tenants.set(data); this.loading.set(false); },
       error: ()   => { this.loading.set(false); },
     });
-    this.search$.next(undefined);
+    this.filter$.next();
   }
 
-  onSearchInput() {
-    this.search$.next(this.search || undefined);
+  onFilterChange() {
+    this.filter$.next();
   }
 
   onPageChange(event: { first?: number; rows?: number }) {

@@ -29,6 +29,18 @@ import { AuthService } from '../../core/auth/auth.service';
             <i class="pi pi-building text-sm w-4 text-center"></i>
             <span>Tenants</span>
           </a>
+          <a routerLink="/admin/planos"
+            routerLinkActive="bg-gray-700 text-white"
+            class="flex items-center gap-2 px-3 py-2 rounded text-gray-300 text-sm hover:bg-gray-700 hover:text-white transition-colors">
+            <i class="pi pi-tag text-sm w-4 text-center"></i>
+            <span>Planos</span>
+          </a>
+          <a routerLink="/admin/cupons"
+            routerLinkActive="bg-gray-700 text-white"
+            class="flex items-center gap-2 px-3 py-2 rounded text-gray-300 text-sm hover:bg-gray-700 hover:text-white transition-colors">
+            <i class="pi pi-ticket text-sm w-4 text-center"></i>
+            <span>Cupons</span>
+          </a>
         </nav>
         <div class="border-t border-gray-700 p-3 flex items-center gap-2">
           <div class="w-7 h-7 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center shrink-0">

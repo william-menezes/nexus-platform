@@ -1,0 +1,78 @@
+<p-toast />
+<p-confirmDialog />
+<div class="nx-page">
+  <div class="nx-page-header">
+    <div class="flex items-center gap-2">
+      <a routerLink="/admin" pButton icon="pi pi-arrow-left"
+        class="p-button-text p-button-sm" aria-label="Voltar"></a>
+      <div>
+        <h1 class="nx-page-title">Cupons</h1>
+        <p class="nx-page-subtitle">Gerencie os cupons de desconto</p>
+      </div>
+    </div>
+    <a routerLink="/admin/cupons/novo" pButton label="Novo Cupom"
+      icon="pi pi-plus" class="p-button-sm"></a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <p-table
+      [value]="coupons()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{ 'min-width': '820px' }"
+      (onPage)="onPageChange($event)"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+          <th pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
+          <th pSortableColumn="value">Valor <p-sortIcon field="value" /></th>
+          <th>Usos</th>
+          <th pSortableColumn="valid_until">Validade <p-sortIcon field="valid_until" /></th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-c>
+        <tr>
+          <td>
+            <code class="font-mono font-bold tracking-wider text-sm uppercase">{{ c.code }}</code>
+          </td>
+          <td>{{ typeLabel(c.type) }}</td>
+          <td class="font-medium">{{ valueLabel(c) }}</td>
+          <td class="text-sm text-text-secondary">{{ usesLabel(c) }}</td>
+          <td>{{ c.valid_until ? (c.valid_until | date:'dd/MM/yyyy') : 'Sem limite' }}</td>
+          <td>
+            <p-tag [value]="couponStatus(c).label" [severity]="couponStatus(c).severity" />
+          </td>
+          <td>
+            <a [routerLink]="['/admin/cupons', c.id]" pButton icon="pi pi-pencil"
+              class="p-button-sm p-button-text" aria-label="Editar cupom"></a>
+            <p-button icon="pi pi-trash" severity="danger" [text]="true"
+              styleClass="p-button-sm" (onClick)="confirmDelete(c)" />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-ticket"></i></span>
+              <span class="nx-table-empty__title">Nenhum cupom cadastrado</span>
+              <div class="nx-table-empty__description">Crie o primeiro cupom clicando em "Novo Cupom".</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

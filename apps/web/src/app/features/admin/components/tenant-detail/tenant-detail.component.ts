@@ -1,9 +1,10 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -12,7 +13,9 @@ import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
+import { DialogModule } from 'primeng/dialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { AdminService, AdminTenant } from '../../admin.service';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 
@@ -24,11 +27,12 @@ const PLAN_SEVERITY: Record<string, string> = {
   standalone: true,
   selector: 'app-tenant-detail',
   imports: [
-    CommonModule, RouterLink, ReactiveFormsModule,
-    ButtonModule, InputTextModule, SelectModule, ToggleSwitchModule,
-    DatePickerModule, CardModule, TagModule, DividerModule, ToastModule, TooltipModule,
+    CommonModule, RouterLink, ReactiveFormsModule, FormsModule,
+    ButtonModule, InputTextModule, InputNumberModule, SelectModule, ToggleSwitchModule,
+    DatePickerModule, CardModule, TagModule, DividerModule,
+    ToastModule, TooltipModule, DialogModule, ConfirmDialogModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './tenant-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -36,11 +40,15 @@ export class TenantDetailComponent implements OnInit {
   private readonly svc = inject(AdminService);
   private readonly route = inject(ActivatedRoute);
   private readonly msg = inject(MessageService);
+  private readonly confirm = inject(ConfirmationService);
   private readonly fb = inject(FormBuilder);
   private readonly breadcrumbSvc = inject(BreadcrumbService);
 
-  readonly tenant = signal<AdminTenant | null>(null);
-  readonly saving = signal(false);
+  readonly tenant       = signal<AdminTenant | null>(null);
+  readonly saving       = signal(false);
+  readonly actioning    = signal(false);
+  readonly showExtendDlg = signal(false);
+  trialDaysToAdd        = 7;
 
   readonly planOptions = [
     { label: 'Trial',      value: 'trial' },
@@ -57,6 +65,10 @@ export class TenantDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
+    this.loadTenant(id);
+  }
+
+  private loadTenant(id: string) {
     this.svc.findOneTenant(id).subscribe(t => {
       this.tenant.set(t);
       this.breadcrumbSvc.set([
@@ -91,6 +103,54 @@ export class TenantDetailComponent implements OnInit {
       error: err => {
         this.msg.add({ severity: 'error', summary: 'Erro', detail: err?.error?.message });
         this.saving.set(false);
+      },
+    });
+  }
+
+  openExtendDialog() {
+    this.trialDaysToAdd = 7;
+    this.showExtendDlg.set(true);
+  }
+
+  confirmExtendTrial() {
+    if (!this.trialDaysToAdd || this.trialDaysToAdd < 1) return;
+    this.actioning.set(true);
+    this.showExtendDlg.set(false);
+    this.svc.extendTrial(this.tenant()!.id, this.trialDaysToAdd).subscribe({
+      next: t => {
+        this.tenant.set(t);
+        this.actioning.set(false);
+        this.msg.add({ severity: 'success', summary: 'Trial estendido', detail: `+${this.trialDaysToAdd} dias adicionados` });
+        this.form.patchValue({ trialEndsAt: t.trial_ends_at ? new Date(t.trial_ends_at) : null });
+      },
+      error: err => {
+        this.msg.add({ severity: 'error', summary: 'Erro', detail: err?.error?.message });
+        this.actioning.set(false);
+      },
+    });
+  }
+
+  confirmRevoke() {
+    this.confirm.confirm({
+      message: `Deseja revogar a assinatura de "${this.tenant()!.name}"? O tenant perderá acesso imediatamente.`,
+      header: 'Revogar Assinatura',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim, revogar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.actioning.set(true);
+        this.svc.revokeSubscription(this.tenant()!.id).subscribe({
+          next: t => {
+            this.tenant.set(t);
+            this.actioning.set(false);
+            this.msg.add({ severity: 'warn', summary: 'Assinatura revogada' });
+          },
+          error: err => {
+            this.msg.add({ severity: 'error', summary: 'Erro', detail: err?.error?.message });
+            this.actioning.set(false);
+          },
+        });
       },
     });
   }

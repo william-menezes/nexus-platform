@@ -7,7 +7,7 @@
     <a routerLink="tenants" pButton label="Ver Tenants" icon="pi pi-list" class="p-button-sm"></a>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" *ngIf="metrics(); else loadingTpl">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8" *ngIf="metrics(); else loadingTpl">
     <div class="bg-surface rounded-xl border border-surface-border p-5 flex flex-col gap-2">
       <span class="text-sm text-text-secondary">Total de Tenants</span>
       <span class="text-3xl font-bold text-text">{{ metrics()!.totalTenants }}</span>
@@ -28,6 +28,16 @@
       <span class="text-3xl font-bold text-blue-600">{{ metrics()!.recentSignups }}</span>
       <span class="text-xs text-text-muted">últimos 30 dias</span>
     </div>
+    <div class="bg-surface rounded-xl border border-surface-border p-5 flex flex-col gap-2">
+      <span class="text-sm text-text-secondary">Pagantes</span>
+      <span class="text-3xl font-bold text-purple-600">{{ metrics()!.payingTenants }}</span>
+      <span class="text-xs text-text-muted">assinatura ativa</span>
+    </div>
+    <div class="bg-surface rounded-xl border border-surface-border p-5 flex flex-col gap-2">
+      <span class="text-sm text-text-secondary">MRR</span>
+      <span class="text-3xl font-bold text-emerald-600">{{ metrics()!.mrr | currency:'BRL':'symbol':'1.0-0' }}</span>
+      <span class="text-xs text-text-muted">receita mensal recorrente</span>
+    </div>
   </div>
 
   <ng-template #loadingTpl>
@@ -36,11 +46,15 @@
     </div>
   </ng-template>
 
-  <!-- Quick link -->
+  <!-- Quick links -->
   <p-card header="Ações Rápidas">
     <div class="flex flex-wrap gap-3">
       <a routerLink="tenants" pButton label="Gerenciar Tenants"
         icon="pi pi-building" class="p-button-outlined p-button-sm"></a>
+      <a routerLink="planos" pButton label="Gerenciar Planos"
+        icon="pi pi-tag" class="p-button-outlined p-button-sm"></a>
+      <a routerLink="cupons" pButton label="Gerenciar Cupons"
+        icon="pi pi-ticket" class="p-button-outlined p-button-sm"></a>
     </div>
   </p-card>
 </div>
