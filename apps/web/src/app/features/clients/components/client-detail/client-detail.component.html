@@ -22,12 +22,13 @@
       </div>
       <div style="display:flex; gap:0.5rem;">
         <a [routerLink]="['editar']">
-          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
+          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
         </a>
-        <p-button label="Excluir" icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="delete()"  styleClass="p-button-sm"/>
+        <p-button label="Excluir" icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="delete()" styleClass="p-button-sm" />
       </div>
     </div>
 
+    <!-- ── Cards de dados ─────────────────────────────────────────────────── -->
     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1rem; margin-top:1rem;">
 
       <div class="nx-card">
@@ -38,10 +39,17 @@
         />
       </div>
 
-      @if (client.cpfCnpj) {
+      @if (client.cpf) {
         <div class="nx-card">
-          <p class="nx-card-label">CPF / CNPJ</p>
-          <p>{{ client.cpfCnpj }}</p>
+          <p class="nx-card-label">CPF</p>
+          <p>{{ client.cpf }}</p>
+        </div>
+      }
+
+      @if (client.cnpj) {
+        <div class="nx-card">
+          <p class="nx-card-label">CNPJ</p>
+          <p>{{ client.cnpj }}</p>
         </div>
       }
 
@@ -59,6 +67,20 @@
         </div>
       }
 
+      @if (client.birthDate) {
+        <div class="nx-card">
+          <p class="nx-card-label">Data de Nascimento</p>
+          <p>{{ client.birthDate | date:'dd/MM/yyyy' }}</p>
+        </div>
+      }
+
+      @if (client.gender) {
+        <div class="nx-card">
+          <p class="nx-card-label">Sexo</p>
+          <p>{{ formatGender(client.gender) }}</p>
+        </div>
+      }
+
       <div class="nx-card">
         <p class="nx-card-label">Cadastrado em</p>
         <p>{{ client.createdAt | date:'dd/MM/yyyy' }}</p>
@@ -66,12 +88,71 @@
 
     </div>
 
+    <!-- ── Endereço ───────────────────────────────────────────────────────── -->
+    @if (client.address && (client.address.street || client.address.city)) {
+      <div style="margin-top:1.5rem;">
+        <p class="nx-card-label">Endereço</p>
+        <p>
+          {{ client.address.street }}{{ client.address.number ? ', ' + client.address.number : '' }}
+          {{ client.address.complement ? '– ' + client.address.complement : '' }}
+          {{ client.address.neighborhood ? '· ' + client.address.neighborhood : '' }}
+          {{ client.address.city }}{{ client.address.state ? '/' + client.address.state : '' }}
+          {{ client.address.zipCode ? '· CEP ' + client.address.zipCode : '' }}
+        </p>
+      </div>
+    }
+
+    <!-- ── Observações ────────────────────────────────────────────────────── -->
     @if (client.notes) {
       <div style="margin-top:1.5rem;">
         <p class="nx-card-label">Observações</p>
         <p>{{ client.notes }}</p>
       </div>
     }
+
+    <!-- ── Ordens de Serviço ──────────────────────────────────────────────── -->
+    <div style="margin-top:2rem;">
+      <h2 class="text-base font-semibold text-[var(--p-text-color)] mb-3">Ordens de Serviço</h2>
+      @if (serviceOrders().length === 0) {
+        <p style="color:var(--p-text-muted-color);">Nenhum registro encontrado.</p>
+      } @else {
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          @for (os of serviceOrders(); track os.id) {
+            <div class="nx-card" style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+              <a [routerLink]="['/app/os', os.id]" class="font-medium text-[var(--p-primary-color)] hover:underline">
+                {{ os.code }}
+              </a>
+              <p-tag [value]="os.status" severity="secondary" />
+              <span style="color:var(--p-text-muted-color); font-size:0.875rem;">
+                {{ os.createdAt | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Orçamentos ─────────────────────────────────────────────────────── -->
+    <div style="margin-top:2rem;">
+      <h2 class="text-base font-semibold text-[var(--p-text-color)] mb-3">Orçamentos</h2>
+      @if (quotes().length === 0) {
+        <p style="color:var(--p-text-muted-color);">Nenhum registro encontrado.</p>
+      } @else {
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          @for (q of quotes(); track q.id) {
+            <div class="nx-card" style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+              <a [routerLink]="['/app/orcamentos', q.id]" class="font-medium text-[var(--p-primary-color)] hover:underline">
+                {{ q.code }}
+              </a>
+              <p-tag [value]="q.status" severity="secondary" />
+              <span style="color:var(--p-text-muted-color); font-size:0.875rem;">
+                {{ q.createdAt | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
 
   }
 

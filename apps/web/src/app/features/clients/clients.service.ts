@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Client } from '@nexus-platform/shared-types';
+import { Client, ClientHistory } from '@nexus-platform/shared-types';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -27,5 +28,9 @@ export class ClientsService {
 
   remove(id: string) {
     return this.http.delete(`${this.base}/${id}`);
+  }
+
+  getHistory(id: string): Observable<ClientHistory> {
+    return this.http.get<ClientHistory>(`${this.base}/${id}/history`);
   }
 }

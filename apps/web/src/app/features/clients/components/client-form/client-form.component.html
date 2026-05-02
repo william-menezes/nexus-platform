@@ -3,12 +3,25 @@
 <div class="nx-page-header">
   <div class="flex items-center gap-3">
     <a routerLink="/app/clientes">
-      <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
+      <p-button
+        icon="pi pi-arrow-left"
+        [text]="true"
+        severity="secondary"
+        pTooltip="Voltar"
+        tooltipPosition="bottom"
+        styleClass="p-button-sm"
+      />
     </a>
     <div>
-      <h1 class="nx-page-title">{{ isEdit() ? 'Editar Cliente' : 'Novo Cliente' }}</h1>
+      <h1 class="nx-page-title">
+        {{ isEdit() ? 'Editar Cliente' : 'Novo Cliente' }}
+      </h1>
       <p class="nx-page-subtitle">
-        {{ isEdit() ? 'Atualize os dados do cliente abaixo' : 'Preencha os dados para cadastrar um novo cliente' }}
+        {{
+          isEdit()
+            ? 'Atualize os dados do cliente abaixo'
+            : 'Preencha os dados para cadastrar um novo cliente'
+        }}
       </p>
     </div>
   </div>
@@ -18,29 +31,43 @@
   <p-message severity="error" [text]="error()" styleClass="w-full mb-4" />
 }
 
-<!-- ── Card envolve apenas o formulário ── -->
 <p-card styleClass="w-full">
   <form [formGroup]="form" (ngSubmit)="save()" class="nx-form">
+    <!-- ── Dados Básicos ─────────────────────────────────────────────────── -->
+    <h2 class="text-base font-semibold text-[var(--p-text-color)] mb-3">
+      Dados Básicos
+    </h2>
 
     <!-- Tipo de Pessoa -->
     <div class="nx-form-group">
-      <label class="nx-form-label">Tipo de Pessoa *</label>
+      <label class="nx-form-label" id="cf-type-label" for="cf-type"
+        >Tipo de Pessoa *</label
+      >
       <p-selectButton
+        id="cf-type"
         [options]="typeOptions"
         formControlName="type"
         optionLabel="label"
         optionValue="value"
+        aria-labelledby="cf-type-label"
+        [invalid]="isInvalid('type')"
+        [class.p-invalid]="isInvalid('type')"
+        class="w-full"
       />
     </div>
 
     <!-- Nome -->
     <div class="nx-form-group">
-      <label class="nx-form-label" for="cf-name">Nome completo *</label>
+      <label class="nx-form-label" for="cf-name">
+        {{ clientType() === 'company' ? 'Razão Social *' : 'Nome Completo *' }}
+      </label>
       <input
         pInputText
         id="cf-name"
         formControlName="name"
         [placeholder]="namePlaceholder()"
+        [invalid]="isInvalid('name')"
+        [class.p-invalid]="isInvalid('name')"
         class="w-full"
       />
       @if (form.controls.name.invalid && form.controls.name.touched) {
@@ -48,44 +75,122 @@
       }
     </div>
 
-    <!-- CPF / CNPJ (máscara dinâmica) -->
-    <div class="nx-form-group">
-      <label class="nx-form-label" for="cf-cpfCnpj">
-        {{ cpfCnpjLabel() }}
-      </label>
-      <p-inputmask
-        inputId="cf-cpfCnpj"
-        formControlName="cpfCnpj"
-        [mask]="cpfCnpjMask()"
-        [placeholder]="cpfCnpjPlaceholder()"
-        styleClass="w-full"
-        inputStyleClass="w-full"
-      />
-    </div>
+    <!-- ── Dados Pessoais (PF) ────────────────────────────────────────────── -->
+    @if (clientType() === 'individual') {
+      <!-- CPF, Data de Nascimento e Sexo -->
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="cf-cpf">CPF</label>
+          <input
+            pInputText
+            pInputMask="999.999.999-99"
+            id="cf-cpf"
+            formControlName="cpf"
+            placeholder="000.000.000-00"
+            [invalid]="isInvalid('cpf')"
+            [class.p-invalid]="isInvalid('cpf')"
+            class="w-full"
+          />
+          @if (form.controls.cpf.invalid && form.controls.cpf.touched) {
+            <small class="p-error">CPF inválido.</small>
+          }
+        </div>
+
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="cf-birthDate"
+            >Data de Nascimento</label
+          >
+          <p-datepicker
+            inputId="cf-birthDate"
+            formControlName="birthDate"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/aaaa"
+            [showIcon]="true"
+            [invalid]="isInvalid('birthDate')"
+            styleClass="w-full"
+            [inputStyleClass]="
+              isInvalid('birthDate') ? 'w-full p-invalid' : 'w-full'
+            "
+          />
+        </div>
+        <div class="nx-form-group">
+          <label class="nx-form-label" for="cf-gender">Sexo</label>
+          <p-select
+            inputId="cf-gender"
+            formControlName="gender"
+            [options]="genderOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecione"
+            [invalid]="isInvalid('gender')"
+            [styleClass]="isInvalid('gender') ? 'w-full p-invalid' : 'w-full'"
+          />
+        </div>
+      </div>
+    }
+
+    <!-- ── Dados Empresariais (PJ) ────────────────────────────────────────── -->
+    @if (clientType() === 'company') {
+      <!-- CNPJ -->
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="cf-cnpj">CNPJ</label>
+        <input
+          pInputText
+          pInputMask="99.999.999/9999-99"
+          id="cf-cnpj"
+          formControlName="cnpj"
+          placeholder="00.000.000/0000-00"
+          [invalid]="isInvalid('cnpj')"
+          [class.p-invalid]="isInvalid('cnpj')"
+          class="w-full"
+        />
+        @if (form.controls.cnpj.invalid && form.controls.cnpj.touched) {
+          <small class="p-error">CNPJ inválido.</small>
+        }
+      </div>
+    }
 
     <!-- Telefones -->
-    <div class="nx-form-row cols-2">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <div class="nx-form-group">
         <label class="nx-form-label" for="cf-phone">Telefone / WhatsApp</label>
-        <p-inputmask
-          inputId="cf-phone"
+        <input
+          pInputText
+          [pInputMask]="phoneMask('phone')"
+          id="cf-phone"
           formControlName="phone"
-          mask="(99) 99999-9999"
+          type="tel"
           placeholder="(00) 00000-0000"
-          styleClass="w-full"
-          inputStyleClass="w-full"
+          [invalid]="isInvalid('phone')"
+          [class.p-invalid]="isInvalid('phone')"
+          class="w-full"
         />
+        @if (form.controls.phone.invalid && form.controls.phone.touched) {
+          <small class="p-error"
+            >Telefone inválido (10 ou 11 dígitos, só números).</small
+          >
+        }
       </div>
       <div class="nx-form-group">
-        <label class="nx-form-label" for="cf-phone2">Telefone 2 (opcional)</label>
-        <p-inputmask
-          inputId="cf-phone2"
+        <label class="nx-form-label" for="cf-phone2"
+          >Telefone 2 (opcional)</label
+        >
+        <input
+          pInputText
+          [pInputMask]="phoneMask('phone2')"
+          id="cf-phone2"
           formControlName="phone2"
-          mask="(99) 99999-9999"
+          type="tel"
           placeholder="(00) 00000-0000"
-          styleClass="w-full"
-          inputStyleClass="w-full"
+          [invalid]="isInvalid('phone2')"
+          [class.p-invalid]="isInvalid('phone2')"
+          class="w-full"
         />
+        @if (form.controls.phone2.invalid && form.controls.phone2.touched) {
+          <small class="p-error"
+            >Telefone inválido (10 ou 11 dígitos, só números).</small
+          >
+        }
       </div>
     </div>
 
@@ -98,6 +203,8 @@
         formControlName="email"
         type="email"
         placeholder="cliente@email.com"
+        [invalid]="isInvalid('email')"
+        [class.p-invalid]="isInvalid('email')"
         class="w-full"
       />
       @if (form.controls.email.invalid && form.controls.email.touched) {
@@ -105,30 +212,171 @@
       }
     </div>
 
-    <!-- Observações -->
+    <!-- ── Endereço ───────────────────────────────────────────────────────── -->
+    <div class="nx-form-group">
+      <div class="flex items-center gap-3">
+        <p-toggleswitch formControlName="hasAddress" inputId="cf-hasAddress" />
+        <label class="nx-form-label cursor-pointer" for="cf-hasAddress">
+          Informar endereço
+        </label>
+      </div>
+    </div>
+
+    @if (hasAddress()) {
+      <div formGroupName="address" class="mt-4">
+        <h2 class="text-base font-semibold text-[var(--p-text-color)] mb-3">
+          Endereço
+        </h2>
+
+        <div
+          class="grid grid-cols-1 gap-4 lg:grid-cols-[9rem_minmax(0,1fr)_8rem]"
+        >
+          <div class="nx-form-group">
+            <label class="nx-form-label" for="cf-zipCode">CEP</label>
+            <p-iconfield class="w-full">
+              <input
+                pInputText
+                pInputMask="99999-999"
+                id="cf-zipCode"
+                formControlName="zipCode"
+                placeholder="00000-000"
+                [invalid]="isInvalid('address.zipCode') || cepError()"
+                [class.p-invalid]="isInvalid('address.zipCode') || cepError()"
+                class="w-full"
+              />
+              @if (cepLoading()) {
+                <p-inputicon class="pi pi-spinner pi-spin" />
+              }
+            </p-iconfield>
+            @if (isInvalid('address.zipCode')) {
+              <small class="p-error">CEP invalido.</small>
+            }
+            @if (cepError()) {
+              <small class="p-error"
+                >CEP não encontrado. Preencha o endereço manualmente.</small
+              >
+            }
+          </div>
+
+          <!-- Logradouro e Número -->
+          <div class="nx-form-group">
+            <label class="nx-form-label" for="cf-street">Logradouro</label>
+            <input
+              pInputText
+              id="cf-street"
+              formControlName="street"
+              placeholder="Rua, Avenida..."
+              [invalid]="isInvalid('address.street')"
+              [class.p-invalid]="isInvalid('address.street')"
+              class="w-full"
+            />
+          </div>
+          <div class="nx-form-group">
+            <label class="nx-form-label" for="cf-number">Número</label>
+            <input
+              pInputText
+              id="cf-number"
+              formControlName="number"
+              placeholder="123"
+              [invalid]="isInvalid('address.number')"
+              [class.p-invalid]="isInvalid('address.number')"
+              class="w-full"
+            />
+          </div>
+        </div>
+
+        <div
+          class="grid grid-cols-1 gap-4 lg:grid-cols-[11rem_minmax(0,1fr)_minmax(0,1fr)_6rem]"
+        >
+          <div class="nx-form-group">
+            <label class="nx-form-label" for="cf-complement">Complemento</label>
+            <input
+              pInputText
+              id="cf-complement"
+              formControlName="complement"
+              placeholder="Apto, Bloco..."
+              [invalid]="isInvalid('address.complement')"
+              [class.p-invalid]="isInvalid('address.complement')"
+              class="w-full"
+            />
+          </div>
+          <div class="nx-form-group">
+            <label class="nx-form-label" for="cf-neighborhood">Bairro</label>
+            <input
+              pInputText
+              id="cf-neighborhood"
+              formControlName="neighborhood"
+              placeholder="Bairro"
+              [invalid]="isInvalid('address.neighborhood')"
+              [class.p-invalid]="isInvalid('address.neighborhood')"
+              class="w-full"
+            />
+          </div>
+          <div class="nx-form-group">
+            <label class="nx-form-label" for="cf-city">Cidade</label>
+            <input
+              pInputText
+              id="cf-city"
+              formControlName="city"
+              placeholder="Cidade"
+              [invalid]="isInvalid('address.city')"
+              [class.p-invalid]="isInvalid('address.city')"
+              class="w-full"
+            />
+          </div>
+          <div class="nx-form-group">
+            <label class="nx-form-label" for="cf-state">Estado</label>
+            <input
+              pInputText
+              id="cf-state"
+              formControlName="state"
+              placeholder="SP"
+              maxlength="2"
+              [invalid]="isInvalid('address.state')"
+              [class.p-invalid]="isInvalid('address.state')"
+              class="w-full"
+            />
+          </div>
+        </div>
+      </div>
+    }
+
+    <p-divider />
+
+    <!-- ── Observações ────────────────────────────────────────────────────── -->
     <div class="nx-form-group">
       <label class="nx-form-label" for="cf-notes">Observações</label>
       <textarea
         pTextarea
         id="cf-notes"
         formControlName="notes"
+        [invalid]="isInvalid('notes')"
+        [class.p-invalid]="isInvalid('notes')"
         rows="3"
         placeholder="Informações adicionais sobre o cliente..."
         class="w-full"
       ></textarea>
     </div>
-
-    <p-divider />
-
   </form>
 
   <ng-template pTemplate="footer">
     <div class="flex justify-end gap-2">
       <a routerLink="/app/clientes">
-        <p-button label="Cancelar" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          [outlined]="true"
+          styleClass="p-button-sm"
+        />
       </a>
-      <p-button label="Salvar" icon="pi pi-check" [loading]="saving()" [disabled]="form.invalid"
-                (onClick)="save()" styleClass="p-button-sm" />
+      <p-button
+        label="Salvar"
+        icon="pi pi-check"
+        [loading]="saving()"
+        [disabled]="form.invalid"
+        (onClick)="save()"
+        styleClass="p-button-sm"
+      />
     </div>
   </ng-template>
 </p-card>

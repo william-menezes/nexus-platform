@@ -1,6 +1,8 @@
 import {
   IsString, IsNotEmpty, IsOptional, IsObject, IsIn, IsEmail,
+  IsDateString,
 } from 'class-validator';
+import { IsCpfValid, IsCnpjValid } from '../../../common/validators/cpf-cnpj.validator';
 
 export class CreateClientDto {
   @IsString() @IsNotEmpty()
@@ -10,8 +12,19 @@ export class CreateClientDto {
   @IsOptional()
   type?: 'individual' | 'company';
 
-  @IsString() @IsOptional()
-  cpfCnpj?: string;
+  @IsOptional()
+  @IsCpfValid()
+  cpf?: string;
+
+  @IsOptional()
+  @IsCnpjValid()
+  cnpj?: string;
+
+  @IsDateString() @IsOptional()
+  birthDate?: string;
+
+  @IsIn(['M', 'F', 'other']) @IsOptional()
+  gender?: 'M' | 'F' | 'other';
 
   @IsEmail() @IsOptional()
   email?: string;
@@ -23,7 +36,7 @@ export class CreateClientDto {
   phone2?: string;
 
   @IsObject() @IsOptional()
-  address?: Record<string, unknown>;
+  address?: Record<string, unknown> | null;
 
   @IsString() @IsOptional()
   notes?: string;

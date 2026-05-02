@@ -21,6 +21,12 @@ export class ClientsController {
     return this.svc.findAll(tenantId, search);
   }
 
+  @Get(':id/history')
+  @RequirePermission('clients:read')
+  getHistory(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.svc.getHistory(tenantId, id);
+  }
+
   @Get(':id')
   @RequirePermission('clients:read')
   findOne(@CurrentTenant() tenantId: string, @Param('id') id: string) {
