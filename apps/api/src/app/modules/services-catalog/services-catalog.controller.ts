@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards,
+  Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, HttpCode, HttpStatus,
 } from '@nestjs/common';
 import { ServicesCatalogService } from './services-catalog.service';
 import { CreateServiceCatalogDto } from './dto/create-service-catalog.dto';
@@ -16,8 +16,13 @@ export class ServicesCatalogController {
 
   @Get()
   @RequirePermission('services_catalog:read')
-  findAll(@CurrentTenant() tenantId: string, @Query('search') search?: string) {
-    return this.service.findAll(tenantId, search);
+  findAll(
+    @CurrentTenant() tenantId: string,
+    @Query('search') search?: string,
+    @Query('categoryId') categoryId?: string,
+    @Query('active') active?: string,
+  ) {
+    return this.service.findAll(tenantId, search, categoryId, active === 'true');
   }
 
   @Get(':id')
@@ -40,6 +45,7 @@ export class ServicesCatalogController {
 
   @Delete(':id')
   @RequirePermission('services_catalog:delete')
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.service.remove(tenantId, id);
   }

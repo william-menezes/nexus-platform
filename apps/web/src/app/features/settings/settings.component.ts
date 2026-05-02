@@ -4,6 +4,7 @@ import { TabsModule } from 'primeng/tabs';
 import { GeneralSettingsComponent } from './components/general/general-settings.component';
 import { CustomStatusesComponent } from './components/custom-statuses/custom-statuses.component';
 import { PermissionsComponent } from './components/permissions/permissions.component';
+import { CatalogSettingsComponent } from './components/catalog/catalog-settings.component';
 import { BreadcrumbService } from '../../core/breadcrumb/breadcrumb.service';
 
 @Component({
@@ -11,7 +12,7 @@ import { BreadcrumbService } from '../../core/breadcrumb/breadcrumb.service';
   selector: 'app-settings',
   imports: [
     CommonModule, TabsModule,
-    GeneralSettingsComponent, CustomStatusesComponent, PermissionsComponent,
+    GeneralSettingsComponent, CustomStatusesComponent, PermissionsComponent, CatalogSettingsComponent,
   ],
   templateUrl: './settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

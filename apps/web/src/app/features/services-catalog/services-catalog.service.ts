@@ -8,8 +8,10 @@ export class ServicesCatalogService {
   private http = inject(HttpClient);
   private base = `${environment.apiUrl}/services`;
 
-  getAll(search?: string) {
-    const params = search ? new HttpParams().set('search', search) : undefined;
+  getAll(search?: string, categoryId?: string) {
+    let params = new HttpParams();
+    if (search) params = params.set('search', search);
+    if (categoryId) params = params.set('categoryId', categoryId);
     return this.http.get<ServiceCatalog[]>(this.base, { params });
   }
 

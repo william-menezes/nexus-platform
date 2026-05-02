@@ -1,45 +1,109 @@
-﻿<p-toast />
-
+<p-toast />
 
 <div class="nx-page">
   <div class="nx-page-header">
     <div class="flex items-center gap-3">
-      <a routerLink="/app/servicos" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm flex-shrink-0" aria-label="Voltar"></a>
+      <a routerLink="/app/servicos" pButton icon="pi pi-arrow-left"
+        class="p-button-text p-button-sm flex-shrink-0" aria-label="Voltar"></a>
       <div>
-        <h1 class="nx-page-title">{{ isEdit ? 'Editar Serviço' : 'Novo Serviço' }}</h1>
+        <h1 class="nx-page-title">{{ isEdit() ? 'Editar Serviço' : 'Novo Serviço' }}</h1>
         <p class="nx-page-subtitle">Preencha os dados do serviço</p>
       </div>
     </div>
   </div>
+
   <form [formGroup]="form" (ngSubmit)="save()">
     <p-card>
       <div class="flex flex-col gap-3">
+
         <div class="flex flex-col gap-1">
           <label class="text-text">Nome *</label>
           <input pInputText formControlName="name" class="w-full" />
         </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-text">Categoria</label>
+          <p-autocomplete
+            formControlName="category"
+            [suggestions]="filteredCategories()"
+            (completeMethod)="searchCategory($event)"
+            optionLabel="name"
+            placeholder="Buscar categoria..."
+            [dropdown]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full">
+            <ng-template pTemplate="footer">
+              <div style="padding:0.5rem 0.75rem; border-top:1px solid var(--p-surface-border);">
+                <button pButton label="Adicionar categoria" icon="pi pi-plus"
+                  class="p-button-sm p-button-text w-full"
+                  type="button"
+                  (click)="openQuickAdd()"></button>
+              </div>
+            </ng-template>
+          </p-autocomplete>
+        </div>
+
         <div class="flex flex-col gap-1">
           <label class="text-text">Descrição</label>
           <textarea pTextarea formControlName="description" rows="3"></textarea>
         </div>
+
         <div class="flex flex-col gap-1">
           <label class="text-text">Preço Padrão *</label>
-          <p-inputNumber formControlName="defaultPrice" mode="currency" currency="BRL" locale="pt-BR" />
+          <p-inputNumber formControlName="defaultPrice"
+            mode="currency" currency="BRL" locale="pt-BR" />
         </div>
+
         <div class="flex flex-col gap-1">
           <label class="text-text">Horas Estimadas</label>
-          <p-inputNumber formControlName="estimatedHours" [min]="0" [minFractionDigits]="1" suffix="h" />
+          <p-inputNumber formControlName="estimatedHours"
+            [min]="0" [minFractionDigits]="1" suffix="h" />
         </div>
+
         <div class="flex items-center gap-2">
           <p-toggleButton formControlName="isActive" onLabel="Ativo" offLabel="Inativo" />
         </div>
+
       </div>
       <ng-template pTemplate="footer">
         <div class="flex justify-end gap-2">
-          <a routerLink="/app/servicos" pButton class="p-button-outlined p-button-sm" label="Cancelar"></a>
-          <button pButton type="submit" label="Salvar" [loading]="saving()" [disabled]="form.invalid" class="p-button-sm"></button>
+          <a routerLink="/app/servicos" pButton
+            class="p-button-outlined p-button-sm" label="Cancelar"></a>
+          <button pButton type="submit" label="Salvar"
+            [loading]="saving()" [disabled]="form.invalid"
+            class="p-button-sm"></button>
         </div>
       </ng-template>
     </p-card>
   </form>
 </div>
+
+<!-- Quick-add categoria -->
+<p-dialog
+  header="Nova Categoria"
+  [visible]="quickAddVisible()"
+  (visibleChange)="quickAddVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '360px' }"
+  [closable]="!quickAddSaving()">
+
+  <div class="flex flex-col gap-2 pt-2">
+    <label class="font-medium text-sm">Nome *</label>
+    <input pInputText [formControl]="quickAddName" class="w-full"
+      placeholder="Ex: Instalação" />
+    @if (quickAddName.invalid && quickAddName.touched) {
+      <small class="p-error">Campo obrigatório.</small>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-outlined p-button-sm"
+      type="button" [disabled]="quickAddSaving()"
+      (click)="quickAddVisible.set(false)"></button>
+    <button pButton label="Criar e selecionar" icon="pi pi-plus" class="p-button-sm"
+      type="button"
+      [disabled]="quickAddName.invalid || quickAddSaving()"
+      (click)="saveQuickAdd()"></button>
+  </ng-template>
+
+</p-dialog>

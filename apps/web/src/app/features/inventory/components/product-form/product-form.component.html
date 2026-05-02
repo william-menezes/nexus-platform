@@ -1,26 +1,39 @@
-<div class="nx-page" style="max-width:640px;">
+<p-toast />
+
+<div class="nx-page" style="max-width:720px;">
 
   <div class="nx-page-header">
     <div>
-      <h1 class="nx-page-title">{{ isEdit ? 'Editar Produto' : 'Novo Produto' }}</h1>
-      <p class="nx-page-subtitle">Preencha os dados do produto</p>
+      <h1 class="nx-page-title">{{ isEdit() ? 'Editar Item' : 'Novo Item' }}</h1>
+      <p class="nx-page-subtitle">Produto ou peça para controle de estoque</p>
     </div>
     <a routerLink="/app/estoque">
-      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
     </a>
   </div>
 
-  @if (error) {
-    <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
+  @if (error()) {
+    <p-message severity="error" [text]="error()" styleClass="w-full mb-4" />
   }
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
+  <form [formGroup]="form" (ngSubmit)="save()" class="nx-form">
 
+    <!-- Tipo -->
+    <div class="nx-form-group">
+      <label class="nx-form-label">Tipo *</label>
+      <p-selectbutton formControlName="type" [options]="typeOptions"
+        optionLabel="label" optionValue="value" />
+    </div>
+
+    <p-divider />
+
+    <!-- Nome + SKU + Código de barras -->
     <div class="nx-form-group">
       <label class="nx-form-label" for="name">Nome *</label>
-      <input pInputText id="name" formControlName="name" type="text" placeholder="Nome do produto" class="w-full" />
-      @if (form.get('name')?.invalid && form.get('name')?.touched) {
-        <small class="p-error">Campo obrigatório.</small>
+      <input pInputText id="name" formControlName="name" class="w-full"
+        [placeholder]="form.get('type')?.value === 'part' ? 'Ex: Tela iPhone 14' : 'Ex: Cabo HDMI 2m'" />
+      @if (isInvalid('name')) {
+        <small class="p-error">Nome obrigatório (mínimo 3 caracteres).</small>
       }
     </div>
 
@@ -28,68 +41,252 @@
 
       <div class="nx-form-group">
         <label class="nx-form-label" for="sku">SKU</label>
-        <input pInputText id="sku" formControlName="sku" type="text" placeholder="Opcional" class="w-full" />
+        <input pInputText id="sku" formControlName="sku" class="w-full"
+          placeholder="Código interno" />
       </div>
 
       <div class="nx-form-group">
-        <label class="nx-form-label" for="category">Categoria</label>
-        <input pInputText id="category" formControlName="category" type="text" placeholder="Ex: Peças" class="w-full" />
+        <label class="nx-form-label" for="barcode">Código de barras</label>
+        <input pInputText id="barcode" formControlName="barcode" class="w-full"
+          placeholder="EAN / GTIN" />
       </div>
 
+    </div>
+
+    <p-divider />
+
+    <!-- Classificação: Categoria, Marca, Qualidade, Fornecedor -->
+    <h3 style="font-size:0.9rem; font-weight:600; color:var(--p-text-muted-color); text-transform:uppercase; letter-spacing:.05em; margin:0 0 0.75rem;">
+      Classificação
+    </h3>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+      <!-- Categoria -->
       <div class="nx-form-group">
-        <label class="nx-form-label" for="costPrice">Custo (R$)</label>
-        <p-inputnumber
-          inputId="costPrice"
-          formControlName="costPrice"
-          mode="currency"
-          currency="BRL"
-          locale="pt-BR"
-          [minFractionDigits]="2"
+        <label class="nx-form-label">Categoria</label>
+        <p-autocomplete
+          formControlName="category"
+          [suggestions]="filteredCategories()"
+          (completeMethod)="searchCategory($event)"
+          optionLabel="name"
+          placeholder="Buscar categoria..."
+          [dropdown]="true"
           styleClass="w-full"
-          inputStyleClass="w-full"
-        />
+          inputStyleClass="w-full">
+          <ng-template pTemplate="footer">
+            <div style="padding:0.5rem 0.75rem; border-top:1px solid var(--p-surface-border);">
+              <button pButton label="Adicionar categoria" icon="pi pi-plus"
+                class="p-button-sm p-button-text w-full"
+                type="button"
+                (click)="openQuickAdd('category')"></button>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+      </div>
+
+      <!-- Marca -->
+      <div class="nx-form-group">
+        <label class="nx-form-label">Marca</label>
+        <p-autocomplete
+          formControlName="brand"
+          [suggestions]="filteredBrands()"
+          (completeMethod)="searchBrand($event)"
+          optionLabel="name"
+          placeholder="Buscar marca..."
+          [dropdown]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full">
+          <ng-template pTemplate="footer">
+            <div style="padding:0.5rem 0.75rem; border-top:1px solid var(--p-surface-border);">
+              <button pButton label="Adicionar marca" icon="pi pi-plus"
+                class="p-button-sm p-button-text w-full"
+                type="button"
+                (click)="openQuickAdd('brand')"></button>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+      </div>
+
+      <!-- Qualidade -->
+      <div class="nx-form-group">
+        <label class="nx-form-label">Qualidade</label>
+        <p-autocomplete
+          formControlName="quality"
+          [suggestions]="filteredQualities()"
+          (completeMethod)="searchQuality($event)"
+          optionLabel="name"
+          placeholder="Buscar qualidade..."
+          [dropdown]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full">
+          <ng-template pTemplate="footer">
+            <div style="padding:0.5rem 0.75rem; border-top:1px solid var(--p-surface-border);">
+              <button pButton label="Adicionar qualidade" icon="pi pi-plus"
+                class="p-button-sm p-button-text w-full"
+                type="button"
+                (click)="openQuickAdd('quality')"></button>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+      </div>
+
+      <!-- Fornecedor -->
+      <div class="nx-form-group">
+        <label class="nx-form-label">Fornecedor</label>
+        <p-autocomplete
+          formControlName="supplier"
+          [suggestions]="filteredSuppliers()"
+          (completeMethod)="searchSupplier($event)"
+          optionLabel="name"
+          placeholder="Buscar fornecedor..."
+          [dropdown]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full">
+          <ng-template pTemplate="footer">
+            <div style="padding:0.5rem 0.75rem; border-top:1px solid var(--p-surface-border);">
+              <button pButton label="Adicionar fornecedor" icon="pi pi-plus"
+                class="p-button-sm p-button-text w-full"
+                type="button"
+                (click)="openQuickAdd('supplier')"></button>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+      </div>
+
+    </div>
+
+    <p-divider />
+
+    <!-- Preços, estoque e unidade -->
+    <h3 style="font-size:0.9rem; font-weight:600; color:var(--p-text-muted-color); text-transform:uppercase; letter-spacing:.05em; margin:0 0 0.75rem;">
+      Preços e Estoque
+    </h3>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+      <div class="nx-form-group">
+        <label class="nx-form-label" for="costPrice">Preço de custo (R$)</label>
+        <p-inputnumber inputId="costPrice" formControlName="costPrice"
+          mode="currency" currency="BRL" locale="pt-BR" [minFractionDigits]="2"
+          styleClass="w-full" inputStyleClass="w-full" />
       </div>
 
       <div class="nx-form-group">
         <label class="nx-form-label" for="salePrice">Preço de venda (R$)</label>
-        <p-inputnumber
-          inputId="salePrice"
-          formControlName="salePrice"
-          mode="currency"
-          currency="BRL"
-          locale="pt-BR"
-          [minFractionDigits]="2"
-          styleClass="w-full"
-          inputStyleClass="w-full"
-        />
+        <p-inputnumber inputId="salePrice" formControlName="salePrice"
+          mode="currency" currency="BRL" locale="pt-BR" [minFractionDigits]="2"
+          styleClass="w-full" inputStyleClass="w-full" />
       </div>
 
       <div class="nx-form-group">
         <label class="nx-form-label" for="minStock">Estoque mínimo</label>
-        <p-inputnumber
-          inputId="minStock"
-          formControlName="minStock"
-          [min]="0"
-          styleClass="w-full"
-          inputStyleClass="w-full"
-        />
+        <p-inputnumber inputId="minStock" formControlName="minStock"
+          [min]="0" styleClass="w-full" inputStyleClass="w-full" />
+      </div>
+
+      <div class="nx-form-group">
+        <label class="nx-form-label">Unidade</label>
+        <p-select formControlName="unit" [options]="unitOptions"
+          optionLabel="label" optionValue="value"
+          styleClass="w-full" />
       </div>
 
     </div>
 
+    <p-divider />
+
+    <!-- Descrição + Status -->
+    <div class="nx-form-group">
+      <label class="nx-form-label" for="description">Descrição</label>
+      <textarea pTextarea id="description" formControlName="description"
+        rows="3" class="w-full" placeholder="Informações adicionais sobre o item"></textarea>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <p-toggleswitch formControlName="isActive" inputId="isActive" />
+      <label for="isActive" style="font-size:0.9rem; cursor:pointer;">
+        Item ativo (visível em vendas e orçamentos)
+      </label>
+    </div>
+
+    <!-- Ações -->
     <div class="nx-form-actions">
-      <p-button
-        type="submit"
-        [label]="isEdit ? 'Salvar alterações' : 'Cadastrar produto'"
+      <p-button type="submit"
+        [label]="isEdit() ? 'Salvar alterações' : 'Cadastrar item'"
         icon="pi pi-check"
-        [loading]="loading"
+        [loading]="saving()"
         [disabled]="form.invalid"
-       styleClass="p-button-sm"/>
+        styleClass="p-button-sm" />
       <a routerLink="/app/estoque">
-        <p-button label="Cancelar" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
       </a>
     </div>
 
   </form>
-
 </div>
+
+<!-- Quick-add dialog -->
+<p-dialog
+  [header]="quickAddTitle"
+  [visible]="quickAddVisible()"
+  (visibleChange)="quickAddVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [closable]="!quickAddSaving()">
+
+  <form [formGroup]="quickAddForm" class="flex flex-col gap-3 pt-2">
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium text-sm">Nome *</label>
+      <input pInputText formControlName="name" class="w-full"
+        placeholder="Digite o nome..." />
+      @if (quickAddForm.get('name')?.invalid && quickAddForm.get('name')?.touched) {
+        <small class="p-error">Campo obrigatório.</small>
+      }
+    </div>
+
+    @if (quickAddFor() === 'category') {
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Descrição</label>
+        <textarea pTextarea formControlName="description" rows="2"
+          class="w-full" placeholder="Opcional"></textarea>
+      </div>
+    }
+
+    @if (quickAddFor() === 'quality') {
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Nível</label>
+        <small style="font-size:0.75rem; color:var(--p-text-muted-color);">1 = melhor qualidade</small>
+        <p-inputnumber formControlName="level" [min]="1" [max]="999"
+          styleClass="w-full" inputStyleClass="w-full" />
+      </div>
+    }
+
+    @if (quickAddFor() === 'supplier') {
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Telefone</label>
+        <p-inputmask formControlName="phone" [mask]="MASKS.PHONE_CEL"
+          placeholder="(00) 00000-0000" styleClass="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">CNPJ</label>
+        <p-inputmask formControlName="cnpj" [mask]="MASKS.CNPJ"
+          placeholder="00.000.000/0000-00" styleClass="w-full" />
+      </div>
+    }
+
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-outlined p-button-sm"
+      type="button"
+      [disabled]="quickAddSaving()"
+      (click)="quickAddVisible.set(false)"></button>
+    <button pButton label="Criar e selecionar" icon="pi pi-plus" class="p-button-sm"
+      type="button"
+      [disabled]="quickAddForm.invalid || quickAddSaving()"
+      (click)="saveQuickAdd()"></button>
+  </ng-template>
+
+</p-dialog>

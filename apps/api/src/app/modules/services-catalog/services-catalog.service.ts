@@ -12,14 +12,24 @@ export class ServicesCatalogService {
     private readonly repo: Repository<ServiceCatalogEntity>,
   ) {}
 
-  findAll(tenantId: string, search?: string) {
+  findAll(tenantId: string, search?: string, categoryId?: string, activeOnly = false) {
     const where: any = { tenantId, deletedAt: IsNull() };
     if (search) where.name = ILike(`%${search}%`);
-    return this.repo.find({ where, order: { name: 'ASC' }, ...(search ? { take: 20 } : {}) });
+    if (categoryId) where.categoryId = categoryId;
+    if (activeOnly) where.isActive = true;
+    return this.repo.find({
+      where,
+      order: { name: 'ASC' },
+      relations: ['category'],
+      ...(search ? { take: 20 } : {}),
+    });
   }
 
   async findOne(tenantId: string, id: string) {
-    const s = await this.repo.findOne({ where: { tenantId, id, deletedAt: IsNull() } });
+    const s = await this.repo.findOne({
+      where: { tenantId, id, deletedAt: IsNull() },
+      relations: ['category'],
+    });
     if (!s) throw new NotFoundException(`Serviço ${id} não encontrado`);
     return s;
   }

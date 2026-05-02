@@ -1,11 +1,8 @@
 import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsNumber,
-  Min,
-  IsInt,
+  IsString, IsNotEmpty, IsOptional, IsNumber,
+  IsUUID, IsIn, IsBoolean, IsInt, Min,
 } from 'class-validator';
+import { ProductType } from '../entities/product.entity';
 
 export class CreateProductDto {
   @IsString()
@@ -13,8 +10,24 @@ export class CreateProductDto {
   name: string;
 
   @IsOptional()
+  @IsIn(['product', 'part'])
+  type?: ProductType;
+
+  @IsOptional()
   @IsString()
   sku?: string;
+
+  @IsOptional()
+  @IsString()
+  barcode?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  unit?: string;
 
   @IsNumber()
   @Min(0)
@@ -29,10 +42,26 @@ export class CreateProductDto {
   minStock: number;
 
   @IsOptional()
-  @IsString()
-  category?: string;
+  @IsUUID()
+  categoryId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  brandId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  qualityId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  supplierId?: string;
 
   @IsOptional()
   @IsString()
   externalRef?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

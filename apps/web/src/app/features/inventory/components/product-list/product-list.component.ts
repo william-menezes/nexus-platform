@@ -9,7 +9,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
-import { Product } from '@nexus-platform/shared-types';
+import { Product, ProductType } from '@nexus-platform/shared-types';
 import { InventoryService } from '../../inventory.service';
 import {
   createInitialTablePageState,
@@ -18,6 +18,8 @@ import {
   TABLE_ROWS_PER_PAGE_OPTIONS,
   updateTablePageState,
 } from '../../../../shared/utils/table-pagination.util';
+
+type TypeFilter = ProductType | 'all';
 
 @Component({
   standalone: true,
@@ -37,17 +39,41 @@ export class ProductListComponent implements OnInit {
 
   constructor() { this.breadcrumbSvc.set([{ label: 'Estoque' }]); }
 
-  products    = signal<Product[]>([]);
-  loading     = signal(false);
-  readonly tablePage = signal(createInitialTablePageState(15));
+  readonly products     = signal<Product[]>([]);
+  readonly loading      = signal(false);
+  readonly activeFilter = signal<TypeFilter>('all');
+  readonly tablePage    = signal(createInitialTablePageState(15));
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
 
-  ngOnInit() {
+  readonly filterOptions: { label: string; value: TypeFilter }[] = [
+    { label: 'Todos', value: 'all' },
+    { label: 'Produtos', value: 'product' },
+    { label: 'Peças', value: 'part' },
+  ];
+
+  ngOnInit() { this.load(); }
+
+  setFilter(f: TypeFilter) {
+    this.activeFilter.set(f);
+    this.tablePage.update(s => ({ ...s, first: 0 }));
+    this.load();
+  }
+
+  load() {
     this.loading.set(true);
-    this.svc.getProducts().subscribe({
+    const f = this.activeFilter();
+    this.svc.getProducts(f === 'all' ? undefined : f).subscribe({
       next: (data) => { this.products.set(data); this.loading.set(false); },
       error: ()     => { this.loading.set(false); },
     });
+  }
+
+  typeLabel(type: ProductType): string {
+    return type === 'part' ? 'Peça' : 'Produto';
+  }
+
+  typeSeverity(type: ProductType): 'info' | 'secondary' {
+    return type === 'part' ? 'secondary' : 'info';
   }
 
   onPageChange(event: { first?: number; rows?: number }) {
@@ -64,14 +90,16 @@ export class ProductListComponent implements OnInit {
   remove(id: string) {
     const product = this.products().find(p => p.id === id);
     this.confirm.confirm({
-      message: `Excluir produto "${product?.name ?? '?'}"?`,
-      header: 'Confirmar exclus?o',
+      message: `Excluir "${product?.name ?? '?'}"?`,
+      header: 'Confirmar exclusão',
       icon: 'pi pi-trash',
+      acceptButtonStyleClass: 'p-button-danger p-button-sm',
+      rejectButtonStyleClass: 'p-button-outlined p-button-sm',
       accept: () => {
         this.svc.removeProduct(id).subscribe({
           next: () => {
             this.products.update(list => list.filter(p => p.id !== id));
-            this.msg.add({ severity: 'success', summary: 'Exclu?do', detail: product?.name ?? 'Produto removido' });
+            this.msg.add({ severity: 'success', summary: 'Excluído', detail: product?.name });
           },
           error: () => this.msg.add({ severity: 'error', summary: 'Erro ao excluir' }),
         });

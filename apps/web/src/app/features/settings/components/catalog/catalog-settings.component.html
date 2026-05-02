@@ -1,0 +1,119 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="flex flex-col gap-4">
+
+  <!-- Seletores de tipo e seção -->
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="flex gap-2">
+      @for (t of typeOptions; track t.value) {
+        <button pButton [label]="t.label"
+          [class]="activeType() === t.value ? 'p-button-sm' : 'p-button-sm p-button-outlined'"
+          (click)="setType(t.value)"></button>
+      }
+    </div>
+
+    @if (!isService) {
+      <div class="flex gap-2">
+        @for (s of sectionOptions; track s.value) {
+          <button pButton [label]="s.label"
+            [class]="activeSection() === s.value ? 'p-button-sm p-button-secondary' : 'p-button-sm p-button-secondary p-button-outlined'"
+            (click)="setSection(s.value)"></button>
+        }
+      </div>
+    }
+
+    <button pButton icon="pi pi-plus" label="Adicionar"
+      class="p-button-sm ml-auto"
+      (click)="openDialog()"></button>
+  </div>
+
+  <!-- Tabela -->
+  <div class="overflow-x-auto">
+    <p-table [value]="items()" [loading]="loading()" stripedRows styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nome</th>
+          @if (activeSection() !== 'brands') {
+            <th>{{ columnLabel }}</th>
+          }
+          <th style="width:8rem; text-align:right;">Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td style="font-weight:600;">{{ item.name }}</td>
+          @if (activeSection() !== 'brands') {
+            <td style="color:var(--p-text-muted-color); font-size:0.875rem;">{{ columnValue(item) }}</td>
+          }
+          <td style="text-align:right;">
+            <button pButton icon="pi pi-pencil"
+              class="p-button-sm p-button-text mr-1"
+              (click)="openDialog(item)"></button>
+            <button pButton icon="pi pi-trash"
+              class="p-button-sm p-button-text p-button-danger"
+              (click)="confirmDelete(item)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [colSpan]="activeSection() !== 'brands' ? 3 : 2" class="text-center py-6" style="color:var(--p-text-muted-color);">
+            Nenhum item cadastrado.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</div>
+
+<!-- Dialog de criação/edição -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [header]="dialogTitle"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [closable]="!saving()">
+
+  <form [formGroup]="form" class="flex flex-col gap-3 pt-2">
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium text-sm">Nome *</label>
+      <input pInputText formControlName="name" class="w-full"
+        placeholder="Ex: Smartphones" />
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <small class="p-error">Campo obrigatório.</small>
+      }
+    </div>
+
+    @if (showDescription) {
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Descrição</label>
+        <textarea pTextarea formControlName="description" rows="2"
+          class="w-full" placeholder="Opcional"></textarea>
+      </div>
+    }
+
+    @if (showLevel) {
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Nível</label>
+        <small class="text-text-secondary" style="font-size:0.75rem;">1 = melhor qualidade. Usado para ordenação.</small>
+        <p-inputnumber formControlName="level" [min]="1" [max]="999"
+          styleClass="w-full" inputStyleClass="w-full" />
+      </div>
+    }
+
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-outlined p-button-sm"
+      [disabled]="saving()"
+      (click)="dialogVisible = false"></button>
+    <button pButton label="Salvar" icon="pi pi-check" class="p-button-sm"
+      [disabled]="form.invalid || saving()"
+      [loading]="saving()"
+      (click)="save()"></button>
+  </ng-template>
+
+</p-dialog>

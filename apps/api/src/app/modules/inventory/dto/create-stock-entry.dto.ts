@@ -1,11 +1,5 @@
 import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsInt,
-  IsIn,
-  Min,
-  IsUUID,
+  IsString, IsNotEmpty, IsOptional, IsInt, IsIn, IsNumber, Min, IsUUID,
 } from 'class-validator';
 
 export class CreateStockEntryDto {
@@ -22,6 +16,11 @@ export class CreateStockEntryDto {
   @IsInt()
   @Min(1)
   quantity: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  costPrice?: number;
 
   @IsOptional()
   @IsString()

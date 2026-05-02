@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable, NotFoundException, UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
-import { ProductEntity } from './entities/product.entity';
+import { ProductEntity, ProductType } from './entities/product.entity';
 import { StockEntryEntity } from './entities/stock-entry.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -16,19 +18,22 @@ export class InventoryService {
     private readonly entries: Repository<StockEntryEntity>,
   ) {}
 
-  findAllProducts(tenantId: string) {
-    return this.products.find({
-      where: { tenantId, deletedAt: IsNull() },
-      order: { name: 'ASC' },
-    });
+  findAllProducts(tenantId: string, type?: ProductType, activeOnly = false) {
+    const where: any = { tenantId, deletedAt: IsNull() };
+    if (type) where.type = type;
+    if (activeOnly) where.isActive = true;
+    return this.products
+      .find({ where, order: { name: 'ASC' }, relations: ['category', 'brand', 'quality'] })
+      .then(list => list.map(p => ({ ...p, belowMinStock: p.currentStock < p.minStock })));
   }
 
   async findOneProduct(tenantId: string, id: string) {
     const p = await this.products.findOne({
       where: { tenantId, id, deletedAt: IsNull() },
+      relations: ['category', 'brand', 'quality'],
     });
     if (!p) throw new NotFoundException(`Produto ${id} não encontrado`);
-    return p;
+    return { ...p, belowMinStock: p.currentStock < p.minStock };
   }
 
   createProduct(tenantId: string, dto: CreateProductDto) {
@@ -54,7 +59,20 @@ export class InventoryService {
   }
 
   async createEntry(tenantId: string, dto: CreateStockEntryDto) {
-    await this.findOneProduct(tenantId, dto.productId);
-    return this.entries.save({ ...dto, tenantId });
+    const product = await this.findOneProduct(tenantId, dto.productId);
+
+    if (dto.type === 'out' && product.currentStock < dto.quantity) {
+      throw new UnprocessableEntityException(
+        `Estoque insuficiente: disponível ${product.currentStock}, solicitado ${dto.quantity}`,
+      );
+    }
+
+    const entry = await this.entries.save({ ...dto, tenantId });
+
+    if (dto.costPrice !== undefined && dto.type === 'in') {
+      await this.products.update({ id: dto.productId, tenantId }, { costPrice: dto.costPrice });
+    }
+
+    return entry;
   }
 }

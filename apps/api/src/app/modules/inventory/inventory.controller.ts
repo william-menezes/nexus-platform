@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   HttpCode,
   HttpStatus,
   UploadedFile,
@@ -20,6 +21,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateStockEntryDto } from './dto/create-stock-entry.dto';
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { CurrentTenant } from '../../core/decorators/tenant.decorator';
+import { ProductType } from './entities/product.entity';
 
 @UseGuards(AuthGuard)
 @Controller('inventory')
@@ -32,8 +34,12 @@ export class InventoryController {
   // ── Produtos ──────────────────────────────────────────────
 
   @Get('products')
-  findAllProducts(@CurrentTenant() tenantId: string) {
-    return this.svc.findAllProducts(tenantId);
+  findAllProducts(
+    @CurrentTenant() tenantId: string,
+    @Query('type') type?: ProductType,
+    @Query('active') active?: string,
+  ) {
+    return this.svc.findAllProducts(tenantId, type, active === 'true');
   }
 
   @Get('products/:id')

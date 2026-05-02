@@ -8,10 +8,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
-  AbstractControl,
   FormBuilder,
   ReactiveFormsModule,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
@@ -32,35 +30,16 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { MessageService } from 'primeng/api';
 import { Client } from '@nexus-platform/shared-types';
-import { isValidCpf, isValidCnpj } from '@nexus-platform/shared-utils';
 import { ClientsService } from '../../clients.service';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
 import { ViaCepService } from '../../../../core/services/via-cep.service';
+import {
+  cpfValidator, cnpjValidator, phoneValidator, cepValidator, emailValidator,
+} from '../../../../shared/validators';
+import { phoneMask as phoneMaskFn } from '../../../../shared/validators/input-masks';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
-// ── Local validators ──────────────────────────────────────────────────────────
-
-const cpfValidator: ValidatorFn = (control: AbstractControl) =>
-  control.value && !isValidCpf(control.value) ? { cpfInvalid: true } : null;
-
-const cnpjValidator: ValidatorFn = (control: AbstractControl) =>
-  control.value && !isValidCnpj(control.value) ? { cnpjInvalid: true } : null;
-
 const stripDigits = (value: unknown) => String(value ?? '').replace(/\D/g, '');
-
-const phoneValidator: ValidatorFn = (control: AbstractControl) => {
-  const digits = stripDigits(control.value);
-  return digits && !/^\d{10,11}$/.test(digits) ? { phoneInvalid: true } : null;
-};
-
-const zipCodeValidator: ValidatorFn = (control: AbstractControl) => {
-  const digits = stripDigits(control.value);
-  return digits && digits.length !== 8 ? { zipCodeInvalid: true } : null;
-};
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 @Component({
   standalone: true,
@@ -122,7 +101,7 @@ export class ClientFormComponent implements OnInit {
     type: ['individual'],
     cpf: ['', [cpfValidator]],
     cnpj: ['', [cnpjValidator]],
-    email: ['', [Validators.email, Validators.pattern(emailPattern)]],
+    email: ['', [emailValidator]],
     phone: ['', [phoneValidator]],
     phone2: ['', [phoneValidator]],
     birthDate: [null as Date | null],
@@ -130,7 +109,7 @@ export class ClientFormComponent implements OnInit {
     notes: [''],
     hasAddress: [false],
     address: this.fb.group({
-      zipCode: ['', [zipCodeValidator]],
+      zipCode: ['', [cepValidator]],
       street: [''],
       number: [''],
       complement: [''],
@@ -157,8 +136,7 @@ export class ClientFormComponent implements OnInit {
   }
 
   phoneMask(path: 'phone' | 'phone2'): string {
-    const digits = stripDigits(this.form.get(path)?.value);
-    return digits.length > 10 ? '(99) 99999-9999' : '(99) 9999-9999';
+    return phoneMaskFn(this.form.get(path)?.value ?? '');
   }
 
   ngOnInit() {

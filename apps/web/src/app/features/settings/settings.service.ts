@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { ItemCategory, ItemBrand, ItemQuality, LookupItemType } from '@nexus-platform/shared-types';
 
 export interface TenantSettings {
   id: string;
@@ -74,5 +75,62 @@ export class SettingsService {
 
   updatePermissions(permissions: Omit<Permission, 'id'>[]) {
     return this.http.put(`${this.base}/permissions`, permissions);
+  }
+
+  // Catalog: Categories
+  getCategories(itemType?: LookupItemType) {
+    const params: Record<string, string> = {};
+    if (itemType) params['itemType'] = itemType;
+    return this.http.get<ItemCategory[]>(`${this.base}/item-categories`, { params });
+  }
+
+  createCategory(payload: { name: string; itemType: LookupItemType; description?: string }) {
+    return this.http.post<ItemCategory>(`${this.base}/item-categories`, payload);
+  }
+
+  updateCategory(id: string, payload: { name?: string; description?: string }) {
+    return this.http.patch<ItemCategory>(`${this.base}/item-categories/${id}`, payload);
+  }
+
+  deleteCategory(id: string) {
+    return this.http.delete<void>(`${this.base}/item-categories/${id}`);
+  }
+
+  // Catalog: Brands
+  getBrands(itemType?: 'product' | 'part') {
+    const params: Record<string, string> = {};
+    if (itemType) params['itemType'] = itemType;
+    return this.http.get<ItemBrand[]>(`${this.base}/item-brands`, { params });
+  }
+
+  createBrand(payload: { name: string; itemType: 'product' | 'part' }) {
+    return this.http.post<ItemBrand>(`${this.base}/item-brands`, payload);
+  }
+
+  updateBrand(id: string, payload: { name?: string }) {
+    return this.http.patch<ItemBrand>(`${this.base}/item-brands/${id}`, payload);
+  }
+
+  deleteBrand(id: string) {
+    return this.http.delete<void>(`${this.base}/item-brands/${id}`);
+  }
+
+  // Catalog: Qualities
+  getQualities(itemType?: 'product' | 'part') {
+    const params: Record<string, string> = {};
+    if (itemType) params['itemType'] = itemType;
+    return this.http.get<ItemQuality[]>(`${this.base}/item-qualities`, { params });
+  }
+
+  createQuality(payload: { name: string; itemType: 'product' | 'part'; level?: number }) {
+    return this.http.post<ItemQuality>(`${this.base}/item-qualities`, payload);
+  }
+
+  updateQuality(id: string, payload: { name?: string; level?: number }) {
+    return this.http.patch<ItemQuality>(`${this.base}/item-qualities/${id}`, payload);
+  }
+
+  deleteQuality(id: string) {
+    return this.http.delete<void>(`${this.base}/item-qualities/${id}`);
   }
 }

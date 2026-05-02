@@ -1,4 +1,4 @@
-﻿<p-toast />
+<p-toast />
 <p-confirmDialog />
 
 <div class="nx-page">
@@ -6,87 +6,102 @@
   <div class="nx-page-header">
     <div>
       <h1 class="nx-page-title">Estoque</h1>
-      <p class="nx-page-subtitle">Controle o estoque de produtos</p>
+      <p class="nx-page-subtitle">Controle o estoque de produtos e peças</p>
     </div>
     <div style="display:flex; gap:0.75rem;">
       <a routerLink="nfe-import">
-        <p-button label="Importar NF-e" icon="pi pi-upload" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
+        <p-button label="Importar NF-e" icon="pi pi-upload" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
       </a>
       <a routerLink="novo">
-        <p-button label="Novo produto" icon="pi pi-plus"  styleClass="p-button-sm"/>
+        <p-button label="Novo item" icon="pi pi-plus" styleClass="p-button-sm" />
       </a>
     </div>
   </div>
 
+  <!-- Filtro por tipo -->
+  <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+    @for (f of filterOptions; track f.value) {
+      <button pButton [label]="f.label"
+        [class]="activeFilter() === f.value ? 'p-button-sm' : 'p-button-sm p-button-outlined'"
+        (click)="setFilter(f.value)"></button>
+    }
+  </div>
+
   <p-card styleClass="w-full">
-  <p-table
-    [value]="products()"
-    [loading]="loading()"
-    [paginator]="true"
-    [rows]="tablePage().rows"
-    [first]="tablePage().first"
-    [rowsPerPageOptions]="rowsPerPageOptions"
-    [rowHover]="true"
-    sortMode="single"
-    styleClass="nx-data-table p-datatable-sm"
-    [tableStyle]="{'min-width':'700px'}"
-    (onPage)="onPageChange($event)"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
-        <th pSortableColumn="sku">SKU <p-sortIcon field="sku" /></th>
-        <th pSortableColumn="category">Categoria <p-sortIcon field="category" /></th>
-        <th pSortableColumn="costPrice" style="text-align:right;">Custo <p-sortIcon field="costPrice" /></th>
-        <th pSortableColumn="salePrice" style="text-align:right;">Venda <p-sortIcon field="salePrice" /></th>
-        <th pSortableColumn="currentStock" style="text-align:right;">Estoque <p-sortIcon field="currentStock" /></th>
-        <th></th>
-      </tr>
-    </ng-template>
+    <p-table
+      [value]="products()"
+      [loading]="loading()"
+      [paginator]="true"
+      [rows]="tablePage().rows"
+      [first]="tablePage().first"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [rowHover]="true"
+      sortMode="single"
+      styleClass="nx-data-table p-datatable-sm"
+      [tableStyle]="{'min-width':'700px'}"
+      (onPage)="onPageChange($event)"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col" pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+          <th scope="col">Tipo</th>
+          <th scope="col" pSortableColumn="sku">SKU <p-sortIcon field="sku" /></th>
+          <th scope="col">Categoria</th>
+          <th scope="col" pSortableColumn="costPrice" style="text-align:right;">Custo <p-sortIcon field="costPrice" /></th>
+          <th scope="col" pSortableColumn="salePrice" style="text-align:right;">Venda <p-sortIcon field="salePrice" /></th>
+          <th scope="col" pSortableColumn="currentStock" style="text-align:right;">Estoque <p-sortIcon field="currentStock" /></th>
+          <th scope="col"></th>
+        </tr>
+      </ng-template>
 
-    <ng-template pTemplate="body" let-p>
-      <tr>
-        <td style="font-weight:600;">{{ p.name }}</td>
-        <td style="color:var(--p-text-muted-color); font-size:0.85em; font-family:monospace;">{{ p.sku || '—' }}</td>
-        <td>{{ p.category || '—' }}</td>
-        <td style="text-align:right;">{{ p.costPrice | currency:'BRL' }}</td>
-        <td style="text-align:right;">{{ p.salePrice | currency:'BRL' }}</td>
-        <td style="text-align:right;">
-          @if (p.currentStock <= p.minStock) {
-            <span style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
-              <p-tag [value]="'' + p.currentStock" severity="danger" />
-              <i class="pi pi-exclamation-triangle" style="color:#ef4444; font-size:0.75rem;" [title]="'Mín: ' + p.minStock"></i>
-            </span>
-          } @else {
-            <span style="font-weight:600;">{{ p.currentStock }}</span>
-          }
-        </td>
-        <td>
-          <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
-            <a [routerLink]="[p.id, 'editar']">
-              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small"  styleClass="p-button-sm"/>
-            </a>
-            <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" (click)="remove(p.id)"  styleClass="p-button-sm"/>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
+      <ng-template pTemplate="body" let-p>
+        <tr>
+          <td style="font-weight:600;">{{ p.name }}</td>
+          <td>
+            <p-tag [value]="typeLabel(p.type)" [severity]="typeSeverity(p.type)" />
+          </td>
+          <td style="color:var(--p-text-muted-color); font-size:0.85em; font-family:monospace;">{{ p.sku || '—' }}</td>
+          <td>{{ p.category?.name || '—' }}</td>
+          <td style="text-align:right;">{{ p.costPrice | currency:'BRL' }}</td>
+          <td style="text-align:right;">{{ p.salePrice | currency:'BRL' }}</td>
+          <td style="text-align:right;">
+            @if (p.belowMinStock || p.currentStock <= p.minStock) {
+              <span style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
+                <p-tag [value]="'' + p.currentStock" severity="danger" />
+                <i class="pi pi-exclamation-triangle" style="color:#ef4444; font-size:0.75rem;"
+                   [title]="'Mínimo: ' + p.minStock"></i>
+              </span>
+            } @else {
+              <span style="font-weight:600;">{{ p.currentStock }}</span>
+            }
+          </td>
+          <td>
+            <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+              <a [routerLink]="[p.id, 'editar']">
+                <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" styleClass="p-button-sm" />
+              </a>
+              <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small"
+                (click)="remove(p.id)" (keydown.enter)="remove(p.id)" styleClass="p-button-sm" />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
 
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="7">
-          <div class="nx-table-empty">
-            <span class="nx-table-empty__icon"><i class="pi pi-box"></i></span>
-            <span class="nx-table-empty__title">Nenhum produto cadastrado</span>
-            <div class="nx-table-empty__description">Cadastre produtos para controlar estoque, custo e precificação.</div>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="paginatorleft">
-      <span class="nx-table-summary">{{ tableSummary() }}</span>
-    </ng-template>
-  </p-table>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8">
+            <div class="nx-table-empty">
+              <span class="nx-table-empty__icon"><i class="pi pi-box"></i></span>
+              <span class="nx-table-empty__title">Nenhum item cadastrado</span>
+              <div class="nx-table-empty__description">Cadastre produtos ou peças para controlar estoque, custo e precificação.</div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span class="nx-table-summary">{{ tableSummary() }}</span>
+      </ng-template>
+    </p-table>
   </p-card>
 
 </div>
