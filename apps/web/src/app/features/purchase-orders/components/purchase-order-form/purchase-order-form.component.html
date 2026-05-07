@@ -1,14 +1,12 @@
 ﻿<p-toast />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div class="flex items-center gap-3">
-      <a routerLink="/app/compras" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm flex-shrink-0" aria-label="Voltar"></a>
-      <div>
-        <h1 class="nx-page-title">Novo Pedido de Compra</h1>
-        <p class="nx-page-subtitle">Preencha os dados do pedido</p>
-      </div>
-    </div>
-  </div>
+  <app-page-header
+    variant="detail"
+    backLabel="Voltar para Pedidos de Compra"
+    backRoute="/app/compras"
+    title="Novo Pedido de Compra"
+    subtitle="Preencha os dados do pedido"
+  />
 
   <form [formGroup]="form" (ngSubmit)="save()">
     <p-card header="Dados do Pedido" styleClass="mb-4">

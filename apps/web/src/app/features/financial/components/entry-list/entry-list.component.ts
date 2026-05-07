@@ -11,6 +11,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { FinancialEntry } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 import {
@@ -28,7 +29,7 @@ type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contr
   selector: 'app-entry-list',
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
-    CardModule, TagModule, SelectModule, ConfirmDialogModule, ToastModule,
+    CardModule, TagModule, SelectModule, ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './entry-list.component.html',

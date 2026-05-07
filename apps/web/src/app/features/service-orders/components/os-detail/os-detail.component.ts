@@ -12,6 +12,8 @@ import { MessageModule } from 'primeng/message';
 import { ServiceOrder } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { PageHeaderPill } from '../../../../shared/models/page-header.types';
 
 const STATUS_FLOW: Record<string, string> = {
   open:            'in_progress',
@@ -22,7 +24,7 @@ const STATUS_FLOW: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-os-detail',
-  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink, TagModule, ButtonModule, CardModule, SkeletonModule, ConfirmDialogModule, ToastModule, MessageModule],
+  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink, TagModule, ButtonModule, CardModule, SkeletonModule, ConfirmDialogModule, ToastModule, MessageModule, PageHeaderComponent],
   providers: [ConfirmationService, MessageService],
   templateUrl: './os-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,6 +66,21 @@ export class OsDetailComponent implements OnInit {
 
   get nextStatus() {
     return this.os ? STATUS_FLOW[this.os.status] : null;
+  }
+
+  osPills(): PageHeaderPill[] {
+    if (!this.os) return [];
+    const statusColorMap: Record<string, PageHeaderPill['color']> = {
+      open:           'blue',
+      in_progress:    'violet',
+      awaiting_parts: 'amber',
+      done:           'green',
+      cancelled:      'red',
+    };
+    return [{
+      label: this.statusLabel[this.os.status] ?? this.os.status,
+      color: statusColorMap[this.os.status] ?? 'gray',
+    }];
   }
 
   ngOnInit() {

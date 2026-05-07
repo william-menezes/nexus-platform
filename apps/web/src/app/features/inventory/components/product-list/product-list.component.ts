@@ -9,6 +9,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Product, ProductType } from '@nexus-platform/shared-types';
 import { InventoryService } from '../../inventory.service';
 import {
@@ -25,7 +26,7 @@ type TypeFilter = ProductType | 'all';
   standalone: true,
   selector: 'app-product-list',
   imports: [
-    CurrencyPipe, RouterLink, TableModule, ButtonModule, CardModule, TagModule, ConfirmDialogModule, ToastModule,
+    CurrencyPipe, RouterLink, TableModule, ButtonModule, CardModule, TagModule, ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './product-list.component.html',

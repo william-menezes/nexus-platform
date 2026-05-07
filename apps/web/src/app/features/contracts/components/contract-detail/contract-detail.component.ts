@@ -10,6 +10,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Contract, ContractBilling } from '@nexus-platform/shared-types';
 import { ContractsService } from '../../contracts.service';
 
@@ -31,7 +32,7 @@ const BILLING_STATUS: Record<string, string> = {
   imports: [
     CommonModule, RouterLink,
     ButtonModule, TagModule, CardModule, TableModule,
-    ToastModule, ConfirmDialogModule, DividerModule,
+    ToastModule, ConfirmDialogModule, DividerModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './contract-detail.component.html',

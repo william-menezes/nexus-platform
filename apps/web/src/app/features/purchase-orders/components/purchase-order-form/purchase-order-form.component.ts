@@ -21,6 +21,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 import { SuppliersService } from '../../../suppliers/suppliers.service';
 import { Supplier } from '@nexus-platform/shared-types';
@@ -40,7 +41,7 @@ interface ProductOption {
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule, DatePickerModule,
-    SelectModule, TextareaModule, CardModule, ToastModule,
+    SelectModule, TextareaModule, CardModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './purchase-order-form.component.html',

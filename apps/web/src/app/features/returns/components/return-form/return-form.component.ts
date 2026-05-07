@@ -11,6 +11,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ReturnsService } from '../../returns.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -24,7 +25,7 @@ interface SaleItemOption { id: string; productId: string; productName: string; q
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule, SelectModule,
-    TextareaModule, CardModule, ToastModule,
+    TextareaModule, CardModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './return-form.component.html',

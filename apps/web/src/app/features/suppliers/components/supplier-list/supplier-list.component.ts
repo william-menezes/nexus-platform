@@ -13,6 +13,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Supplier } from '@nexus-platform/shared-types';
 import { SuppliersService } from '../../suppliers.service';
 import {
@@ -28,7 +29,7 @@ import {
   selector: 'app-supplier-list',
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
-    CardModule, InputTextModule, ConfirmDialogModule, ToastModule,
+    CardModule, InputTextModule, ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './supplier-list.component.html',

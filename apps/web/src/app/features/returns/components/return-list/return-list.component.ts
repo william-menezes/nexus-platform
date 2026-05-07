@@ -10,6 +10,7 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Return } from '@nexus-platform/shared-types';
 import { ReturnsService } from '../../returns.service';
 import {
@@ -39,6 +40,7 @@ const TYPE_LABELS: Record<string, string> = {
   imports: [
     CommonModule, RouterLink, FormsModule,
     TableModule, ButtonModule, CardModule, SelectModule, TagModule, ToastModule,
+    PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './return-list.component.html',

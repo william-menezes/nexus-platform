@@ -3,100 +3,236 @@
 
 <div class="nx-page">
 
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Clientes</h1>
-      <p class="nx-page-subtitle">Gerencie os clientes do seu negócio</p>
+  <app-page-header
+    variant="list"
+    title="Clientes"
+    [subtitle]="clients().length + ' cadastrados · gerencie pessoas físicas e jurídicas'"
+  >
+    <div actions class="flex items-center gap-2 flex-wrap">
+      <p-button label="Importar" icon="pi pi-upload" [outlined]="true" styleClass="p-button-sm" />
+      <p-button label="Exportar" icon="pi pi-download" [outlined]="true" styleClass="p-button-sm" />
+      <a routerLink="novo">
+        <p-button label="Novo cliente" icon="pi pi-plus" styleClass="p-button-sm" />
+      </a>
     </div>
-    <a routerLink="novo">
-      <p-button label="Novo Cliente" icon="pi pi-plus"  styleClass="p-button-sm"/>
-    </a>
-  </div>
+  </app-page-header>
 
-  <p-card styleClass="w-full">
+  @if (error()) {
+    <div role="alert" class="mb-4 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <i class="pi pi-exclamation-circle shrink-0"></i>{{ error() }}
+    </div>
+  }
 
-    <div class="mb-4">
-      <div class="relative max-w-sm">
+  <!-- ── Card ────────────────────────────────────────── -->
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
+
+    <!-- Toolbar -->
+    <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-surface-border flex-wrap">
+
+      <!-- Search -->
+      <div class="relative flex-1 min-w-[180px] max-w-sm">
         <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm pointer-events-none"></i>
         <input
           type="text"
-          placeholder="Buscar por nome ou CPF/CNPJ…"
+          placeholder="Buscar por nome, CPF ou CNPJ…"
           [(ngModel)]="search"
           (keyup.enter)="onSearch()"
-          class="block w-full rounded-lg border border-surface-border bg-surface pl-9 pr-3 py-2.5 text-sm text-text
-                 placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500
-                 focus:outline-none transition-colors"
+          class="block w-full rounded-md border border-surface-border bg-surface pl-9 pr-3 py-2 text-sm text-text
+                 placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-colors"
           aria-label="Buscar clientes"
         />
       </div>
-    </div>
 
-    @if (error()) {
-      <div role="alert" class="mb-4 flex items-center gap-3 rounded-lg border border-danger-500 bg-danger-50 px-4 py-3 text-sm text-danger-700">
-        <i class="pi pi-exclamation-circle shrink-0"></i>
-        {{ error() }}
+      <!-- Filter chips -->
+      <div class="flex items-center gap-1.5 flex-wrap">
+
+        <button
+          type="button"
+          (click)="setTypeFilter('all')"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors"
+          [class.border-primary-300]="typeFilter() === 'all'"
+          [class.bg-primary-50]="typeFilter() === 'all'"
+          [class.text-primary-700]="typeFilter() === 'all'"
+          [class.border-surface-border]="typeFilter() !== 'all'"
+          [class.bg-surface-elevated]="typeFilter() !== 'all'"
+          [class.text-text-muted]="typeFilter() !== 'all'"
+        >
+          Todos
+          <span class="font-mono text-[10.5px] font-bold px-1.5 py-0.5 rounded-full"
+            [class.bg-primary-100]="typeFilter() === 'all'"
+            [class.text-primary-700]="typeFilter() === 'all'"
+            [class.bg-surface-border]="typeFilter() !== 'all'"
+            [class.text-text-muted]="typeFilter() !== 'all'"
+          >{{ clients().length }}</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="setTypeFilter('individual')"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors"
+          [class.border-primary-300]="typeFilter() === 'individual'"
+          [class.bg-primary-50]="typeFilter() === 'individual'"
+          [class.text-primary-700]="typeFilter() === 'individual'"
+          [class.border-surface-border]="typeFilter() !== 'individual'"
+          [class.bg-surface-elevated]="typeFilter() !== 'individual'"
+          [class.text-text-muted]="typeFilter() !== 'individual'"
+        >
+          Pessoa Física
+          <span class="font-mono text-[10.5px] font-bold px-1.5 py-0.5 rounded-full"
+            [class.bg-primary-100]="typeFilter() === 'individual'"
+            [class.text-primary-700]="typeFilter() === 'individual'"
+            [class.bg-surface-border]="typeFilter() !== 'individual'"
+            [class.text-text-muted]="typeFilter() !== 'individual'"
+          >{{ pfCount() }}</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="setTypeFilter('company')"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors"
+          [class.border-primary-300]="typeFilter() === 'company'"
+          [class.bg-primary-50]="typeFilter() === 'company'"
+          [class.text-primary-700]="typeFilter() === 'company'"
+          [class.border-surface-border]="typeFilter() !== 'company'"
+          [class.bg-surface-elevated]="typeFilter() !== 'company'"
+          [class.text-text-muted]="typeFilter() !== 'company'"
+        >
+          Pessoa Jurídica
+          <span class="font-mono text-[10.5px] font-bold px-1.5 py-0.5 rounded-full"
+            [class.bg-primary-100]="typeFilter() === 'company'"
+            [class.text-primary-700]="typeFilter() === 'company'"
+            [class.bg-surface-border]="typeFilter() !== 'company'"
+            [class.text-text-muted]="typeFilter() !== 'company'"
+          >{{ pjCount() }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border border-surface-border bg-surface-elevated text-text-muted hover:text-text hover:bg-surface transition-colors"
+        >
+          <i class="pi pi-filter text-[10px]"></i>
+          Mais filtros
+        </button>
+
       </div>
-    }
-
-    <div class="overflow-x-auto">
-    <p-table
-      [value]="clients()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '900px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
-          <th pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
-          <th pSortableColumn="cpfCnpj">CPF/CNPJ <p-sortIcon field="cpfCnpj" /></th>
-          <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
-          <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
-          <th pSortableColumn="createdAt">Cadastro <p-sortIcon field="createdAt" /></th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-client>
-        <tr>
-          <td class="font-medium">{{ client.name }}</td>
-          <td>{{ clientTypeLabel(client.type) }}</td>
-          <td class="font-mono text-text-secondary">{{ client.cpfCnpj || '—' }}</td>
-          <td>{{ client.phone || '—' }}</td>
-          <td>{{ client.email || '—' }}</td>
-          <td>{{ client.createdAt | date:'dd/MM/yyyy' }}</td>
-          <td>
-            <div class="flex items-center justify-end gap-1">
-              <a [routerLink]="client.id" pButton icon="pi pi-eye" class="p-button-sm p-button-text" aria-label="Ver detalhes do cliente"></a>
-              <a [routerLink]="[client.id, 'editar']" pButton icon="pi pi-pencil" class="p-button-sm p-button-text" aria-label="Editar cliente"></a>
-              <p-button icon="pi pi-trash" severity="danger" [text]="true" styleClass="p-button-sm" (onClick)="confirmDelete(client)" />
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-users"></i></span>
-              <span class="nx-table-empty__title">Nenhum cliente encontrado</span>
-              <div class="nx-table-empty__description">Cadastre seu primeiro cliente para começar.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
     </div>
 
-  </p-card>
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <p-table
+        [value]="displayClients()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '860px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 40px">
+              <input type="checkbox" class="w-4 h-4 rounded border-gray-300" />
+            </th>
+            <th pSortableColumn="name">Cliente <p-sortIcon field="name" /></th>
+            <th>Tipo</th>
+            <th pSortableColumn="cpfCnpj">CPF/CNPJ <p-sortIcon field="cpfCnpj" /></th>
+            <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
+            <th>Cidade</th>
+            <th pSortableColumn="createdAt">Cadastro <p-sortIcon field="createdAt" /></th>
+            <th style="width: 96px; text-align: right">Ações</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-client>
+          <tr class="group">
+            <td>
+              <input type="checkbox" class="w-4 h-4 rounded border-gray-300" />
+            </td>
+
+            <!-- Nome + email -->
+            <td>
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 select-none"
+                  [ngClass]="avatarColorClass(client.name)"
+                >{{ avatarInitials(client.name) }}</div>
+                <div class="min-w-0">
+                  <a [routerLink]="client.id" class="block font-semibold text-text hover:text-primary-600 transition-colors truncate leading-snug">
+                    {{ client.name }}
+                  </a>
+                  @if (client.email) {
+                    <span class="block text-[11.5px] text-text-muted leading-snug truncate">{{ client.email }}</span>
+                  }
+                </div>
+              </div>
+            </td>
+
+            <!-- Tipo pill -->
+            <td>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold font-mono"
+                [class.bg-blue-50]="client.type === 'individual'"
+                [class.text-blue-700]="client.type === 'individual'"
+                [class.bg-violet-50]="client.type === 'company'"
+                [class.text-violet-700]="client.type === 'company'"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [class.bg-blue-500]="client.type === 'individual'"
+                  [class.bg-violet-500]="client.type === 'company'"
+                ></span>
+                {{ client.type === 'individual' ? 'PF' : 'PJ' }}
+              </span>
+            </td>
+
+            <td class="font-mono text-[12.5px] text-text-secondary">{{ client.cpfCnpj || '—' }}</td>
+            <td class="font-mono text-[12.5px]">{{ client.phone || '—' }}</td>
+            <td>{{ client.address?.city || '—' }}</td>
+            <td class="font-mono text-[12.5px] text-text-muted">{{ client.createdAt | date:'dd/MM/yyyy' }}</td>
+
+            <!-- Ações — aparecem só no hover da linha -->
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="client.id" pButton icon="pi pi-eye"
+                   class="p-button-sm p-button-text" aria-label="Ver detalhes"></a>
+                <a [routerLink]="[client.id, 'editar']" pButton icon="pi pi-pencil"
+                   class="p-button-sm p-button-text" aria-label="Editar cliente"></a>
+                <p-button icon="pi pi-trash" severity="danger" [text]="true"
+                          styleClass="p-button-sm" (onClick)="confirmDelete(client)" />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-users"></i></span>
+                <span class="nx-table-empty__title">Nenhum cliente encontrado</span>
+                <div class="nx-table-empty__description">
+                  @if (typeFilter() !== 'all') {
+                    Nenhum {{ typeFilter() === 'individual' ? 'pessoa física' : 'pessoa jurídica' }} encontrado.
+                  } @else {
+                    Cadastre seu primeiro cliente para começar.
+                  }
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+
+      </p-table>
+    </div>
+
+  </div>
 
 </div>

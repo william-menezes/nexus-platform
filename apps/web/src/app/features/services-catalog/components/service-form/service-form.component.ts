@@ -20,6 +20,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ServiceCatalog, ItemCategory } from '@nexus-platform/shared-types';
 import { ServicesCatalogService } from '../../services-catalog.service';
 import { SettingsService } from '../../../settings/settings.service';
@@ -31,7 +32,7 @@ import { SettingsService } from '../../../settings/settings.service';
     RouterLink, ReactiveFormsModule,
     InputTextModule, TextareaModule, InputNumberModule,
     AutoCompleteModule, ToggleButtonModule, ButtonModule, CardModule,
-    DialogModule, ToastModule,
+    DialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './service-form.component.html',

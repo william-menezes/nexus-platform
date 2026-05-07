@@ -1,17 +1,13 @@
 <p-toast />
 <p-confirmDialog />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Lançamentos</h1>
-      <p class="nx-page-subtitle">Contas a pagar e a receber</p>
-    </div>
-    <div class="flex gap-2">
+  <app-page-header variant="list" title="Lançamentos" subtitle="Contas a pagar e a receber">
+    <div actions class="flex items-center gap-2">
       <a routerLink="caixa" pButton label="Caixa" icon="pi pi-dollar" class="p-button-sm p-button-secondary"></a>
       <a routerLink="plano-de-contas" pButton label="Plano de Contas" icon="pi pi-list" class="p-button-sm p-button-secondary"></a>
       <a routerLink="lancamentos/novo" pButton label="Novo Lançamento" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
-  </div>
+  </app-page-header>
 
   <p-card styleClass="w-full">
     <div class="flex gap-3 mb-4">

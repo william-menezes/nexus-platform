@@ -10,6 +10,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Equipment, EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
 
@@ -19,6 +20,7 @@ import { EquipmentsService } from '../../equipments.service';
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule,
     TextareaModule, SelectModule, ButtonModule, CardModule, ToastModule,
+    PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './equipment-form.component.html',

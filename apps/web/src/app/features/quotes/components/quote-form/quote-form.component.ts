@@ -18,6 +18,7 @@ import { AutoCompleteModule, AutoCompleteCompleteEvent, AutoCompleteSelectEvent 
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Client, Quote } from '@nexus-platform/shared-types';
 import { QuotesService } from '../../quotes.service';
 import { ClientsService } from '../../../clients/clients.service';
@@ -34,7 +35,7 @@ const ITEM_TYPES = [
     ReactiveFormsModule, FormsModule, RouterLink,
     InputTextModule, TextareaModule, InputNumberModule, InputMaskModule,
     SelectModule, DatePickerModule, ButtonModule, CardModule, DividerModule,
-    AutoCompleteModule, ToastModule,
+    AutoCompleteModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './quote-form.component.html',

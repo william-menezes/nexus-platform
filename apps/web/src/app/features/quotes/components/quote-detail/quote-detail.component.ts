@@ -8,6 +8,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Quote } from '@nexus-platform/shared-types';
 import { QuotesService } from '../../quotes.service';
 
@@ -15,7 +16,7 @@ import { QuotesService } from '../../quotes.service';
   standalone: true,
   selector: 'app-quote-detail',
   imports: [
-    CommonModule, RouterLink, ButtonModule, TagModule, TableModule, ToastModule, ConfirmDialogModule,
+    CommonModule, RouterLink, ButtonModule, TagModule, TableModule, ToastModule, ConfirmDialogModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './quote-detail.component.html',

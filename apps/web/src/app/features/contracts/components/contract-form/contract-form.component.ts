@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ContractsService } from '../../contracts.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -26,6 +27,7 @@ interface ClientOption { id: string; name: string; }
     CommonModule, RouterLink, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule, DatePickerModule,
     SelectModule, TextareaModule, CardModule, ToastModule, TooltipModule,
+    PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './contract-form.component.html',

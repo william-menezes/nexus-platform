@@ -2,15 +2,13 @@
 
 
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div class="flex items-center gap-3">
-      <a routerLink="/app/fornecedores" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm flex-shrink-0" aria-label="Voltar"></a>
-      <div>
-        <h1 class="nx-page-title">{{ isEdit() ? 'Editar Fornecedor' : 'Novo Fornecedor' }}</h1>
-        <p class="nx-page-subtitle">Preencha os dados do fornecedor</p>
-      </div>
-    </div>
-  </div>
+  <app-page-header
+    variant="detail"
+    backLabel="Voltar para Fornecedores"
+    backRoute="/app/fornecedores"
+    [title]="isEdit() ? 'Editar Fornecedor' : 'Novo Fornecedor'"
+    subtitle="Preencha os dados do fornecedor"
+  />
 
   <form [formGroup]="form" (ngSubmit)="save()">
     <p-card>

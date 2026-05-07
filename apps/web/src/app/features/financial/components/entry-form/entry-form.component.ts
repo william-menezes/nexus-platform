@@ -12,6 +12,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { FinancialEntry } from '@nexus-platform/shared-types';
 import { FinancialService } from '../../financial.service';
 
@@ -21,6 +22,7 @@ import { FinancialService } from '../../financial.service';
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule, TextareaModule,
     InputNumberModule, SelectModule, DatePickerModule, ButtonModule, CardModule, ToastModule,
+    PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './entry-form.component.html',

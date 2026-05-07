@@ -11,6 +11,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { PurchaseOrder } from '@nexus-platform/shared-types';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 import {
@@ -43,7 +44,7 @@ const STATUS_SEVERITY: Record<string, string> = {
   imports: [
     CommonModule, RouterLink, FormsModule,
     TableModule, ButtonModule, CardModule, SelectModule, TagModule,
-    ConfirmDialogModule, ToastModule,
+    ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './purchase-order-list.component.html',

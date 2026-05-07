@@ -37,16 +37,21 @@ export class AuthService {
   readonly sessionReady$: Observable<boolean>         = this._ready$.asObservable();
   readonly meLoaded$:     Observable<boolean>         = this._meLoaded$.asObservable();
 
-  readonly userRole   = signal<MeResponse['role']>(null);
-  readonly userTenant = signal<string | null>(null);
+  readonly userRole          = signal<MeResponse['role']>(null);
+  readonly userTenant        = signal<string | null>(null);
+  readonly isRecoverySession = signal<boolean>(false);
 
   constructor() {
     // Primary source of truth: onAuthStateChange fires INITIAL_SESSION on load,
     // SIGNED_IN after OAuth/email-confirmation code exchange, SIGNED_OUT on logout.
-    this.supabase.auth.onAuthStateChange((_event, session) => {
+    this.supabase.auth.onAuthStateChange((event, session) => {
       this._user$.next(session?.user ?? null);
       this._session$.next(session);
       this._ready$.next(true);
+
+      if (event === 'PASSWORD_RECOVERY') {
+        this.isRecoverySession.set(true);
+      }
 
       if (session) {
         this._meLoaded$.next(false); // reset while we fetch the latest me
@@ -54,6 +59,7 @@ export class AuthService {
       } else {
         this.userRole.set(null);
         this.userTenant.set(null);
+        this.isRecoverySession.set(false);
         this._meLoaded$.next(true);
       }
     });
@@ -129,6 +135,13 @@ export class AuthService {
       redirectTo: `${window.location.origin}/redefinir-senha`,
     });
     if (error) throw error;
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    const { error } = await this.supabase.auth.updateUser({ password });
+    if (error) throw error;
+    this.isRecoverySession.set(false);
+    await this.refreshMe();
   }
 
   createTenant(dto: { companyName: string; segment?: string; cnpj?: string; phone?: string }) {

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { adminGuard } from './core/guards/admin-guard';
 import { setupGuard } from './core/guards/setup-guard';
+import { passwordRecoveryGuard, passwordRecoveryDeactivateGuard } from './core/guards/password-recovery.guard';
 
 export const appRoutes: Routes = [
   {
@@ -45,6 +46,15 @@ export const appRoutes: Routes = [
     path: 'auth/callback',
     loadComponent: () =>
       import('./features/auth/callback/auth-callback.component').then(m => m.AuthCallbackComponent),
+  },
+  {
+    path: 'redefinir-senha',
+    canActivate:  [passwordRecoveryGuard],
+    canDeactivate: [passwordRecoveryDeactivateGuard],
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        m => m.ResetPasswordComponent,
+      ),
   },
   {
     path: 'app',

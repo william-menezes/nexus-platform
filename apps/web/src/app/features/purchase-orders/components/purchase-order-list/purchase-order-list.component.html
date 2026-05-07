@@ -1,13 +1,11 @@
 ﻿<p-toast />
 <p-confirmDialog />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Pedidos de Compra</h1>
-      <p class="nx-page-subtitle">Gerencie pedidos de compra a fornecedores</p>
+  <app-page-header variant="list" title="Pedidos de Compra" subtitle="Gerencie pedidos de compra a fornecedores">
+    <div actions class="flex items-center gap-2">
+      <a routerLink="nova" pButton label="Novo Pedido" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
-    <a routerLink="nova" pButton label="Novo Pedido" icon="pi pi-plus" class="p-button-sm"></a>
-  </div>
+  </app-page-header>
 
   <p-card styleClass="w-full">
     <div class="mb-3 flex gap-2 items-center">

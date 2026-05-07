@@ -3,17 +3,18 @@
 
 
 <div class="nx-page" *ngIf="contract(); else loading">
-  <div class="nx-page-header">
-    <div class="flex items-center gap-3">
-      <a routerLink="/app/contratos" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm flex-shrink-0" aria-label="Voltar"></a>
-      <div>
-        <h1 class="nx-page-title">{{ contract()!.code }}</h1>
-        <p class="nx-page-subtitle">{{ contract()!.clientName ?? '' }}</p>
-      </div>
+  <app-page-header
+    variant="detail"
+    backLabel="Voltar para Contratos"
+    backRoute="/app/contratos"
+    [title]="contract()!.code"
+    [subtitle]="contract()!.clientName ?? ''"
+  >
+    <div actions class="flex items-center gap-2">
+      <p-tag [value]="statusLabel(contract()!.status)"
+        [severity]="statusSeverity(contract()!.status)" />
     </div>
-    <p-tag [value]="statusLabel(contract()!.status)"
-      [severity]="statusSeverity(contract()!.status)" />
-  </div>
+  </app-page-header>
 
   <!-- Action buttons -->
   <div class="flex gap-2 mb-4 flex-wrap">

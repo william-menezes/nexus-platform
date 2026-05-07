@@ -1,16 +1,12 @@
 <p-toast />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div class="flex items-center gap-3">
-      <a routerLink="/app/financeiro">
-        <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
-      </a>
-      <div>
-        <h1 class="nx-page-title">{{ isEdit() ? 'Editar Lançamento' : 'Novo Lançamento' }}</h1>
-        <p class="nx-page-subtitle">Preencha os dados do lançamento</p>
-      </div>
-    </div>
-  </div>
+  <app-page-header
+    variant="detail"
+    backLabel="Voltar para Lançamentos"
+    backRoute="/app/financeiro/lancamentos"
+    [title]="isEdit() ? 'Editar Lançamento' : 'Novo Lançamento'"
+    subtitle="Preencha os dados do lançamento"
+  />
   <p-card styleClass="w-full">
     <form [formGroup]="form" class="flex flex-col gap-3">
       <div class="flex flex-col gap-1">

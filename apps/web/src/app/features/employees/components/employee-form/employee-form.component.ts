@@ -10,6 +10,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Employee } from '@nexus-platform/shared-types';
 import { EmployeesService } from '../../employees.service';
 
@@ -18,7 +19,7 @@ import { EmployeesService } from '../../employees.service';
   selector: 'app-employee-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, InputTextModule,
-    InputNumberModule, ToggleButtonModule, ButtonModule, CardModule, ToastModule,
+    InputNumberModule, ToggleButtonModule, ButtonModule, CardModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './employee-form.component.html',

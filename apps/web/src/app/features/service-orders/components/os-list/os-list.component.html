@@ -2,15 +2,18 @@
 <p-confirmdialog />
 <div class="nx-page">
 
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Ordens de Serviço</h1>
-      <p class="nx-page-subtitle">Acompanhe as ordens de serviço em andamento</p>
+  <app-page-header
+    variant="list"
+    title="Ordens de Serviço"
+    subtitle="Acompanhe as ordens de serviço em andamento"
+    [viewToggleOptions]="viewToggleOptions"
+    [viewMode]="viewMode()"
+    (viewModeChange)="viewMode.set($event)"
+  >
+    <div actions class="flex items-center gap-2">
+      <a routerLink="nova"><p-button label="Nova OS" icon="pi pi-plus" styleClass="p-button-sm" /></a>
     </div>
-    <a routerLink="nova">
-      <p-button label="Nova OS" icon="pi pi-plus"  styleClass="p-button-sm"/>
-    </a>
-  </div>
+  </app-page-header>
 
   <p-card styleClass="w-full">
 

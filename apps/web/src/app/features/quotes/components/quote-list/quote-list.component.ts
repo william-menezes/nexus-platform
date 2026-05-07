@@ -18,13 +18,15 @@ import {
   TABLE_ROWS_PER_PAGE_OPTIONS,
   updateTablePageState,
 } from '../../../../shared/utils/table-pagination.util';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { PageHeaderViewToggleOption } from '../../../../shared/models/page-header.types';
 
 @Component({
   standalone: true,
   selector: 'app-quote-list',
   imports: [
     CommonModule, RouterLink, TableModule, ButtonModule, CardModule, TagModule,
-    ConfirmDialogModule, ToastModule,
+    ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './quote-list.component.html',
@@ -40,6 +42,12 @@ export class QuoteListComponent implements OnInit {
   loading = signal(false);
   readonly tablePage = signal(createInitialTablePageState());
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
+
+  readonly viewMode = signal<string>('list');
+  readonly viewToggleOptions: PageHeaderViewToggleOption[] = [
+    { label: 'Lista', icon: 'pi-list', value: 'list' },
+    { label: 'Kanban', icon: 'pi-th-large', value: 'kanban' },
+  ];
 
   ngOnInit() {
     this.breadcrumbSvc.set([{ label: 'Orçamentos' }]);

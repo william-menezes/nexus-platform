@@ -1,16 +1,12 @@
 <p-toast />
 <p-confirmDialog />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Funcionários</h1>
-      <p class="nx-page-subtitle">Gestão de funcionários e técnicos</p>
-    </div>
-    <div class="flex gap-2">
+  <app-page-header variant="list" title="Funcionários" subtitle="Gestão de funcionários e técnicos">
+    <div actions class="flex items-center gap-2">
       <a routerLink="convidar" pButton label="Convidar" icon="pi pi-envelope" class="p-button-sm p-button-outlined"></a>
       <a routerLink="novo" pButton label="Novo Funcionário" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
-  </div>
+  </app-page-header>
   <p-card styleClass="w-full">
     <div class="mb-3">
       <input pInputText [(ngModel)]="search" (ngModelChange)="load()" placeholder="Buscar por nome..." class="w-full md:w-1/3" />

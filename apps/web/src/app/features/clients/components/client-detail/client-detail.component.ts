@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { forkJoin } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -22,7 +23,7 @@ import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.servic
 @Component({
   standalone: true,
   selector: 'app-client-detail',
-  imports: [DatePipe, RouterLink, ButtonModule, TagModule, MessageModule, ConfirmDialogModule, TooltipModule],
+  imports: [DatePipe, RouterLink, PageHeaderComponent, ButtonModule, TagModule, MessageModule, ConfirmDialogModule, TooltipModule],
   providers: [ConfirmationService],
   templateUrl: './client-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

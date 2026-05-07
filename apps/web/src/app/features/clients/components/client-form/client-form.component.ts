@@ -13,6 +13,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputMaskModule } from 'primeng/inputmask';
@@ -21,8 +22,6 @@ import { InputIconModule } from 'primeng/inputicon';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
-import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
 import { SelectModule } from 'primeng/select';
@@ -47,6 +46,7 @@ const stripDigits = (value: unknown) => String(value ?? '').replace(/\D/g, '');
   imports: [
     ReactiveFormsModule,
     RouterLink,
+    PageHeaderComponent,
     ButtonModule,
     InputTextModule,
     InputMaskModule,
@@ -55,8 +55,6 @@ const stripDigits = (value: unknown) => String(value ?? '').replace(/\D/g, '');
     SelectButtonModule,
     TextareaModule,
     MessageModule,
-    CardModule,
-    DividerModule,
     ToastModule,
     TooltipModule,
     SelectModule,
@@ -215,6 +213,14 @@ export class ClientFormComponent implements OnInit {
   }
 
   save() {
+    this.submit('/app/clientes');
+  }
+
+  saveAndNew() {
+    this.submit('/app/clientes/novo');
+  }
+
+  private submit(redirectTo: string) {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -222,7 +228,6 @@ export class ClientFormComponent implements OnInit {
     this.saving.set(true);
     const raw = this.form.getRawValue();
 
-    // Build DTO: send cpf OR cnpj based on type, not both
     const dto: Partial<Client> = {
       name: raw.name ?? '',
       type: (raw.type ?? 'individual') as 'individual' | 'company',
@@ -261,7 +266,7 @@ export class ClientFormComponent implements OnInit {
       : this.svc.create(dto);
 
     req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.router.navigate(['/app/clientes']),
+      next: () => this.router.navigate([redirectTo]),
       error: () => {
         this.error.set('Erro ao salvar cliente.');
         this.saving.set(false);

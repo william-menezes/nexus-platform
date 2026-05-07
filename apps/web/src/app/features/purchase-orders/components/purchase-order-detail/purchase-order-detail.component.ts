@@ -11,6 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { DividerModule } from 'primeng/divider';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { PurchaseOrder, PurchaseItem, ReceivePurchaseOrderPayload } from '@nexus-platform/shared-types';
 import { PurchaseOrdersService } from '../../purchase-orders.service';
 
@@ -27,9 +28,9 @@ const STATUS_SEVERITY: Record<string, string> = {
   standalone: true,
   selector: 'app-purchase-order-detail',
   imports: [
-    CommonModule, RouterLink, ReactiveFormsModule,
+    CommonModule, ReactiveFormsModule,
     ButtonModule, InputNumberModule, TagModule, CardModule,
-    TableModule, ToastModule, DividerModule,
+    TableModule, ToastModule, DividerModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './purchase-order-detail.component.html',

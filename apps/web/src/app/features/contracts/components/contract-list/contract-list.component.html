@@ -2,13 +2,11 @@
 <p-confirmDialog />
 
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Contratos</h1>
-      <p class="nx-page-subtitle">Contratos e mensalidades de clientes</p>
+  <app-page-header variant="list" title="Contratos" subtitle="Contratos e mensalidades de clientes">
+    <div actions class="flex items-center gap-2">
+      <a routerLink="novo" pButton label="Novo Contrato" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
-    <a routerLink="novo" pButton label="Novo Contrato" icon="pi pi-plus" class="p-button-sm"></a>
-  </div>
+  </app-page-header>
 
   <p-card styleClass="w-full">
     <div class="mb-3">

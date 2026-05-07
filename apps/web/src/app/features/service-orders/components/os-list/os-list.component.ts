@@ -20,11 +20,13 @@ import {
   TABLE_ROWS_PER_PAGE_OPTIONS,
   updateTablePageState,
 } from '../../../../shared/utils/table-pagination.util';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { PageHeaderViewToggleOption } from '../../../../shared/models/page-header.types';
 
 @Component({
   standalone: true,
   selector: 'app-os-list',
-  imports: [DatePipe, RouterLink, ButtonModule, CardModule, MessageModule, TableModule, TagModule, TooltipModule, ConfirmDialogModule, ToastModule],
+  imports: [DatePipe, RouterLink, ButtonModule, CardModule, MessageModule, TableModule, TagModule, TooltipModule, ConfirmDialogModule, ToastModule, PageHeaderComponent],
   providers: [ConfirmationService, MessageService],
   templateUrl: './os-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +42,11 @@ export class OsListComponent implements OnInit {
   error   = signal('');
   readonly tablePage = signal(createInitialTablePageState(15));
   readonly rowsPerPageOptions = TABLE_ROWS_PER_PAGE_OPTIONS;
+  readonly viewMode = signal<string>('list');
+  readonly viewToggleOptions: PageHeaderViewToggleOption[] = [
+    { label: 'Lista', icon: 'pi-list', value: 'list' },
+    { label: 'Kanban', icon: 'pi-th-large', value: 'kanban' },
+  ];
 
   readonly statusLabel: Record<string, string> = {
     open:           'Aberta',

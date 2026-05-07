@@ -1,16 +1,12 @@
 <p-toast />
 <p-confirmDialog />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Equipamentos</h1>
-      <p class="nx-page-subtitle">Equipamentos cadastrados</p>
-    </div>
-    <div class="flex gap-2">
+  <app-page-header variant="list" title="Equipamentos" subtitle="Equipamentos cadastrados">
+    <div actions class="flex items-center gap-2">
       <a routerLink="tipos" pButton label="Tipos" icon="pi pi-cog" class="p-button-sm p-button-secondary"></a>
       <a routerLink="novo" pButton label="Novo Equipamento" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
-  </div>
+  </app-page-header>
   <p-card styleClass="w-full">
     <div class="overflow-x-auto">
     <p-table

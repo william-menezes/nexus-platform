@@ -20,6 +20,7 @@ import { Client } from '@nexus-platform/shared-types';
 import { ServiceOrdersService } from '../../service-orders.service';
 import { ClientsService } from '../../../clients/clients.service';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
   standalone: true,
@@ -28,7 +29,7 @@ import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.servic
     ReactiveFormsModule, FormsModule, RouterLink,
     ButtonModule, InputTextModule, InputMaskModule, TextareaModule,
     InputNumberModule, AutoCompleteModule, MessageModule,
-    CardModule, DividerModule, ToastModule,
+    CardModule, DividerModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './os-form.component.html',

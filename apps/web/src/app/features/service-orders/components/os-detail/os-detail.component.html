@@ -10,29 +10,23 @@
     <p-message severity="error" [text]="error || 'OS não encontrada.'" />
   } @else {
 
-    <div class="nx-page-header">
-      <div class="flex items-center gap-3">
-        <a routerLink="/app/os">
-          <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
-        </a>
-        <div>
-          <h1 class="nx-page-title">{{ os.code }}</h1>
-          <p class="nx-page-subtitle">{{ os.clientName ?? '' }}</p>
-          <p-tag
-            [value]="statusLabel[os.status]"
-            [severity]="statusSeverity[os.status]"
-            styleClass="mt-1"
-          />
-        </div>
-      </div>
-      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+    <app-page-header
+      variant="detail"
+      backLabel="Voltar para Ordens de Serviço"
+      backRoute="/app/os"
+      [title]="os.code"
+      [subtitle]="os.clientName ?? ''"
+      [pills]="osPills()"
+    >
+      <div actions class="flex items-center gap-2 flex-wrap">
         @if (nextStatus) {
           <p-button
             [label]="'Avançar: ' + nextStatusLabel[nextStatus]"
             icon="pi pi-arrow-right"
             iconPos="right"
             (click)="advance()"
-           styleClass="p-button-sm"/>
+            styleClass="p-button-sm"
+          />
         }
         @if (os.status !== 'cancelled' && os.status !== 'done') {
           <p-button
@@ -41,13 +35,14 @@
             severity="danger"
             [outlined]="true"
             (click)="cancelOs()"
-           styleClass="p-button-sm"/>
+            styleClass="p-button-sm"
+          />
         }
         <a [routerLink]="[os.id, 'editar']">
-          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true"  styleClass="p-button-sm"/>
+          <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
         </a>
       </div>
-    </div>
+    </app-page-header>
 
     <p-card styleClass="mt-4">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">

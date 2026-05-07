@@ -1,13 +1,27 @@
 ﻿<p-toast />
 <p-confirmDialog />
 <div class="nx-page" *ngIf="quote() as q">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">{{ q.code }}</h1>
-      <p class="nx-page-subtitle">{{ q.clientId }}</p>
+  <app-page-header
+    variant="detail"
+    backLabel="Voltar para Orçamentos"
+    backRoute="/app/orcamentos"
+    [title]="q.code"
+    [subtitle]="q.clientId"
+  >
+    <div actions class="flex items-center gap-2 flex-wrap">
+      @if (!q.sentAt) {
+        <button pButton label="Enviar" icon="pi pi-send" class="p-button-sm p-button-info" (click)="send(q)"></button>
+      }
+      @if (!q.approvedAt && !q.rejectedAt) {
+        <button pButton label="Aprovar" icon="pi pi-check" class="p-button-sm p-button-success" (click)="approve(q)"></button>
+        <button pButton label="Rejeitar" icon="pi pi-times" class="p-button-sm p-button-danger" (click)="reject(q)"></button>
+      }
+      @if (q.approvedAt && !q.convertedToOsId) {
+        <button pButton label="Converter em OS" icon="pi pi-wrench" class="p-button-sm" (click)="convertToOs(q)"></button>
+      }
+      <a [routerLink]="['/app/orcamentos', q.id, 'editar']" pButton label="Editar" icon="pi pi-pencil" class="p-button-sm p-button-secondary"></a>
     </div>
-    <a routerLink="/app/orcamentos" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm" aria-label="Voltar"></a>
-  </div>
+  </app-page-header>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
     <div class="bg-surface rounded-lg shadow p-4">
@@ -26,20 +40,6 @@
       <p class="text-sm text-text-secondary">Válido até</p>
       <p class="text-lg">{{ q.validUntil ? (q.validUntil | date:'dd/MM/yyyy') : '—' }}</p>
     </div>
-  </div>
-
-  <div class="flex flex-wrap gap-2 mb-4">
-    @if (!q.sentAt) {
-      <button pButton label="Enviar" icon="pi pi-send" class="p-button-sm p-button-info" (click)="send(q)"></button>
-    }
-    @if (!q.approvedAt && !q.rejectedAt) {
-      <button pButton label="Aprovar" icon="pi pi-check" class="p-button-sm p-button-success" (click)="approve(q)"></button>
-      <button pButton label="Rejeitar" icon="pi pi-times" class="p-button-sm p-button-danger" (click)="reject(q)"></button>
-    }
-    @if (q.approvedAt && !q.convertedToOsId) {
-      <button pButton label="Converter em OS" icon="pi pi-wrench" class="p-button-sm" (click)="convertToOs(q)"></button>
-    }
-    <a [routerLink]="['/app/orcamentos', q.id, 'editar']" pButton label="Editar" icon="pi pi-pencil" class="p-button-sm p-button-secondary"></a>
   </div>
 
   <div class="bg-surface rounded-lg shadow p-4 mb-4">

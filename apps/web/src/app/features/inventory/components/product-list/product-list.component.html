@@ -3,12 +3,8 @@
 
 <div class="nx-page">
 
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Estoque</h1>
-      <p class="nx-page-subtitle">Controle o estoque de produtos e peças</p>
-    </div>
-    <div style="display:flex; gap:0.75rem;">
+  <app-page-header variant="list" title="Estoque" subtitle="Controle o estoque de produtos e peças">
+    <div actions class="flex items-center gap-2">
       <a routerLink="nfe-import">
         <p-button label="Importar NF-e" icon="pi pi-upload" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
       </a>
@@ -16,7 +12,7 @@
         <p-button label="Novo item" icon="pi pi-plus" styleClass="p-button-sm" />
       </a>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- Filtro por tipo -->
   <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">

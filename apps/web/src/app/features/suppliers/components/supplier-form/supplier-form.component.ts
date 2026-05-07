@@ -9,6 +9,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { SuppliersService } from '../../suppliers.service';
 
 @Component({
@@ -16,7 +17,7 @@ import { SuppliersService } from '../../suppliers.service';
   selector: 'app-supplier-form',
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule,
-    ButtonModule, InputTextModule, TextareaModule, CardModule, ToastModule,
+    ButtonModule, InputTextModule, TextareaModule, CardModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './supplier-form.component.html',

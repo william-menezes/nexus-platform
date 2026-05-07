@@ -1,18 +1,12 @@
 <p-toast />
 
-<div class="nx-page-header">
-  <div class="flex items-center gap-3">
-    <a routerLink="/app/orcamentos">
-      <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
-    </a>
-    <div>
-      <h1 class="nx-page-title">{{ isEdit ? 'Editar Orçamento' : 'Novo Orçamento' }}</h1>
-      <p class="nx-page-subtitle">
-        {{ isEdit ? 'Atualize os dados do orçamento' : 'Crie um orçamento para envio ao cliente' }}
-      </p>
-    </div>
-  </div>
-</div>
+<app-page-header
+  variant="detail"
+  backLabel="Voltar para Orçamentos"
+  backRoute="/app/orcamentos"
+  [title]="isEdit ? 'Editar Orçamento' : 'Novo Orçamento'"
+  [subtitle]="isEdit ? 'Atualize os dados do orçamento' : 'Crie um novo orçamento para o cliente'"
+/>
 
 <form [formGroup]="form" (ngSubmit)="save()">
 

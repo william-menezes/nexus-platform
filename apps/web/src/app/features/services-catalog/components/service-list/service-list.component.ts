@@ -11,6 +11,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ServiceCatalog } from '@nexus-platform/shared-types';
 import { ServicesCatalogService } from '../../services-catalog.service';
 import {
@@ -27,6 +28,7 @@ import {
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
     CardModule, InputTextModule, TagModule, ConfirmDialogModule, ToastModule,
+    PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './service-list.component.html',

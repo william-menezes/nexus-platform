@@ -1,14 +1,12 @@
 ﻿<p-toast />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div class="flex items-center gap-3">
-      <a routerLink="/app/vendas/devolucoes" pButton icon="pi pi-arrow-left" class="p-button-text p-button-sm flex-shrink-0" aria-label="Voltar"></a>
-      <div>
-        <h1 class="nx-page-title">Nova Devolução</h1>
-        <p class="nx-page-subtitle">Preencha os dados da devolução</p>
-      </div>
-    </div>
-  </div>
+  <app-page-header
+    variant="detail"
+    backLabel="Voltar para Devoluções"
+    backRoute="/app/vendas/devolucoes"
+    title="Nova Devolução"
+    subtitle="Preencha os dados da devolução"
+  />
 
   <form [formGroup]="form" (ngSubmit)="save()">
     <p-card header="Dados da Devolução" styleClass="mb-4">

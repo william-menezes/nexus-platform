@@ -11,6 +11,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Contract } from '@nexus-platform/shared-types';
 import { ContractsService } from '../../contracts.service';
 import {
@@ -40,7 +41,7 @@ const TYPE_LABELS: Record<string, string> = {
   imports: [
     CommonModule, RouterLink, FormsModule,
     TableModule, ButtonModule, CardModule, SelectModule, TagModule,
-    ConfirmDialogModule, ToastModule,
+    ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './contract-list.component.html',

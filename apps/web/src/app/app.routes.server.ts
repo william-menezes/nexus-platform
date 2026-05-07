@@ -7,9 +7,10 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'cadastro',      renderMode: RenderMode.Prerender },
   { path: 'esqueci-senha', renderMode: RenderMode.Prerender },
 
-  // Auth callback e setup de empresa — requerem sessão/tokens da URL, só cliente
+  // Auth callback, setup de empresa e redefinição de senha — requerem sessão/tokens da URL, só cliente
   { path: 'auth/callback',    renderMode: RenderMode.Client },
   { path: 'cadastro/empresa', renderMode: RenderMode.Client },
+  { path: 'redefinir-senha',  renderMode: RenderMode.Client },
 
   // Rotas autenticadas — renderizadas no cliente (requerem sessão, sem SSR)
   { path: 'app/**',   renderMode: RenderMode.Client },

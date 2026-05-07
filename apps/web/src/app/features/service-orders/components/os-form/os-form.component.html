@@ -1,18 +1,12 @@
 <p-toast />
 
-<div class="nx-page-header">
-  <div class="flex items-center gap-3">
-    <a routerLink="/app/os">
-      <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
-    </a>
-    <div>
-      <h1 class="nx-page-title">{{ isEdit ? 'Editar OS' : 'Nova Ordem de Serviço' }}</h1>
-      <p class="nx-page-subtitle">
-        {{ isEdit ? 'Atualize os dados da ordem de serviço' : 'Preencha os dados para abrir uma nova OS' }}
-      </p>
-    </div>
-  </div>
-</div>
+<app-page-header
+  variant="detail"
+  backLabel="Voltar para Ordens de Serviço"
+  backRoute="/app/os"
+  [title]="isEdit ? 'Editar OS' : 'Nova Ordem de Serviço'"
+  [subtitle]="isEdit ? 'Atualize os dados da ordem de serviço' : 'Preencha os dados para abrir uma nova OS'"
+/>
 
 @if (error) {
   <p-message severity="error" [text]="error" styleClass="w-full mb-4" />

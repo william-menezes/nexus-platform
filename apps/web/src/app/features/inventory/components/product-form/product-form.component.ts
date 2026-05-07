@@ -33,6 +33,7 @@ import { InventoryService } from '../../inventory.service';
 import { SettingsService } from '../../../../features/settings/settings.service';
 import { SuppliersService } from '../../../../features/suppliers/suppliers.service';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { MASKS } from '../../../../shared/validators/input-masks';
 
 type QuickAddFor = 'category' | 'brand' | 'quality' | 'supplier';
@@ -45,7 +46,7 @@ type QuickAddFor = 'category' | 'brand' | 'quality' | 'supplier';
     ButtonModule, InputTextModule, InputMaskModule, InputNumberModule,
     AutoCompleteModule, SelectButtonModule, SelectModule,
     TextareaModule, ToggleSwitchModule, DividerModule,
-    MessageModule, DialogModule, ToastModule,
+    MessageModule, DialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './product-form.component.html',

@@ -10,23 +10,20 @@
     <p style="color:var(--p-text-muted-color);">Carregando...</p>
   } @else if (client) {
 
-    <div class="nx-page-header">
-      <div class="flex items-center gap-3">
-        <a routerLink="/app/clientes">
-          <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" pTooltip="Voltar" tooltipPosition="bottom" styleClass="p-button-sm" />
-        </a>
-        <div>
-          <h1 class="nx-page-title">{{ client.name }}</h1>
-          <p class="nx-page-subtitle">{{ client.type === 'company' ? 'Pessoa Jurídica' : 'Pessoa Física' }}</p>
-        </div>
-      </div>
-      <div style="display:flex; gap:0.5rem;">
+    <app-page-header
+      variant="detail"
+      backLabel="Clientes"
+      backRoute="/app/clientes"
+      [title]="client.name"
+      [subtitle]="client.type === 'company' ? 'Pessoa Jurídica' : 'Pessoa Física'"
+    >
+      <div actions class="flex items-center gap-2">
         <a [routerLink]="['editar']">
           <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
         </a>
         <p-button label="Excluir" icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="delete()" styleClass="p-button-sm" />
       </div>
-    </div>
+    </app-page-header>
 
     <!-- ── Cards de dados ─────────────────────────────────────────────────── -->
     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1rem; margin-top:1rem;">

@@ -2,15 +2,13 @@
 
 <div class="nx-page" style="max-width:720px;">
 
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">{{ isEdit() ? 'Editar Item' : 'Novo Item' }}</h1>
-      <p class="nx-page-subtitle">Produto ou peça para controle de estoque</p>
-    </div>
-    <a routerLink="/app/estoque">
-      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" styleClass="p-button-sm" />
-    </a>
-  </div>
+  <app-page-header
+    variant="detail"
+    backLabel="Voltar para Estoque"
+    backRoute="/app/estoque"
+    [title]="isEdit() ? 'Editar Item' : 'Novo Item'"
+    subtitle="Produto ou peça para controle de estoque"
+  />
 
   @if (error()) {
     <p-message severity="error" [text]="error()" styleClass="w-full mb-4" />

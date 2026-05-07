@@ -1,13 +1,18 @@
 <p-toast />
 <p-confirmDialog />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Orçamentos</h1>
-      <p class="nx-page-subtitle">Crie e acompanhe orçamentos para seus clientes</p>
+  <app-page-header
+    variant="list"
+    title="Orçamentos"
+    subtitle="Crie e acompanhe orçamentos para seus clientes"
+    [viewToggleOptions]="viewToggleOptions"
+    [viewMode]="viewMode()"
+    (viewModeChange)="viewMode.set($event)"
+  >
+    <div actions class="flex items-center gap-2">
+      <a routerLink="novo" pButton label="Novo Orçamento" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
-    <a routerLink="novo" pButton label="Novo Orçamento" icon="pi pi-plus" class="p-button-sm"></a>
-  </div>
+  </app-page-header>
   <p-card styleClass="w-full">
     <div class="overflow-x-auto">
     <p-table
