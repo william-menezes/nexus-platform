@@ -1,59 +1,64 @@
 <p-toast />
 <p-confirmDialog />
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Tipos de Equipamento</h1>
-      <p class="nx-page-subtitle">Categorias de equipamentos para OS</p>
+  <app-page-header variant="list" title="Tipos de Equipamento" subtitle="Categorias de equipamentos para OS">
+    <div actions class="flex items-center gap-2">
+      <p-button label="Novo Tipo" icon="pi pi-plus" styleClass="p-button-sm" (onClick)="openDialog()" />
     </div>
-    <button pButton label="Novo Tipo" icon="pi pi-plus" class="p-button-sm" (click)="openDialog()"></button>
-  </div>
-  <div class="overflow-x-auto">
-    <p-table
-      [value]="types()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '640px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
-          <th>Campos</th>
-          <th>A??es</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-t>
-        <tr>
-          <td>{{ t.name }}</td>
-          <td>{{ (t.fieldsSchema || []).length }} campo(s)</td>
-          <td>
-            <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text mr-1" (click)="openDialog(t)"></button>
-            <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(t)"></button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="3">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-cog"></i></span>
-              <span class="nx-table-empty__title">Nenhum tipo encontrado</span>
-              <div class="nx-table-empty__description">Crie tipos para padronizar os equipamentos aceitos no sistema.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+  </app-page-header>
+
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <p-table
+        [value]="types()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '640px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+            <th>Campos</th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-t>
+          <tr class="group">
+            <td>{{ t.name }}</td>
+            <td>{{ (t.fieldsSchema || []).length }} campo(s)</td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <p-button icon="pi pi-pencil" [text]="true" styleClass="p-button-sm" pTooltip="Editar"
+                  (onClick)="openDialog(t)" />
+                <p-button icon="pi pi-trash" severity="danger" [text]="true" styleClass="p-button-sm" pTooltip="Excluir"
+                  (onClick)="confirmDelete(t)" />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-cog"></i></span>
+                <span class="nx-table-empty__title">Nenhum tipo encontrado</span>
+                <div class="nx-table-empty__description">Crie tipos para padronizar os equipamentos aceitos no sistema.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
+    </div>
   </div>
 </div>
 

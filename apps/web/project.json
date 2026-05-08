@@ -30,7 +30,11 @@
         ],
         "styles": [
           "node_modules/primeicons/primeicons.css",
-          "apps/web/src/styles.css"
+          "apps/web/src/styles/tailwind-base.css",
+          "apps/web/src/styles/colors_and_type.css",
+          "apps/web/src/styles/app.tailwind.css",
+          "apps/web/src/styles/app.project.css",
+          "apps/web/src/styles/tailwind-utilities.css"
         ],
         "server": "apps/web/src/main.server.ts",
         "ssr": {

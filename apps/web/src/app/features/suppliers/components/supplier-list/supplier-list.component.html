@@ -1,73 +1,80 @@
-﻿<p-toast />
+<p-toast />
 <p-confirmDialog />
-
-
 <div class="nx-page">
   <app-page-header variant="list" title="Fornecedores" subtitle="Cadastro de fornecedores">
     <div actions class="flex items-center gap-2">
       <a routerLink="novo" pButton label="Novo Fornecedor" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
   </app-page-header>
-  <p-card styleClass="w-full">
-    <div class="mb-3">
-      <input pInputText [(ngModel)]="search" (input)="onSearchInput()"
-        placeholder="Buscar por nome..." class="w-full md:w-1/3" />
+
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
+    <!-- Toolbar -->
+    <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-surface-border flex-wrap">
+      <!-- left: search -->
+      <div class="relative flex-1 min-w-[180px] max-w-sm">
+        <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm pointer-events-none"></i>
+        <input type="text" placeholder="Buscar por nome..." [(ngModel)]="search" (input)="onSearchInput()"
+          class="block w-full rounded-md border border-surface-border bg-surface pl-9 pr-3 py-2 text-sm text-text placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-colors"
+          aria-label="Buscar fornecedor" />
+      </div>
+      <!-- right: filters (none) -->
+      <div class="flex items-center gap-2 flex-wrap"></div>
     </div>
+
     <div class="overflow-x-auto">
-    <p-table
-      [value]="suppliers()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '760px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
-          <th pSortableColumn="cnpj">CNPJ <p-sortIcon field="cnpj" /></th>
-          <th pSortableColumn="contact">Contato <p-sortIcon field="contact" /></th>
-          <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
-          <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-s>
-        <tr>
-          <td>{{ s.name }}</td>
-          <td>{{ s.cnpj || '—' }}</td>
-          <td>{{ s.contact || '—' }}</td>
-          <td>{{ s.phone || '—' }}</td>
-          <td>{{ s.email || '—' }}</td>
-          <td>
-            <a [routerLink]="[s.id, 'editar']" pButton icon="pi pi-pencil"
-              class="p-button-sm p-button-text mr-1"></a>
-            <button pButton icon="pi pi-trash"
-              class="p-button-sm p-button-text p-button-danger"
-              (click)="confirmDelete(s)"></button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="6">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-truck"></i></span>
-              <span class="nx-table-empty__title">Nenhum fornecedor encontrado</span>
-              <div class="nx-table-empty__description">Cadastre fornecedores para organizar compras e reposições.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+      <p-table
+        [value]="suppliers()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '760px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+            <th pSortableColumn="cnpj">CNPJ <p-sortIcon field="cnpj" /></th>
+            <th pSortableColumn="contact">Contato <p-sortIcon field="contact" /></th>
+            <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
+            <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-s>
+          <tr class="group">
+            <td>{{ s.name }}</td>
+            <td>{{ s.cnpj || '—' }}</td>
+            <td>{{ s.contact || '—' }}</td>
+            <td>{{ s.phone || '—' }}</td>
+            <td>{{ s.email || '—' }}</td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="[s.id, 'editar']" pButton icon="pi pi-pencil" class="p-button-sm p-button-text"></a>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(s)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-truck"></i></span>
+                <span class="nx-table-empty__title">Nenhum fornecedor encontrado</span>
+                <div class="nx-table-empty__description">Cadastre fornecedores para organizar compras e reposições.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
     </div>
-  </p-card>
+  </div>
 </div>

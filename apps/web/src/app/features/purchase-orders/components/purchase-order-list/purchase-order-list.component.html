@@ -1,4 +1,4 @@
-﻿<p-toast />
+<p-toast />
 <p-confirmDialog />
 <div class="nx-page">
   <app-page-header variant="list" title="Pedidos de Compra" subtitle="Gerencie pedidos de compra a fornecedores">
@@ -7,79 +7,82 @@
     </div>
   </app-page-header>
 
-  <p-card styleClass="w-full">
-    <div class="mb-3 flex gap-2 items-center">
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
+    <!-- Toolbar: filter-only (right-aligned) -->
+    <div class="flex items-center justify-end gap-3 px-4 py-3 border-b border-surface-border flex-wrap">
       <p-select [options]="statusOptions" [(ngModel)]="statusFilter"
         optionLabel="label" optionValue="value"
         placeholder="Todos os status" [showClear]="true"
-        (onChange)="load()" styleClass="w-48" />
+        (onChange)="load()" styleClass="w-44" />
     </div>
 
     <div class="overflow-x-auto">
-    <p-table
-      [value]="orders()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '900px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
-          <th pSortableColumn="supplier.name">Fornecedor <p-sortIcon field="supplier.name" /></th>
-          <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
-          <th pSortableColumn="total">Total <p-sortIcon field="total" /></th>
-          <th pSortableColumn="expectedAt">Previsão <p-sortIcon field="expectedAt" /></th>
-          <th pSortableColumn="createdAt">Criado em <p-sortIcon field="createdAt" /></th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-po>
-        <tr>
-          <td>
-            <a [routerLink]="[po.id]" class="text-primary font-medium hover:underline">
-              {{ po.code }}
-            </a>
-          </td>
-          <td>{{ po.supplier?.name || po.supplierId }}</td>
-          <td>
-            <p-tag [value]="statusLabel(po.status)" [severity]="statusSeverity(po.status)" />
-          </td>
-          <td>{{ po.total | currency:'BRL':'symbol':'1.2-2' }}</td>
-          <td>{{ po.expectedAt ? (po.expectedAt | date:'dd/MM/yyyy') : '—' }}</td>
-          <td>{{ po.createdAt | date:'dd/MM/yyyy' }}</td>
-          <td>
-            <a [routerLink]="[po.id]" pButton icon="pi pi-eye"
-              class="p-button-sm p-button-text mr-1" pTooltip="Ver detalhes"
-              aria-label="Ver detalhes"></a>
-            <button pButton icon="pi pi-trash"
-              class="p-button-sm p-button-text p-button-danger"
-              [disabled]="!canDelete(po.status)"
-              (click)="confirmDelete(po)" pTooltip="Excluir"></button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-shopping-bag"></i></span>
-              <span class="nx-table-empty__title">Nenhum pedido de compra encontrado</span>
-              <div class="nx-table-empty__description">Crie pedidos para acompanhar compras e recebimentos.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+      <p-table
+        [value]="orders()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '900px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+            <th pSortableColumn="supplier.name">Fornecedor <p-sortIcon field="supplier.name" /></th>
+            <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+            <th pSortableColumn="total">Total <p-sortIcon field="total" /></th>
+            <th pSortableColumn="expectedAt">Previsão <p-sortIcon field="expectedAt" /></th>
+            <th pSortableColumn="createdAt">Criado em <p-sortIcon field="createdAt" /></th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-po>
+          <tr class="group">
+            <td>
+              <a [routerLink]="[po.id]" class="text-primary font-medium hover:underline">
+                {{ po.code }}
+              </a>
+            </td>
+            <td>{{ po.supplier?.name || po.supplierId }}</td>
+            <td>
+              <p-tag [value]="statusLabel(po.status)" [severity]="statusSeverity(po.status)" />
+            </td>
+            <td>{{ po.total | currency:'BRL':'symbol':'1.2-2' }}</td>
+            <td>{{ po.expectedAt ? (po.expectedAt | date:'dd/MM/yyyy') : '—' }}</td>
+            <td>{{ po.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="[po.id]" pButton icon="pi pi-eye"
+                  class="p-button-sm p-button-text" pTooltip="Ver detalhes"
+                  aria-label="Ver detalhes"></a>
+                <button pButton icon="pi pi-trash"
+                  class="p-button-sm p-button-text p-button-danger"
+                  [disabled]="!canDelete(po.status)"
+                  (click)="confirmDelete(po)" pTooltip="Excluir"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-shopping-bag"></i></span>
+                <span class="nx-table-empty__title">Nenhum pedido de compra encontrado</span>
+                <div class="nx-table-empty__description">Crie pedidos para acompanhar compras e recebimentos.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
     </div>
-  </p-card>
+  </div>
 </div>

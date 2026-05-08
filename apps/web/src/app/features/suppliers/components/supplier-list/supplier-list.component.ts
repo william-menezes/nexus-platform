@@ -7,8 +7,6 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -29,7 +27,7 @@ import {
   selector: 'app-supplier-list',
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
-    CardModule, InputTextModule, ConfirmDialogModule, ToastModule, PageHeaderComponent,
+    ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './supplier-list.component.html',

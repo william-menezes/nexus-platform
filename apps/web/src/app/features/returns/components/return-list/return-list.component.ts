@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
@@ -39,7 +38,7 @@ const TYPE_LABELS: Record<string, string> = {
   selector: 'app-return-list',
   imports: [
     CommonModule, RouterLink, FormsModule,
-    TableModule, ButtonModule, CardModule, SelectModule, TagModule, ToastModule,
+    TableModule, ButtonModule, SelectModule, TagModule, ToastModule,
     PageHeaderComponent,
   ],
   providers: [MessageService],

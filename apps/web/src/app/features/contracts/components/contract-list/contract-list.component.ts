@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -40,7 +39,7 @@ const TYPE_LABELS: Record<string, string> = {
   selector: 'app-contract-list',
   imports: [
     CommonModule, RouterLink, FormsModule,
-    TableModule, ButtonModule, CardModule, SelectModule, TagModule,
+    TableModule, ButtonModule, SelectModule, TagModule,
     ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],

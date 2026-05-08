@@ -1,0 +1,112 @@
+/* ============================================================
+   SimplificaOS — Design Tokens (colors + type)
+   ============================================================
+   Source of truth for every variable referenced in app CSS,
+   Tailwind config, and PrimeNG Lara overrides.
+   Import order in production:
+     1. Tailwind base/components   (tailwind-base.css)
+     2. THIS FILE
+     3. styles/app.tailwind.css    (PrimeNG overrides + composed components)
+     4. styles/app.project.css     (Angular app-specific CSS)
+     5. Tailwind utilities          (tailwind-utilities.css)
+   ============================================================ */
+
+:root {
+  /* ── PRIMARY · "Confidence Blue" ──────────────────────── */
+  --primary:        #1F4FE0;
+  --primary-hover:  #1A41C2;
+  --primary-active: #163598;
+  --primary-50:     #EEF3FF;
+  --primary-100:    #DBE5FF;
+  --primary-200:    #BACBFF;
+  --primary-600:    #1F4FE0;
+  --primary-700:    #1A41C2;
+
+  /* ── SURFACES ─────────────────────────────────────────── */
+  --bg:         #F6F7FB;
+  --bg-elev:    #FFFFFF;
+  --bg-shell:   #0E1322;
+  --bg-shell-2: #161D33;
+
+  /* ── INK & MUTED ──────────────────────────────────────── */
+  --ink:    #0B1020;
+  --ink-2:  #1F2540;
+  --muted:  #5A6480;
+  --muted-2:#8590AB;
+  --line:   #E5E8F1;
+  --line-2: #EEF0F6;
+
+  /* ── SEMANTIC STATUS ──────────────────────────────────── */
+  --ok:     #0E9F6E;  --ok-bg:    #E5F7EF;
+  --warn:   #B45309;  --warn-bg:  #FDF4E3;
+  --bad:    #C2410C;  --bad-bg:   #FCEBE0;
+  --info:   #1F4FE0;  --info-bg:  #EEF3FF;
+  --violet: #6D4AFF;  --violet-bg:#F1ECFF;
+
+  /* ── RADIUS ───────────────────────────────────────────── */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+
+  /* ── SHADOW ───────────────────────────────────────────── */
+  --sh-sm:   0 1px 2px rgba(15,20,40,.04), 0 1px 1px rgba(15,20,40,.03);
+  --sh-md:   0 2px 4px rgba(15,20,40,.05), 0 4px 12px rgba(15,20,40,.04);
+  --sh-lg:   0 8px 24px rgba(15,20,40,.08), 0 2px 6px rgba(15,20,40,.04);
+  --sh-hero: 0 30px 80px rgba(15,20,40,.25), 0 8px 24px rgba(15,20,40,.12);
+
+  /* ── SPACING (4-pt rhythm) ────────────────────────────── */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+
+  /* ── TYPOGRAPHY ───────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+
+html.dark {
+  --bg:        #0A0F1E;
+  --bg-elev:   #131A2D;
+  --line:      #232C45;
+  --line-2:    #1B2238;
+  --ink:       #F1F4FB;
+  --ink-2:     #E2E7F4;
+  --muted:     #9AA4C2;
+  --muted-2:   #6E7896;
+}
+
+/* ── BASE ELEMENT MAPPINGS ────────────────────────────────
+   Tokens applied via element selectors so PrimeNG markup
+   inherits the system without utility classes.
+*/
+html, body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+
+code, kbd, .mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+}
+.tnum { font-feature-settings: "tnum"; }
+
+.label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+}

@@ -96,15 +96,13 @@
             <div class="nx-form-group">
               <label class="nx-form-label" for="cf-birthDate">
                 Data de Nascimento
-                <span class="text-[11.5px] text-text-muted font-normal"
-                  >opcional</span
-                >
               </label>
               <p-datepicker
                 inputId="cf-birthDate"
                 formControlName="birthDate"
                 dateFormat="dd/mm/yy"
                 placeholder="dd/mm/aaaa"
+                [iconDisplay]="'input'"
                 [showIcon]="true"
                 [invalid]="isInvalid('birthDate')"
                 styleClass="w-full"
@@ -116,9 +114,6 @@
             <div class="nx-form-group">
               <label class="nx-form-label" for="cf-gender">
                 Sexo
-                <span class="text-[11.5px] text-text-muted font-normal"
-                  >opcional</span
-                >
               </label>
               <p-select
                 inputId="cf-gender"
@@ -185,9 +180,6 @@
           <div class="nx-form-group">
             <label class="nx-form-label" for="cf-phone2">
               Telefone 2
-              <span class="text-[11.5px] text-text-muted font-normal"
-                >opcional</span
-              >
             </label>
             <input
               pInputText

@@ -4,8 +4,6 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
@@ -27,7 +25,7 @@ import {
   selector: 'app-service-list',
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
-    CardModule, InputTextModule, TagModule, ConfirmDialogModule, ToastModule,
+    TagModule, ConfirmDialogModule, ToastModule,
     PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],

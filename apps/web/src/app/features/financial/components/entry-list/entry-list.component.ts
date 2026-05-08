@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -29,7 +28,7 @@ type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contr
   selector: 'app-entry-list',
   imports: [
     CommonModule, RouterLink, FormsModule, TableModule, ButtonModule,
-    CardModule, TagModule, SelectModule, ConfirmDialogModule, ToastModule, PageHeaderComponent,
+    TagModule, SelectModule, ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './entry-list.component.html',

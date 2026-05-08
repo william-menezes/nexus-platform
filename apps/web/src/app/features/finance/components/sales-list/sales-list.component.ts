@@ -3,9 +3,9 @@ import { CurrencyPipe, DatePipe, SlicePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { Sale } from '@nexus-platform/shared-types';
 import { FinanceService } from '../../finance.service';
 import {
@@ -29,7 +29,7 @@ const STATUS_CLASS: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-sales-list',
-  imports: [DatePipe, CurrencyPipe, SlicePipe, RouterLink, ButtonModule, CardModule, TableModule, TagModule],
+  imports: [DatePipe, CurrencyPipe, SlicePipe, RouterLink, ButtonModule, TableModule, TagModule, PageHeaderComponent],
   templateUrl: './sales-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

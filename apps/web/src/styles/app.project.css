@@ -1,0 +1,463 @@
+/* ============================================================
+   SimplificaOS — Angular App CSS (project-specific)
+   Not part of the design system — lives here alongside it.
+   All values reference tokens from colors_and_type.css.
+   ============================================================ */
+
+/* ── Primeicons local font (assets copy) ─────────────────── */
+@font-face {
+  font-family: 'primeicons';
+  font-display: block;
+  src:
+    url('/assets/primeicons/fonts/primeicons.woff2') format('woff2'),
+    url('/assets/primeicons/fonts/primeicons.woff') format('woff'),
+    url('/assets/primeicons/fonts/primeicons.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ── Base element overrides ─────────────────────────────── */
+a {
+  color: var(--muted);
+  text-decoration: none !important;
+}
+a:hover { text-decoration: none !important; }
+a[pbutton]:hover,
+a[pButton]:hover,
+a.p-button:hover,
+a:has(> .p-button):hover { text-decoration: none !important; }
+
+label {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ── App shell — sidebar ────────────────────────────────── */
+.nx-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elev);
+  border-right: 1px solid var(--line);
+  overflow: hidden;
+  transition: width 0.22s ease-in-out, border-color 0.22s ease-in-out;
+}
+
+/* Desktop: collapses when not open */
+@media (min-width: 1024px) {
+  .nx-sidebar:not(.open) {
+    width: 0;
+    border-right-color: transparent;
+  }
+}
+
+/* Mobile: fixed overlay sliding from left */
+@media (max-width: 1023px) {
+  .nx-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease-in-out;
+    box-shadow: 4px 0 24px rgba(11,16,32,.15);
+    width: 260px;
+  }
+  .nx-sidebar.open { transform: translateX(0); }
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.nx-header {
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  flex-shrink: 0;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--line);
+  z-index: 10;
+}
+
+/* ── Breadcrumb ─────────────────────────────────────────── */
+.nx-breadcrumb.p-breadcrumb {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-list {
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-item-link {
+  color: var(--muted);
+  font-weight: 500;
+  padding: 0.125rem 0.25rem;
+  border-radius: var(--r-sm);
+  transition: color .15s;
+}
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-item-link:hover {
+  color: var(--primary);
+  text-decoration: none !important;
+}
+.nx-breadcrumb.p-breadcrumb .p-breadcrumb-item:last-child .p-breadcrumb-item-link {
+  color: var(--ink);
+  font-weight: 600;
+  pointer-events: none;
+}
+@media (max-width: 639px) {
+  .nx-breadcrumb.p-breadcrumb .p-breadcrumb-item:not(:last-child) .p-breadcrumb-item-link {
+    max-width: 6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+/* ── Sidebar nav link (alias to .sb-link) ───────────────── */
+.nx-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--r-md);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background .15s, color .15s, border-color .15s;
+  margin-bottom: 1px;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+  border-left: 2px solid transparent;
+}
+.nx-sidebar-link:hover {
+  background: var(--primary-50);
+  color: var(--primary);
+  text-decoration: none !important;
+}
+.nx-sidebar-link.active {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+.nx-sidebar-link.active i { color: var(--primary); }
+.nx-sidebar-link:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ── Data table (.nx-data-table) ────────────────────────── */
+/* Border/shadow live on the container div (Tailwind), not the table */
+.nx-data-table.p-datatable {
+  border: none;
+  background: var(--bg-elev);
+  box-shadow: none;
+}
+.nx-data-table .p-datatable-thead > tr > th:first-child,
+.nx-data-table .p-datatable-tbody > tr > td:first-child { padding-left: 1rem; }
+.nx-data-table .p-datatable-thead > tr > th:last-child,
+.nx-data-table .p-datatable-tbody > tr > td:last-child { padding-right: 1rem; }
+.nx-data-table .p-datatable-tbody > tr {
+  transition: background-color .12s;
+}
+.nx-data-table .p-datatable-tbody > tr:hover > td {
+  background: var(--primary-50);
+}
+
+/* ── Table empty state ──────────────────────────────────── */
+.nx-table-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+}
+.nx-table-empty__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.75rem;
+  border-radius: 999px;
+  background: var(--primary-50);
+  color: var(--muted);
+  font-size: 1.125rem;
+}
+.nx-table-empty__title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.nx-table-empty__description {
+  margin-top: 0.25rem;
+  color: var(--muted);
+}
+.nx-table-summary {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ── Stat card ──────────────────────────────────────────── */
+.nx-stat {
+  border-radius: var(--r-lg);
+  padding: 1.5rem;
+  box-shadow: var(--sh-sm);
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+}
+.nx-stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+}
+.nx-stat-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.5rem;
+  color: var(--muted);
+}
+.nx-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Page layout helpers ────────────────────────────────── */
+.nx-page { width: 100%; }
+.nx-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.nx-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.125rem;
+  color: var(--ink);
+}
+.nx-page-subtitle {
+  font-size: 0.875rem;
+  margin: 0;
+  color: var(--muted);
+}
+
+/* ── Form helpers ───────────────────────────────────────── */
+.nx-form { width: 100%; }
+.nx-form-group { margin-bottom: 1.25rem; }
+.nx-form-label,
+.nx-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--ink);
+}
+.nx-form-row { display: grid; gap: 1rem; }
+.nx-form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.nx-form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.nx-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* ── Auth pages ─────────────────────────────────────────── */
+.auth-container {
+  display: flex;
+  height: 100vh;
+  background: var(--bg-shell);
+}
+.auth-left {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-elev);
+  padding: 32px;
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-lg);
+}
+.auth-right {
+  width: 60%;
+  background: linear-gradient(135deg, var(--bg-shell), var(--bg-shell-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #E2E7F4;
+  position: relative;
+}
+.auth-overlay { max-width: 420px; padding: 2rem; }
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--bg-shell) 0%, var(--bg-shell-2) 100%);
+}
+.auth-page .auth-card {
+  max-width: 440px;
+  border: 1px solid var(--line);
+  padding: 2.5rem;
+}
+.auth-brand { text-align: center; margin-bottom: 2rem; }
+.auth-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--primary);
+}
+.auth-subtitle {
+  font-size: 0.9rem;
+  margin: 0.375rem 0 0;
+  font-weight: 500;
+  color: var(--muted);
+}
+.auth-footer {
+  text-align: center;
+  font-size: 0.875rem;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.auth-footer a { color: var(--primary); font-weight: 600; }
+
+/* ── Landing page ───────────────────────────────────────── */
+.landing-hero {
+  min-height: 100vh;
+  background: linear-gradient(155deg, var(--primary-50) 0%, var(--bg) 55%, var(--primary-50) 100%);
+  display: flex;
+  flex-direction: column;
+}
+.landing-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3rem;
+}
+.landing-hero-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem 2rem;
+}
+.landing-headline {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1.05;
+  margin: 0 0 1.5rem;
+}
+.landing-headline span { color: var(--primary); }
+.landing-lead {
+  font-size: 1.125rem;
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  font-weight: 500;
+  line-height: 1.7;
+}
+.landing-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.landing-features { background: var(--bg-elev); padding: 6rem 3rem; }
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 3rem auto 0;
+}
+.landing-feature-card {
+  background: var(--bg);
+  border-radius: var(--r-lg);
+  padding: 2rem;
+  border: 1px solid var(--line);
+  transition: transform .15s, box-shadow .15s;
+}
+.landing-feature-card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.landing-feature-icon  { font-size: 2rem; margin-bottom: 1rem; }
+.landing-feature-title { font-size: 1.1rem; font-weight: 700; margin: 0 0 0.5rem; color: var(--ink); }
+.landing-feature-desc  { font-size: 0.875rem; color: var(--muted); line-height: 1.6; margin: 0; }
+.landing-section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  text-align: center;
+}
+.landing-section-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-align: center;
+  margin: 0.75rem 0 0;
+}
+
+/* ── DRE / PDV ──────────────────────────────────────────── */
+.dre-bar-wrap { height: 6px; background: var(--line); border-radius: 99px; }
+.dre-bar { height: 6px; background: var(--primary); border-radius: 99px; transition: width 0.4s ease; }
+.pdv-totals { background: var(--bg); border-radius: var(--r-md); padding: 1.25rem 1.5rem; }
+.pdv-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.375rem 0;
+  font-size: 0.9rem;
+}
+.pdv-total-row.grand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+}
+.pdv-remaining-ok  { color: var(--ok);  font-weight: 700; }
+.pdv-remaining-bad { color: var(--bad); font-weight: 700; }
+
+/* ── Dark mode extras (PrimeNG components) ──────────────── */
+html.dark .p-datatable .p-datatable-thead > tr > th { background: var(--bg); }
+html.dark .p-datatable .p-datatable-tbody > tr { background: var(--bg-elev); }
+html.dark .p-datatable .p-paginator { background: var(--bg); }
+html.dark .p-inputtext,
+html.dark .p-password input,
+html.dark .p-select { background: var(--bg-elev); border-color: var(--line); color: var(--ink); }
+html.dark .p-select .p-select-overlay { background: var(--bg-elev); border-color: var(--line); }

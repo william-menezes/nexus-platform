@@ -9,71 +9,77 @@
     </div>
   </app-page-header>
 
-  <p-card styleClass="w-full">
-    <div class="flex gap-3 mb-4">
-    <p-select [(ngModel)]="filterType" [options]="typeOptions" optionLabel="label" optionValue="value"
-      placeholder="Tipo" (onChange)="load()" [style]="{ width: '150px' }" />
-    <p-select [(ngModel)]="filterStatus" [options]="statusOptions" optionLabel="label" optionValue="value"
-      placeholder="Status" (onChange)="load()" [style]="{ width: '150px' }" />
-  </div>
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
 
-  <div class="overflow-x-auto">
-    <p-table
-      [value]="entries()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '860px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="description">Descrição <p-sortIcon field="description" /></th>
-          <th pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
-          <th pSortableColumn="totalAmount">Total <p-sortIcon field="totalAmount" /></th>
-          <th pSortableColumn="paidAmount">Pago <p-sortIcon field="paidAmount" /></th>
-          <th pSortableColumn="dueDate">Vencimento <p-sortIcon field="dueDate" /></th>
-          <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-e>
-        <tr>
-          <td>{{ e.description }}</td>
-          <td>
-            <p-tag [severity]="e.type === 'receivable' ? 'success' : 'danger'"
-              [value]="e.type === 'receivable' ? 'A Receber' : 'A Pagar'" />
-          </td>
-          <td>{{ e.totalAmount | currency:'BRL' }}</td>
-          <td>{{ e.paidAmount | currency:'BRL' }}</td>
-          <td>{{ e.dueDate | date:'dd/MM/yyyy' }}</td>
-          <td><p-tag [severity]="statusSeverity(e.status)" [value]="statusLabel(e.status)" /></td>
-          <td>
-            <a [routerLink]="['lancamentos', e.id]" pButton icon="pi pi-eye" class="p-button-sm p-button-text mr-1"></a>
-            <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(e)"></button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-wallet"></i></span>
-              <span class="nx-table-empty__title">Nenhum lançamento encontrado</span>
-              <div class="nx-table-empty__description">Os recebíveis e pagáveis aparecerão aqui conforme forem cadastrados.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+    <div class="flex items-center justify-end gap-3 px-4 py-3 border-b border-surface-border flex-wrap">
+      <div class="flex items-center gap-2 flex-wrap">
+        <p-select [(ngModel)]="filterType" [options]="typeOptions" optionLabel="label" optionValue="value"
+          placeholder="Tipo" (onChange)="load()" styleClass="w-36" />
+        <p-select [(ngModel)]="filterStatus" [options]="statusOptions" optionLabel="label" optionValue="value"
+          placeholder="Status" (onChange)="load()" styleClass="w-36" />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <p-table
+        [value]="entries()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '860px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th scope="col" pSortableColumn="description">Descrição <p-sortIcon field="description" /></th>
+            <th scope="col" pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
+            <th scope="col" pSortableColumn="totalAmount">Total <p-sortIcon field="totalAmount" /></th>
+            <th scope="col" pSortableColumn="paidAmount">Pago <p-sortIcon field="paidAmount" /></th>
+            <th scope="col" pSortableColumn="dueDate">Vencimento <p-sortIcon field="dueDate" /></th>
+            <th scope="col" pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+            <th scope="col">Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-e>
+          <tr class="group">
+            <td>{{ e.description }}</td>
+            <td>
+              <p-tag [severity]="e.type === 'receivable' ? 'success' : 'danger'"
+                [value]="e.type === 'receivable' ? 'A Receber' : 'A Pagar'" />
+            </td>
+            <td>{{ e.totalAmount | currency:'BRL' }}</td>
+            <td>{{ e.paidAmount | currency:'BRL' }}</td>
+            <td>{{ e.dueDate | date:'dd/MM/yyyy' }}</td>
+            <td><p-tag [severity]="statusSeverity(e.status)" [value]="statusLabel(e.status)" /></td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="['lancamentos', e.id]" pButton icon="pi pi-eye" class="p-button-sm p-button-text" aria-label="Ver detalhes"></a>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(e)" aria-label="Excluir"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-wallet"></i></span>
+                <span class="nx-table-empty__title">Nenhum lançamento encontrado</span>
+                <div class="nx-table-empty__description">Os recebíveis e pagáveis aparecerão aqui conforme forem cadastrados.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
+    </div>
+
   </div>
-  </p-card>
 </div>

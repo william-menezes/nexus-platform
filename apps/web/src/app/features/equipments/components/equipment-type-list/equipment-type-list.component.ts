@@ -9,6 +9,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { EquipmentType } from '@nexus-platform/shared-types';
 import { EquipmentsService } from '../../equipments.service';
 import {
@@ -25,6 +26,7 @@ import {
   imports: [
     CommonModule, TableModule, ButtonModule, DialogModule,
     InputTextModule, ReactiveFormsModule, ConfirmDialogModule, ToastModule,
+    PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './equipment-type-list.component.html',

@@ -1,0 +1,297 @@
+/* ============================================================
+   SimplificaOS — Tailwind + PrimeNG Lara
+   ============================================================
+   Drop-in for previous styles/app.css.
+   Designed to coexist with Tailwind utilities and PrimeNG Lara.
+   Load order in project.json styles array:
+     1. primeicons.css
+     2. tailwind-base.css         (@tailwind base; components;)
+     3. colors_and_type.css       (tokens)
+     4. THIS FILE                 (PrimeNG overrides + components)
+     5. app.project.css           (Angular app-specific)
+     6. tailwind-utilities.css    (@tailwind utilities;)
+   ============================================================ */
+
+/* ── 1. TOKEN BRIDGE ──────────────────────────────────────
+   Tokens are canonical in colors_and_type.css.
+   This block only maps them to PrimeNG's --p-* namespace.
+*/
+:root {
+  --p-primary-color:        var(--primary);
+  --p-primary-hover-color:  var(--primary-hover);
+  --p-primary-active-color: var(--primary-active);
+  --p-primary-50:           var(--primary-50);
+  --p-primary-100:          var(--primary-100);
+  --p-primary-500:          var(--primary);
+  --p-primary-600:          var(--primary);
+  --p-primary-700:          var(--primary-hover);
+
+  --p-text-color:        var(--ink);
+  --p-text-muted-color:  var(--muted);
+  --p-content-color:     var(--ink);
+
+  --p-surface-ground:  var(--bg);
+  --p-surface-section: var(--bg);
+  --p-surface-card:    var(--bg-elev);
+  --p-surface-overlay: var(--bg-elev);
+  --p-surface-border:  var(--line);
+  --p-surface-hover:   var(--primary-50);
+}
+
+html.dark {
+  --p-surface-ground:      var(--bg);
+  --p-surface-card:        var(--bg-elev);
+  --p-surface-overlay:     var(--bg-elev);
+  --p-surface-border:      var(--line);
+  --p-content-background:  var(--bg-elev);
+  --p-content-border-color: var(--line);
+}
+
+/* ── 2. PRIMENG OVERRIDES ─────────────────────────────────
+   Tailwind cannot reach into PrimeNG's internal markup;
+   these CSS rules handle what utilities can't.
+*/
+
+/* Buttons */
+.p-button {
+  border-radius: var(--r-md);
+  font-weight: 500;
+  transition: transform .15s, background .15s, border-color .15s;
+}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):hover {
+  transform: translateY(-1px);
+}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link) {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):active {
+  background: var(--primary-active);
+  border-color: var(--primary-active);
+}
+.p-button.p-button-outlined {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+/* Inputs */
+.p-inputtext,
+.p-password input,
+.p-select,
+.p-multiselect,
+.p-autocomplete-input {
+  border-radius: var(--r-md);
+  background: var(--bg);
+  border-color: var(--line);
+}
+.p-inputtext:focus,
+.p-autocomplete-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+.p-selectButton {
+  border-color: var(--bg);
+}
+
+/* Cards & dialogs */
+.p-card,
+.p-dialog {
+  background-color: var(--bg-elev);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-md);
+}
+.p-card .p-card-body { padding: 16px; }
+.p-card .p-card-content { padding: 0; }
+
+/* DataTable */
+.p-datatable {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--bg);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+}
+.p-datatable .p-datatable-tbody > tr {
+  transition: background .12s;
+}
+.p-datatable .p-datatable-tbody > tr > td {
+  color: var(--ink);
+  border-color: var(--line-2);
+}
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: var(--primary-50);
+}
+.p-datatable .p-sortable-column:not(.p-highlight):hover {
+  background: var(--primary-50);
+  color: var(--ink);
+}
+.p-datatable .p-sortable-column.p-highlight {
+  color: var(--primary);
+}
+.p-datatable .p-paginator {
+  background: var(--bg-elev);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  padding: 0.75rem 1rem;
+  gap: 0.5rem;
+}
+.p-datatable .p-paginator .p-dropdown,
+.p-datatable .p-paginator .p-select {
+  min-width: 5.25rem;
+}
+
+/* Breadcrumb */
+.p-breadcrumb {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Dialog */
+.p-dialog .p-dialog-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+  font-size: 16px;
+}
+.p-dialog .p-dialog-content { padding: 20px; }
+.p-dialog .p-dialog-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* AutoComplete */
+.p-autocomplete .p-autocomplete-panel {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-lg);
+}
+.p-autocomplete-item { font-size: 14px; padding: 10px 12px; }
+.p-autocomplete-item:hover { background: var(--primary-50); }
+
+/* Paginator standalone */
+.p-paginator {
+  background: var(--bg-elev);
+  border-top: 1px solid var(--line);
+}
+
+/* Component density */
+.p-component { font-size: 14px; }
+
+/* ── 3. COMPOSED COMPONENTS ───────────────────────────────
+   Only patterns with 4+ children or complex states that
+   would be utility soup if repeated in markup.
+*/
+
+/* Status pills — tables, kanban, timeline */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.pill.ok     { background: var(--ok-bg);     color: var(--ok); }
+.pill.warn   { background: var(--warn-bg);   color: var(--warn); }
+.pill.bad    { background: var(--bad-bg);    color: var(--bad); }
+.pill.info   { background: var(--info-bg);   color: var(--info); }
+.pill.violet { background: var(--violet-bg); color: var(--violet); }
+.pill.muted  { background: var(--line);      color: var(--muted); }
+
+/* Kanban card */
+.pipe-card {
+  display: block;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: var(--sh-sm);
+  transition: border-color .12s, box-shadow .12s, transform .12s;
+  cursor: pointer;
+}
+.pipe-card:hover {
+  border-color: var(--primary-200);
+  box-shadow: 0 4px 10px rgba(31,79,224,.08);
+  transform: translateY(-1px);
+}
+.pipe-card-id     { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.pipe-card-title  { font-weight: 600; color: var(--ink); font-size: 13.5px; line-height: 1.3; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pipe-card-client { color: var(--muted); font-size: 12px; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pipe-card-meta   { display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 11.5px; color: var(--muted); }
+.pipe-card-meta .val { font-family: var(--font-mono); font-weight: 600; color: var(--ink-2); }
+
+/* Checklist row */
+.chk-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  gap: 12px;
+}
+.chk-row:hover { background: var(--bg); }
+.chk-seg {
+  display: inline-flex;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 2px;
+}
+.chk-seg-btn {
+  background: none;
+  border: none;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  transition: all .12s;
+}
+.chk-seg-btn.ok.active    { background: var(--ok-bg);   color: var(--ok); }
+.chk-seg-btn.bad.active   { background: var(--bad-bg);  color: var(--bad); }
+.chk-seg-btn.muted.active { background: var(--line);    color: var(--ink-2); }
+.chk-seg-btn:disabled { cursor: default; opacity: .7; }
+
+/* Sidebar nav link */
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .5rem .75rem;
+  border-radius: var(--r-md);
+  color: var(--muted);
+  font-size: .8125rem;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.sb-link:hover { background: var(--primary-50); color: var(--primary); text-decoration: none; }
+.sb-link.active {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}

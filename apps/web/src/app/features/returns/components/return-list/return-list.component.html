@@ -1,4 +1,4 @@
-﻿<p-toast />
+<p-toast />
 <div class="nx-page">
   <app-page-header variant="list" title="Devoluções" subtitle="Solicitações de devolução e troca">
     <div actions class="flex items-center gap-2">
@@ -6,73 +6,76 @@
     </div>
   </app-page-header>
 
-  <p-card styleClass="w-full">
-    <div class="mb-3 flex gap-2 items-center">
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
+    <!-- Toolbar: filter-only (right-aligned) -->
+    <div class="flex items-center justify-end gap-3 px-4 py-3 border-b border-surface-border flex-wrap">
       <p-select [options]="statusOptions" [(ngModel)]="statusFilter"
         optionLabel="label" optionValue="value"
         placeholder="Todos os status" [showClear]="true"
-        (onChange)="load()" styleClass="w-48" />
+        (onChange)="load()" styleClass="w-44" />
     </div>
 
     <div class="overflow-x-auto">
-    <p-table
-      [value]="returns()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '780px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
-          <th pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
-          <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
-          <th pSortableColumn="totalAmount">Total <p-sortIcon field="totalAmount" /></th>
-          <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-ret>
-        <tr>
-          <td>
-            <a [routerLink]="[ret.id]" class="text-primary font-medium hover:underline">
-              {{ ret.code }}
-            </a>
-          </td>
-          <td>{{ typeLabel(ret.type) }}</td>
-          <td>
-            <p-tag [value]="statusLabel(ret.status)" [severity]="statusSeverity(ret.status)" />
-          </td>
-          <td>{{ ret.totalAmount | currency:'BRL':'symbol':'1.2-2' }}</td>
-          <td>{{ ret.createdAt | date:'dd/MM/yyyy' }}</td>
-          <td>
-            <a [routerLink]="[ret.id]" pButton icon="pi pi-eye"
-              class="p-button-sm p-button-text" aria-label="Ver detalhes"
-              pTooltip="Ver detalhes"></a>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="6">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-arrow-circle-left"></i></span>
-              <span class="nx-table-empty__title">Nenhuma devolução encontrada</span>
-              <div class="nx-table-empty__description">As solicitações de troca, crédito e estorno aparecerão aqui.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+      <p-table
+        [value]="returns()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '780px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+            <th pSortableColumn="type">Tipo <p-sortIcon field="type" /></th>
+            <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+            <th pSortableColumn="totalAmount">Total <p-sortIcon field="totalAmount" /></th>
+            <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ret>
+          <tr class="group">
+            <td>
+              <a [routerLink]="[ret.id]" class="text-primary font-medium hover:underline">
+                {{ ret.code }}
+              </a>
+            </td>
+            <td>{{ typeLabel(ret.type) }}</td>
+            <td>
+              <p-tag [value]="statusLabel(ret.status)" [severity]="statusSeverity(ret.status)" />
+            </td>
+            <td>{{ ret.totalAmount | currency:'BRL':'symbol':'1.2-2' }}</td>
+            <td>{{ ret.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="[ret.id]" pButton icon="pi pi-eye"
+                  class="p-button-sm p-button-text" aria-label="Ver detalhes"
+                  pTooltip="Ver detalhes"></a>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-arrow-circle-left"></i></span>
+                <span class="nx-table-empty__title">Nenhuma devolução encontrada</span>
+                <div class="nx-table-empty__description">As solicitações de troca, crédito e estorno aparecerão aqui.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
     </div>
-  </p-card>
+  </div>
 </div>

@@ -4,68 +4,93 @@ module.exports = {
     './apps/web/src/**/*.{html,ts}',
     './libs/**/*.{html,ts}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
+      colors: {
+        // ── Design system tokens ──────────────────────────
+        primary: {
+          DEFAULT: 'var(--primary)',
+          hover:   'var(--primary-hover)',
+          50:      'var(--primary-50)',
+          100:     'var(--primary-100)',
+          200:     'var(--primary-200)',
+          600:     'var(--primary-600)',
+          700:     'var(--primary-700)',
+        },
+        ink:    { DEFAULT: 'var(--ink)',   2: 'var(--ink-2)' },
+        muted:  { DEFAULT: 'var(--muted)', 2: 'var(--muted-2)' },
+        line:   { DEFAULT: 'var(--line)',  2: 'var(--line-2)' },
+        ok:     'var(--ok)',
+        warn:   'var(--warn)',
+        bad:    'var(--bad)',
+        info:   'var(--info)',
+        violet: 'var(--violet)',
+
+        // ── Semantic surface aliases ───────────────────────
+        // Used by app shell and table container Tailwind classes
+        surface: {
+          DEFAULT:  'var(--bg-elev)',     // bg-surface → card bg
+          elevated: 'var(--bg-elev)',     // bg-surface-elevated
+          page:     'var(--bg)',          // bg-surface-page
+          border:   'var(--line)',        // border-surface-border
+          hover:    'var(--primary-50)',  // bg-surface-hover
+        },
+
+        // ── Backward-compat aliases ───────────────────────
+        // Old Tailwind color names mapped to new semantic tokens
+        // so existing templates compile without changes.
+        secondary: {
+          DEFAULT: 'var(--violet)',
+          50:      'var(--violet-bg)',
+          500:     'var(--violet)',
+          600:     'var(--violet)',
+          700:     'var(--violet)',
+        },
+        success: {
+          DEFAULT: 'var(--ok)',
+          50:      'var(--ok-bg)',
+          500:     'var(--ok)',
+          600:     'var(--ok)',
+          700:     'var(--ok)',
+        },
+        warning: {
+          DEFAULT: 'var(--warn)',
+          50:      'var(--warn-bg)',
+          500:     'var(--warn)',
+          600:     'var(--warn)',
+          700:     'var(--warn)',
+        },
+        danger: {
+          DEFAULT: 'var(--bad)',
+          50:      'var(--bad-bg)',
+          500:     'var(--bad)',
+          600:     'var(--bad)',
+          700:     'var(--bad)',
+        },
+      },
+
       fontFamily: {
         sans:    ['Inter', 'system-ui', 'sans-serif'],
         display: ['Inter', 'system-ui', 'sans-serif'],
-        mono:    ['Inconsolata', 'monospace'],
+        mono:    ['"IBM Plex Mono"', 'ui-monospace', 'Menlo', 'monospace'],
       },
-      colors: {
-        primary: {
-          DEFAULT: '#2563eb',
-          50:  '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
-        },
-        secondary: {
-          DEFAULT: '#8B5CF6',
-          50:  '#F5F3FF',
-          500: '#8B5CF6',
-          600: '#7C3AED',
-          700: '#6D28D9',
-        },
-        success: {
-          DEFAULT: '#16A34A',
-          50:  '#F0FDF4',
-          500: '#16A34A',
-          600: '#15803D',
-          700: '#166534',
-        },
-        warning: {
-          DEFAULT: '#D97706',
-          50:  '#FFFBEB',
-          500: '#D97706',
-          600: '#B45309',
-          700: '#92400E',
-        },
-        danger: {
-          DEFAULT: '#DC2626',
-          50:  '#FEF2F2',
-          500: '#DC2626',
-          600: '#B91C1C',
-          700: '#991B1B',
-        },
-        surface: {
-          DEFAULT: 'var(--bg-card)',
-          light:   'var(--bg-light)',
-          muted:   '#F9FAFB',
-          border:  'var(--border-color)',
-        },
-        text: {
-          DEFAULT:   'var(--text-primary)',
-          secondary: 'var(--text-secondary)',
-          muted:     '#9CA3AF',
-          inverse:   'var(--text-inverse)',
-        },
+
+      borderRadius: {
+        xs:  'var(--r-xs)',
+        sm:  'var(--r-sm)',
+        DEFAULT: 'var(--r-sm)',
+        md:  'var(--r-md)',
+        lg:  'var(--r-lg)',
+        xl:  'var(--r-xl)',
+        '2xl': '20px',
+      },
+
+      boxShadow: {
+        sm:   'var(--sh-sm)',
+        md:   'var(--sh-md)',
+        lg:   'var(--sh-lg)',
+        hero: 'var(--sh-hero)',
       },
     },
   },

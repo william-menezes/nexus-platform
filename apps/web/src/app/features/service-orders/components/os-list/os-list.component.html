@@ -15,80 +15,82 @@
     </div>
   </app-page-header>
 
-  <p-card styleClass="w-full">
+  @if (error()) {
+    <p-message severity="error" [text]="error()" styleClass="w-full mb-4" />
+  }
 
-    @if (error()) {
-      <p-message severity="error" [text]="error()" styleClass="w-full mb-4" />
-    }
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
 
-    <p-table
-    [value]="orders()"
-    [loading]="loading()"
-    [paginator]="true"
-    [rows]="tablePage().rows"
-    [first]="tablePage().first"
-    [rowsPerPageOptions]="rowsPerPageOptions"
-    [rowHover]="true"
-    sortMode="single"
-    styleClass="nx-data-table p-datatable-sm"
-    [tableStyle]="{'min-width':'600px'}"
-    (onPage)="onPageChange($event)"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th pSortableColumn="code">Código <p-sortIcon field="code" /></th>
-        <th pSortableColumn="clientName">Cliente <p-sortIcon field="clientName" /></th>
-        <th>Descrição</th>
-        <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
-        <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
-        <th></th>
-      </tr>
-    </ng-template>
+    <div class="overflow-x-auto">
+      <p-table
+        [value]="orders()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{'min-width':'600px'}"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th scope="col" pSortableColumn="code">Código <p-sortIcon field="code" /></th>
+            <th scope="col" pSortableColumn="clientName">Cliente <p-sortIcon field="clientName" /></th>
+            <th scope="col">Descrição</th>
+            <th scope="col" pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+            <th scope="col" pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
+            <th scope="col"></th>
+          </tr>
+        </ng-template>
 
-    <ng-template pTemplate="body" let-os>
-      <tr>
-        <td><code style="font-family:monospace; font-size:0.85em;">{{ os.code }}</code></td>
-        <td>{{ os.clientName }}</td>
-        <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-          {{ os.description }}
-        </td>
-        <td>
-          <p-tag
-            [value]="statusLabel[os.status]"
-            [severity]="statusSeverity[os.status]"
-          />
-        </td>
-        <td>{{ os.createdAt | date:'dd/MM/yyyy' }}</td>
-        <td>
-          <div style="display:flex; gap:0.5rem;">
-            <a [routerLink]="os.id">
-              <p-button icon="pi pi-eye" severity="secondary" [outlined]="true" size="small" pTooltip="Ver detalhes"  styleClass="p-button-sm"/>
-            </a>
-            <a [routerLink]="[os.id, 'editar']">
-              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" pTooltip="Editar"  styleClass="p-button-sm"/>
-            </a>
-            <p-button icon="pi pi-trash" severity="danger" [text]="true" styleClass="p-button-sm" (onClick)="confirmDelete(os)" pTooltip="Excluir" />
-          </div>
-        </td>
-      </tr>
-    </ng-template>
+        <ng-template pTemplate="body" let-os>
+          <tr class="group">
+            <td><code class="font-mono text-[0.85em]">{{ os.code }}</code></td>
+            <td>{{ os.clientName }}</td>
+            <td class="max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap">
+              {{ os.description }}
+            </td>
+            <td>
+              <p-tag
+                [value]="statusLabel[os.status]"
+                [severity]="statusSeverity[os.status]"
+              />
+            </td>
+            <td>{{ os.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="os.id">
+                  <p-button icon="pi pi-eye" [text]="true" styleClass="p-button-sm" pTooltip="Ver detalhes" />
+                </a>
+                <a [routerLink]="[os.id, 'editar']">
+                  <p-button icon="pi pi-pencil" [text]="true" styleClass="p-button-sm" pTooltip="Editar" />
+                </a>
+                <p-button icon="pi pi-trash" severity="danger" [text]="true" styleClass="p-button-sm" (onClick)="confirmDelete(os)" pTooltip="Excluir" />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
 
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="6">
-          <div class="nx-table-empty">
-            <span class="nx-table-empty__icon"><i class="pi pi-inbox"></i></span>
-            <span class="nx-table-empty__title">Nenhuma OS encontrada</span>
-            <div class="nx-table-empty__description">As ordens de serviço aparecerão aqui conforme forem abertas.</div>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="paginatorleft">
-      <span class="nx-table-summary">{{ tableSummary() }}</span>
-    </ng-template>
-    </p-table>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-inbox"></i></span>
+                <span class="nx-table-empty__title">Nenhuma OS encontrada</span>
+                <div class="nx-table-empty__description">As ordens de serviço aparecerão aqui conforme forem abertas.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
+    </div>
 
-  </p-card>
+  </div>
 
 </div>

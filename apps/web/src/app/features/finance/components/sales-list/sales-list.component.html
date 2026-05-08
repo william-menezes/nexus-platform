@@ -1,81 +1,79 @@
 <div class="nx-page">
-  <div class="nx-page-header">
-    <div>
-      <h1 class="nx-page-title">Vendas</h1>
-      <p class="nx-page-subtitle">Histórico e gestão de vendas</p>
-    </div>
-    <div class="flex items-center gap-3">
+  <app-page-header variant="list" title="Vendas" subtitle="Histórico e gestão de vendas">
+    <div actions class="flex items-center gap-3">
       <a routerLink="../dre" pButton label="DRE" icon="pi pi-chart-bar"
         class="p-button-outlined p-button-secondary p-button-sm"></a>
       <a routerLink="../pdv" pButton label="Nova venda (PDV)" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
-  </div>
+  </app-page-header>
 
-  <p-card styleClass="w-full">
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
-    <p-table
-      [value]="sales()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{'min-width':'600px'}"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
-          <th>OS vinculada</th>
-          <th pSortableColumn="total" class="text-right">Total <p-sortIcon field="total" /></th>
-          <th pSortableColumn="paidAmount" class="text-right">Pago <p-sortIcon field="paidAmount" /></th>
-          <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
+      <p-table
+        [value]="sales()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{'min-width':'600px'}"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="createdAt">Data <p-sortIcon field="createdAt" /></th>
+            <th>OS vinculada</th>
+            <th pSortableColumn="total" class="text-right">Total <p-sortIcon field="total" /></th>
+            <th pSortableColumn="paidAmount" class="text-right">Pago <p-sortIcon field="paidAmount" /></th>
+            <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
 
-      <ng-template pTemplate="body" let-sale>
-        <tr>
-          <td class="text-text-muted">{{ sale.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td class="font-mono text-sm text-text-muted">
-            {{ sale.serviceOrderId ? (sale.serviceOrderId | slice:0:8) + '…' : '—' }}
-          </td>
-          <td class="text-right font-semibold">{{ sale.total | currency:'BRL' }}</td>
-          <td class="text-right">{{ sale.paidAmount | currency:'BRL' }}</td>
-          <td>
-            <p-tag
-              [value]="statusLabel(sale.status)"
-              [severity]="sale.status === 'paid' ? 'success' : sale.status === 'open' ? 'warn' : 'danger'"
-            />
-          </td>
-          <td>
-            @if (sale.status === 'open') {
-              <button pButton icon="pi pi-ban" label="Cancelar"
-                class="p-button-outlined p-button-danger p-button-sm"
-                (click)="cancel(sale.id)"></button>
-            }
-          </td>
-        </tr>
-      </ng-template>
+        <ng-template pTemplate="body" let-sale>
+          <tr class="group">
+            <td class="text-text-muted">{{ sale.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="font-mono text-sm text-text-muted">
+              {{ sale.serviceOrderId ? (sale.serviceOrderId | slice:0:8) + '…' : '—' }}
+            </td>
+            <td class="text-right font-semibold">{{ sale.total | currency:'BRL' }}</td>
+            <td class="text-right">{{ sale.paidAmount | currency:'BRL' }}</td>
+            <td>
+              <p-tag
+                [value]="statusLabel(sale.status)"
+                [severity]="sale.status === 'paid' ? 'success' : sale.status === 'open' ? 'warn' : 'danger'"
+              />
+            </td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                @if (sale.status === 'open') {
+                  <button pButton icon="pi pi-ban" label="Cancelar"
+                    class="p-button-outlined p-button-danger p-button-sm"
+                    (click)="cancel(sale.id)"></button>
+                }
+              </div>
+            </td>
+          </tr>
+        </ng-template>
 
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="6">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-shopping-cart"></i></span>
-              <span class="nx-table-empty__title">Nenhuma venda registrada</span>
-              <div class="nx-table-empty__description">As vendas concluídas e pendentes aparecerão aqui.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-shopping-cart"></i></span>
+                <span class="nx-table-empty__title">Nenhuma venda registrada</span>
+                <div class="nx-table-empty__description">As vendas concluídas e pendentes aparecerão aqui.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
     </div>
-  </p-card>
+  </div>
 </div>

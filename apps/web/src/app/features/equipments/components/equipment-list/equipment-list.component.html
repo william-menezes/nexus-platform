@@ -7,56 +7,62 @@
       <a routerLink="novo" pButton label="Novo Equipamento" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
   </app-page-header>
-  <p-card styleClass="w-full">
+
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
-    <p-table
-      [value]="equipments()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '760px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Tipo</th>
-          <th pSortableColumn="brand">Marca <p-sortIcon field="brand" /></th>
-          <th pSortableColumn="model">Modelo <p-sortIcon field="model" /></th>
-          <th>Observações</th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-e>
-        <tr>
-          <td>{{ getTypeName(e.equipmentTypeId) }}</td>
-          <td>{{ e.brand || '?' }}</td>
-          <td>{{ e.model || '?' }}</td>
-          <td>{{ e.notes || '?' }}</td>
-          <td>
-            <a [routerLink]="[e.id, 'editar']" pButton icon="pi pi-pencil" class="p-button-sm p-button-text mr-1"></a>
-            <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(e)"></button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="5">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-desktop"></i></span>
-              <span class="nx-table-empty__title">Nenhum equipamento encontrado</span>
-              <div class="nx-table-empty__description">Associe equipamentos aos clientes para acelerar o fluxo das OS.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+      <p-table
+        [value]="equipments()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '760px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Tipo</th>
+            <th pSortableColumn="brand">Marca <p-sortIcon field="brand" /></th>
+            <th pSortableColumn="model">Modelo <p-sortIcon field="model" /></th>
+            <th>Observações</th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-e>
+          <tr class="group">
+            <td>{{ getTypeName(e.equipmentTypeId) }}</td>
+            <td>{{ e.brand || '?' }}</td>
+            <td>{{ e.model || '?' }}</td>
+            <td>{{ e.notes || '?' }}</td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="[e.id, 'editar']">
+                  <p-button icon="pi pi-pencil" [text]="true" styleClass="p-button-sm" pTooltip="Editar" />
+                </a>
+                <p-button icon="pi pi-trash" severity="danger" [text]="true"
+                  (click)="confirmDelete(e)" styleClass="p-button-sm" pTooltip="Excluir" />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-desktop"></i></span>
+                <span class="nx-table-empty__title">Nenhum equipamento encontrado</span>
+                <div class="nx-table-empty__description">Associe equipamentos aos clientes para acelerar o fluxo das OS.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
     </div>
-  </p-card>
+  </div>
 </div>

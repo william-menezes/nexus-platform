@@ -7,66 +7,79 @@
       <a routerLink="novo" pButton label="Novo Funcionário" icon="pi pi-plus" class="p-button-sm"></a>
     </div>
   </app-page-header>
-  <p-card styleClass="w-full">
-    <div class="mb-3">
-      <input pInputText [(ngModel)]="search" (ngModelChange)="load()" placeholder="Buscar por nome..." class="w-full md:w-1/3" />
+
+  <div class="rounded-xl border border-surface-border bg-surface-elevated shadow-sm overflow-hidden">
+    <!-- Toolbar -->
+    <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-surface-border flex-wrap">
+      <!-- left: search -->
+      <div class="relative flex-1 min-w-[180px] max-w-sm">
+        <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm pointer-events-none"></i>
+        <input type="text" placeholder="Buscar por nome..." [(ngModel)]="search" (ngModelChange)="load()"
+          class="block w-full rounded-md border border-surface-border bg-surface pl-9 pr-3 py-2 text-sm text-text placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition-colors"
+          aria-label="Buscar funcionário" />
+      </div>
+      <!-- right: filters (none) -->
+      <div class="flex items-center gap-2 flex-wrap"></div>
     </div>
+
     <div class="overflow-x-auto">
-    <p-table
-      [value]="employees()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="tablePage().rows"
-      [first]="tablePage().first"
-      [rowsPerPageOptions]="rowsPerPageOptions"
-      [rowHover]="true"
-      sortMode="single"
-      styleClass="nx-data-table p-datatable-sm"
-      [tableStyle]="{ 'min-width': '820px' }"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
-          <th pSortableColumn="roleLabel">Cargo <p-sortIcon field="roleLabel" /></th>
-          <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
-          <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
-          <th pSortableColumn="commissionRate">Comissão <p-sortIcon field="commissionRate" /></th>
-          <th pSortableColumn="isActive">Status <p-sortIcon field="isActive" /></th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-e>
-        <tr>
-          <td>{{ e.name }}</td>
-          <td>{{ e.roleLabel || '—' }}</td>
-          <td>{{ e.phone || '—' }}</td>
-          <td>{{ e.email || '—' }}</td>
-          <td>{{ e.commissionRate }}%</td>
-          <td>
-            <p-tag [severity]="e.isActive ? 'success' : 'danger'" [value]="e.isActive ? 'Ativo' : 'Inativo'" />
-          </td>
-          <td>
-            <a [routerLink]="[e.id, 'editar']" pButton icon="pi pi-pencil" class="p-button-sm p-button-text mr-1"></a>
-            <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(e)"></button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7">
-            <div class="nx-table-empty">
-              <span class="nx-table-empty__icon"><i class="pi pi-users"></i></span>
-              <span class="nx-table-empty__title">Nenhum funcionário encontrado</span>
-              <div class="nx-table-empty__description">Adicione ou convide membros para montar sua equipe.</div>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="paginatorleft">
-        <span class="nx-table-summary">{{ tableSummary() }}</span>
-      </ng-template>
-    </p-table>
+      <p-table
+        [value]="employees()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="tablePage().rows"
+        [first]="tablePage().first"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [rowHover]="true"
+        sortMode="single"
+        styleClass="nx-data-table p-datatable-sm"
+        [tableStyle]="{ 'min-width': '820px' }"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
+            <th pSortableColumn="roleLabel">Cargo <p-sortIcon field="roleLabel" /></th>
+            <th pSortableColumn="phone">Telefone <p-sortIcon field="phone" /></th>
+            <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
+            <th pSortableColumn="commissionRate">Comissão <p-sortIcon field="commissionRate" /></th>
+            <th pSortableColumn="isActive">Status <p-sortIcon field="isActive" /></th>
+            <th>Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-e>
+          <tr class="group">
+            <td>{{ e.name }}</td>
+            <td>{{ e.roleLabel || '—' }}</td>
+            <td>{{ e.phone || '—' }}</td>
+            <td>{{ e.email || '—' }}</td>
+            <td>{{ e.commissionRate }}%</td>
+            <td>
+              <p-tag [severity]="e.isActive ? 'success' : 'danger'" [value]="e.isActive ? 'Ativo' : 'Inativo'" />
+            </td>
+            <td>
+              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <a [routerLink]="[e.id, 'editar']" pButton icon="pi pi-pencil" class="p-button-sm p-button-text"></a>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(e)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7">
+              <div class="nx-table-empty">
+                <span class="nx-table-empty__icon"><i class="pi pi-users"></i></span>
+                <span class="nx-table-empty__title">Nenhum funcionário encontrado</span>
+                <div class="nx-table-empty__description">Adicione ou convide membros para montar sua equipe.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="nx-table-summary">{{ tableSummary() }}</span>
+        </ng-template>
+      </p-table>
     </div>
-  </p-card>
+  </div>
 </div>

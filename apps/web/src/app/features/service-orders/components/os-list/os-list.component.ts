@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -26,7 +25,7 @@ import { PageHeaderViewToggleOption } from '../../../../shared/models/page-heade
 @Component({
   standalone: true,
   selector: 'app-os-list',
-  imports: [DatePipe, RouterLink, ButtonModule, CardModule, MessageModule, TableModule, TagModule, TooltipModule, ConfirmDialogModule, ToastModule, PageHeaderComponent],
+  imports: [DatePipe, RouterLink, ButtonModule, MessageModule, TableModule, TagModule, TooltipModule, ConfirmDialogModule, ToastModule, PageHeaderComponent],
   providers: [ConfirmationService, MessageService],
   templateUrl: './os-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
@@ -25,7 +24,7 @@ import { PageHeaderViewToggleOption } from '../../../../shared/models/page-heade
   standalone: true,
   selector: 'app-quote-list',
   imports: [
-    CommonModule, RouterLink, TableModule, ButtonModule, CardModule, TagModule,
+    CommonModule, RouterLink, TableModule, ButtonModule, TagModule,
     ConfirmDialogModule, ToastModule, PageHeaderComponent,
   ],
   providers: [ConfirmationService, MessageService],
