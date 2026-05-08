@@ -89,6 +89,20 @@ export class QuoteFormComponent implements OnInit {
       { label: 'Orçamentos', routerLink: '/app/orcamentos' },
       { label: this.isEdit ? 'Editar Orçamento' : 'Novo Orçamento' },
     ]);
+
+    if (!this.isEdit) {
+      const clientId = this.route.snapshot.queryParamMap.get('clientId');
+      if (clientId) {
+        this.clientsSvc.getOne(clientId).subscribe({
+          next: (c) => {
+            this.selectedClient = c;
+            this.form.patchValue({ clientId: c.id });
+            this.cdr.markForCheck();
+          },
+        });
+      }
+    }
+
     if (this.editId) {
       this.svc.getOne(this.editId).subscribe(q => {
         this.form.patchValue({

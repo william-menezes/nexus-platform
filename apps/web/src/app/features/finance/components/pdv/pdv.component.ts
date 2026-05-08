@@ -1,7 +1,10 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
+import { Component, OnInit, inject, DestroyRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -9,10 +12,12 @@ import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
 import { MessageModule } from 'primeng/message';
 import { CardModule } from 'primeng/card';
+import { AutoCompleteModule, AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { BreadcrumbService } from '../../../../core/breadcrumb/breadcrumb.service';
-import { Product } from '@nexus-platform/shared-types';
+import { Client, Product } from '@nexus-platform/shared-types';
 import { FinanceService } from '../../finance.service';
 import { InventoryService } from '../../../inventory/inventory.service';
+import { ClientsService } from '../../../clients/clients.service';
 
 type PaymentMethod = 'cash' | 'credit' | 'debit' | 'pix' | 'boleto';
 
@@ -28,18 +33,22 @@ const METHOD_OPTIONS = [
   standalone: true,
   selector: 'app-pdv',
   imports: [
-    ReactiveFormsModule, RouterLink, CurrencyPipe,
+    ReactiveFormsModule, FormsModule, RouterLink, CurrencyPipe,
     ButtonModule, InputTextModule, InputNumberModule, SelectModule, DividerModule, MessageModule, CardModule,
+    AutoCompleteModule,
   ],
   templateUrl: './pdv.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PdvComponent implements OnInit {
-  private readonly fb      = inject(FormBuilder);
-  private readonly svc     = inject(FinanceService);
-  private readonly invSvc  = inject(InventoryService);
-  private readonly router  = inject(Router);
-  private readonly cdr     = inject(ChangeDetectorRef);
+  private readonly fb         = inject(FormBuilder);
+  private readonly svc        = inject(FinanceService);
+  private readonly invSvc     = inject(InventoryService);
+  private readonly clientsSvc = inject(ClientsService);
+  private readonly router     = inject(Router);
+  private readonly route      = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr        = inject(ChangeDetectorRef);
   private readonly breadcrumbSvc = inject(BreadcrumbService);
 
   constructor() {
@@ -55,7 +64,12 @@ export class PdvComponent implements OnInit {
   error    = '';
   readonly methodOptions = METHOD_OPTIONS;
 
+  selectedClient: Client | null = null;
+  clientSuggestions: Client[]   = [];
+  private readonly clientSearch$ = new Subject<string>();
+
   form = this.fb.group({
+    clientId:       [null as string | null],
     serviceOrderId: [''],
     discountAmount: [0, Validators.min(0)],
     items:    this.fb.array([this.buildItem()]),
@@ -104,7 +118,35 @@ export class PdvComponent implements OnInit {
     }
   }
 
+  searchClients(event: AutoCompleteCompleteEvent) {
+    this.clientSearch$.next(event.query);
+  }
+
+  onClientSelect(event: AutoCompleteSelectEvent) {
+    const c: Client = event.value;
+    this.form.patchValue({ clientId: c.id });
+  }
+
+  onClientClear() {
+    this.form.patchValue({ clientId: null });
+    this.selectedClient = null;
+  }
+
+  clientLabel(c: Client): string {
+    return c.phone ? `${c.name} | ${c.phone}` : c.name;
+  }
+
   ngOnInit() {
+    this.clientSearch$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => this.clientsSvc.getAll(query)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: list => { this.clientSuggestions = list; this.cdr.markForCheck(); },
+      error: ()  => { this.clientSuggestions = []; this.cdr.markForCheck(); },
+    });
+
     this.invSvc.getProducts().subscribe({
       next: (p) => {
         this.products = p;
@@ -112,6 +154,17 @@ export class PdvComponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
+
+    const clientId = this.route.snapshot.queryParamMap.get('clientId');
+    if (clientId) {
+      this.clientsSvc.getOne(clientId).subscribe({
+        next: (c) => {
+          this.selectedClient = c;
+          this.form.patchValue({ clientId: c.id });
+          this.cdr.markForCheck();
+        },
+      });
+    }
   }
 
   submit() {
@@ -119,6 +172,7 @@ export class PdvComponent implements OnInit {
     this.loading = true;
     const val = this.form.value;
     const dto = {
+      clientId:       val.clientId       || undefined,
       serviceOrderId: val.serviceOrderId || undefined,
       discountAmount: val.discountAmount ?? 0,
       items:    val.items ?? [],

@@ -85,6 +85,17 @@ export class OsFormComponent implements OnInit {
         next:  (os) => { this.form.patchValue(os as never); this.cdr.markForCheck(); },
         error: ()   => { this.error = 'OS não encontrada.'; this.cdr.markForCheck(); },
       });
+    } else {
+      const clientId = this.route.snapshot.queryParamMap.get('clientId');
+      if (clientId) {
+        this.clientsSvc.getOne(clientId).subscribe({
+          next: (c) => {
+            this.selectedClient = c;
+            this.form.patchValue({ clientId: c.id, clientName: c.name, clientPhone: c.phone ?? '' });
+            this.cdr.markForCheck();
+          },
+        });
+      }
     }
   }
 

@@ -9,6 +9,29 @@
   />
   <p-card styleClass="w-full">
     <form [formGroup]="form" class="flex flex-col gap-3">
+
+      <div class="flex flex-col gap-1">
+        <label class="text-text">Cliente</label>
+        <p-autoComplete
+          [(ngModel)]="selectedClient"
+          [ngModelOptions]="{ standalone: true }"
+          [suggestions]="clientSuggestions"
+          optionLabel="name"
+          [forceSelection]="false"
+          [showClear]="true"
+          placeholder="Buscar cliente..."
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          (completeMethod)="searchClients($event)"
+          (onSelect)="onClientSelect($event)"
+          (onClear)="onClientClear()"
+        >
+          <ng-template let-c pTemplate="item">
+            <span>{{ clientLabel(c) }}</span>
+          </ng-template>
+        </p-autoComplete>
+      </div>
+
       <div class="flex flex-col gap-1">
         <label class="text-text">Tipo de Equipamento *</label>
         <p-select formControlName="equipmentTypeId" [options]="types()" optionLabel="name" optionValue="id" placeholder="Selecione..." styleClass="w-full" />

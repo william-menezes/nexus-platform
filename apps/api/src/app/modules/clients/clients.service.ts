@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, ILike } from 'typeorm';
+import { Repository, IsNull, ILike, In } from 'typeorm';
 import { ClientEntity } from './entities/client.entity';
 import { AddressEntity } from './entities/address.entity';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ServiceOrderEntity } from '../service-orders/entities/service-order.entity';
 import { QuoteEntity } from '../quotes/entities/quote.entity';
+import { SaleEntity } from '../finance/entities/sale.entity';
+import { FinancialEntryEntity } from '../financial/entities/financial-entry.entity';
+import { EquipmentEntity } from '../equipments/entities/equipment.entity';
 
 @Injectable()
 export class ClientsService {
@@ -19,6 +22,12 @@ export class ClientsService {
     private readonly soRepo: Repository<ServiceOrderEntity>,
     @InjectRepository(QuoteEntity)
     private readonly quoteRepo: Repository<QuoteEntity>,
+    @InjectRepository(SaleEntity)
+    private readonly saleRepo: Repository<SaleEntity>,
+    @InjectRepository(FinancialEntryEntity)
+    private readonly finEntryRepo: Repository<FinancialEntryEntity>,
+    @InjectRepository(EquipmentEntity)
+    private readonly equipmentRepo: Repository<EquipmentEntity>,
   ) {}
 
   async findAll(tenantId: string, search?: string) {
@@ -130,11 +139,69 @@ export class ClientsService {
       quotes: rawQuotes.map((q) => ({
         id: q.id,
         code: q.code,
-        status: '—',
+        status: null,
         createdAt: q.createdAt,
         type: 'quote' as const,
       })),
     };
+  }
+
+  async getSummary(tenantId: string, clientId: string) {
+    await this.findOne(tenantId, clientId);
+
+    const openStatuses = ['open', 'in_progress', 'awaiting_parts'];
+
+    const [openOrders, closedOrders, salesAgg, finAgg] = await Promise.all([
+      this.soRepo.count({
+        where: { tenantId, clientId, status: In(openStatuses) as any, deletedAt: IsNull() },
+      }),
+      this.soRepo.count({
+        where: { tenantId, clientId, status: 'done' as any, deletedAt: IsNull() },
+      }),
+      this.saleRepo
+        .createQueryBuilder('s')
+        .select('COALESCE(SUM(s.total), 0)', 'total')
+        .where(
+          's.tenantId = :tenantId AND s.clientId = :clientId AND s.status != :cancelled AND s.deletedAt IS NULL',
+          { tenantId, clientId, cancelled: 'cancelled' },
+        )
+        .getRawOne<{ total: string }>(),
+      this.finEntryRepo
+        .createQueryBuilder('f')
+        .select('COALESCE(SUM(f.totalAmount - f.paidAmount), 0)', 'balance')
+        .where(
+          'f.tenantId = :tenantId AND f.entityType = :entityType AND f.entityId = :clientId AND f.type = :type AND f.status NOT IN (:...statuses) AND f.deletedAt IS NULL',
+          { tenantId, entityType: 'client', clientId, type: 'receivable', statuses: ['paid', 'cancelled'] },
+        )
+        .getRawOne<{ balance: string }>(),
+    ]);
+
+    return {
+      openOrders,
+      closedOrders,
+      totalBilled: parseFloat(salesAgg?.total ?? '0') || 0,
+      pendingBalance: parseFloat(finAgg?.balance ?? '0') || 0,
+    };
+  }
+
+  async getSales(tenantId: string, clientId: string) {
+    await this.findOne(tenantId, clientId);
+    return this.saleRepo.find({
+      where: { tenantId, clientId, deletedAt: IsNull() },
+      select: ['id', 'code', 'status', 'total', 'createdAt'],
+      order: { createdAt: 'DESC' },
+      take: 50,
+    });
+  }
+
+  async getEquipments(tenantId: string, clientId: string) {
+    await this.findOne(tenantId, clientId);
+    return this.equipmentRepo.find({
+      where: { tenantId, clientId, deletedAt: IsNull() },
+      select: ['id', 'equipmentTypeId', 'brand', 'model', 'createdAt'],
+      order: { createdAt: 'DESC' },
+      take: 50,
+    });
   }
 
   private toEntityData(dto: Partial<CreateClientDto | UpdateClientDto>) {

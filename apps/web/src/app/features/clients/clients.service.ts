@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Client, ClientHistory } from '@nexus-platform/shared-types';
+import {
+  Client, ClientHistory, ClientSummary, ClientSaleItem, ClientEquipmentItem,
+} from '@nexus-platform/shared-types';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -32,5 +34,17 @@ export class ClientsService {
 
   getHistory(id: string): Observable<ClientHistory> {
     return this.http.get<ClientHistory>(`${this.base}/${id}/history`);
+  }
+
+  getSummary(id: string): Observable<ClientSummary> {
+    return this.http.get<ClientSummary>(`${this.base}/${id}/summary`);
+  }
+
+  getSales(id: string): Observable<ClientSaleItem[]> {
+    return this.http.get<ClientSaleItem[]>(`${this.base}/${id}/sales`);
+  }
+
+  getEquipments(id: string): Observable<ClientEquipmentItem[]> {
+    return this.http.get<ClientEquipmentItem[]>(`${this.base}/${id}/equipments`);
   }
 }

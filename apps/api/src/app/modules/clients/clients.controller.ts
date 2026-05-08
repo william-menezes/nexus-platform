@@ -27,6 +27,24 @@ export class ClientsController {
     return this.svc.getHistory(tenantId, id);
   }
 
+  @Get(':id/summary')
+  @RequirePermission('clients:read')
+  getSummary(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.svc.getSummary(tenantId, id);
+  }
+
+  @Get(':id/sales')
+  @RequirePermission('clients:read')
+  getSales(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.svc.getSales(tenantId, id);
+  }
+
+  @Get(':id/equipments')
+  @RequirePermission('clients:read')
+  getEquipments(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.svc.getEquipments(tenantId, id);
+  }
+
   @Get(':id')
   @RequirePermission('clients:read')
   findOne(@CurrentTenant() tenantId: string, @Param('id') id: string) {

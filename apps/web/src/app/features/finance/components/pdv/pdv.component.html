@@ -17,6 +17,31 @@
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
 
+    <!-- Cliente -->
+    <div class="nx-form-group">
+      <label class="nx-form-label">Cliente (opcional)</label>
+      <p-autoComplete
+        [(ngModel)]="selectedClient"
+        [ngModelOptions]="{ standalone: true }"
+        [suggestions]="clientSuggestions"
+        optionLabel="name"
+        [forceSelection]="false"
+        [showClear]="true"
+        placeholder="Buscar cliente..."
+        styleClass="w-full"
+        inputStyleClass="w-full"
+        (completeMethod)="searchClients($event)"
+        (onSelect)="onClientSelect($event)"
+        (onClear)="onClientClear()"
+      >
+        <ng-template let-c pTemplate="item">
+          <span>{{ clientLabel(c) }}</span>
+        </ng-template>
+      </p-autoComplete>
+    </div>
+
+    <p-divider />
+
     <!-- OS Vinculada -->
     <div class="nx-form-group">
       <label class="nx-form-label" for="serviceOrderId">OS vinculada (opcional)</label>
