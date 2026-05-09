@@ -12,8 +12,9 @@ export const authGuard: CanActivateFn = (_route, _state) => {
     filter(([sessionReady, meLoaded]) => sessionReady && meLoaded),
     take(1),
     map(() => {
-      if (!auth.getAccessToken())  return router.createUrlTree(['/login']);
-      if (!auth.userTenant())      return router.createUrlTree(['/cadastro/empresa']);
+      if (!auth.getAccessToken())              return router.createUrlTree(['/login']);
+      if (auth.isSuperAdmin())                 return router.createUrlTree(['/admin/dashboard']);
+      if (!auth.userTenant())                  return router.createUrlTree(['/cadastro/empresa']);
       return true;
     }),
   );

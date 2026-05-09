@@ -41,7 +41,7 @@ label {
   display: flex;
   flex-direction: column;
   background: var(--bg-elev);
-  border-right: 1px solid var(--line);
+
   overflow: hidden;
   transition: width 0.22s ease-in-out, border-color 0.22s ease-in-out;
 }
@@ -168,7 +168,7 @@ label {
   transition: background-color .12s;
 }
 .nx-data-table .p-datatable-tbody > tr:hover > td {
-  background: var(--primary-50);
+  background: var(--bg);
 }
 
 /* ── Table empty state ──────────────────────────────────── */

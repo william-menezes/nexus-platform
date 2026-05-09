@@ -14,6 +14,7 @@ export const setupGuard: CanActivateFn = (_route, _state) => {
     take(1),
     map(() => {
       if (!auth.getAccessToken()) return router.createUrlTree(['/login']);
+      if (auth.isSuperAdmin())    return router.createUrlTree(['/admin/dashboard']);
       if (auth.userTenant())      return router.createUrlTree(['/app/dashboard']);
       return true;
     }),

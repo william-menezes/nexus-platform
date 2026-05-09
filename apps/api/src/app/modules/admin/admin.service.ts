@@ -32,17 +32,14 @@ export class AdminService {
           `SELECT COUNT(*)::int AS count FROM public.tenants WHERE created_at >= NOW() - INTERVAL '30 days'`,
         ),
         this.ds.query<{ count: string }[]>(
-          `SELECT COUNT(DISTINCT t.id)::int AS count
-           FROM public.tenants t
-           INNER JOIN public.subscriptions s ON s.tenant_id = t.id
-           WHERE t.plan != 'trial' AND s.status = 'active'`,
+          `SELECT COUNT(*)::int AS count FROM public.tenants
+           WHERE plan != 'trial' AND is_active = true`,
         ),
         this.ds.query<{ mrr: string }[]>(
           `SELECT COALESCE(SUM(p.price), 0)::numeric AS mrr
            FROM public.tenants t
-           INNER JOIN public.subscriptions s ON s.tenant_id = t.id
            INNER JOIN public.plans p ON p.slug = t.plan
-           WHERE s.status = 'active'`,
+           WHERE t.plan != 'trial' AND t.is_active = true`,
         ),
       ]);
 

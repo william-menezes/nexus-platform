@@ -81,6 +81,7 @@ html.dark {
 
 /* Inputs */
 .p-inputtext,
+.p-textarea,
 .p-password input,
 .p-select,
 .p-multiselect,
@@ -111,7 +112,7 @@ html.dark {
 
 /* DataTable */
 .p-datatable {
-  border-radius: var(--r-lg);
+  border-radius: 0 0 var(--r-lg);
   overflow: hidden;
 }
 .p-datatable .p-datatable-thead > tr > th {
@@ -131,10 +132,10 @@ html.dark {
   border-color: var(--line-2);
 }
 .p-datatable .p-datatable-tbody > tr:hover {
-  background: var(--primary-50);
+  background: var(--bg);
 }
 .p-datatable .p-sortable-column:not(.p-highlight):hover {
-  background: var(--primary-50);
+  background: var(--bg);
   color: var(--ink);
 }
 .p-datatable .p-sortable-column.p-highlight {

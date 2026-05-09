@@ -105,15 +105,6 @@
             [class.text-text-muted]="typeFilter() !== 'company'"
           >{{ pjCount() }}</span>
         </button>
-
-        <button
-          type="button"
-          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border border-surface-border bg-surface-elevated text-text-muted hover:text-text hover:bg-surface transition-colors"
-        >
-          <i class="pi pi-filter text-[10px]"></i>
-          Mais filtros
-        </button>
-
       </div>
     </div>
 
@@ -194,9 +185,9 @@
             <td>{{ client.address?.city || '—' }}</td>
             <td class="font-mono text-[12.5px] text-text-muted">{{ client.createdAt | date:'dd/MM/yyyy' }}</td>
 
-            <!-- Ações — aparecem só no hover da linha -->
+            <!-- Ações -->
             <td>
-              <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+              <div class="flex items-center justify-end gap-0.5 ">
                 <a [routerLink]="client.id" pButton icon="pi pi-eye"
                    class="p-button-sm p-button-text" aria-label="Ver detalhes"></a>
                 <a [routerLink]="[client.id, 'editar']" pButton icon="pi pi-pencil"

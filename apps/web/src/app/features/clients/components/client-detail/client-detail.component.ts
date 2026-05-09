@@ -14,6 +14,9 @@ import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
+import { DividerModule } from 'primeng/divider';
+import { TabsModule } from 'primeng/tabs';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import {
   Client,
   ClientHistoryItem,
@@ -35,7 +38,7 @@ interface TimelineItem {
 @Component({
   standalone: true,
   selector: 'app-client-detail',
-  imports: [DatePipe, RouterLink, ButtonModule, MessageModule, ConfirmDialogModule, TooltipModule],
+  imports: [DatePipe, RouterLink, ButtonModule, MessageModule, ConfirmDialogModule, TooltipModule, DividerModule, TabsModule, PageHeaderComponent],
   providers: [ConfirmationService],
   templateUrl: './client-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -124,8 +127,8 @@ export class ClientDetailComponent implements OnInit {
     });
   }
 
-  setTab(tab: string) {
-    this.activeTab.set(tab);
+  setTab(tab: string | number | undefined) {
+    if (tab != null) this.activeTab.set(tab.toString());
   }
 
   formatCurrency(value: number): string {

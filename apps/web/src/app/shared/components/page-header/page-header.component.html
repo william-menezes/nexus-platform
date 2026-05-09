@@ -14,7 +14,9 @@
   <!-- Left: title + pills + subtitle -->
   <div class="min-w-0">
     <div class="flex items-center gap-2 flex-wrap">
-      <h1 class="nx-page-title">{{ title }}</h1>
+      @if (title) {
+        <h1 class="nx-page-title">{{ title }}</h1>
+      }
 
       <!-- Pills — detail mode only -->
       @if (variant === 'detail') {

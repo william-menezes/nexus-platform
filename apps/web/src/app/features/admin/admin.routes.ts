@@ -8,6 +8,7 @@ export const routes: Routes = [
         m => m.AdminDashboardComponent,
       ),
   },
+  { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
   {
     path: 'tenants',
     loadComponent: () =>
