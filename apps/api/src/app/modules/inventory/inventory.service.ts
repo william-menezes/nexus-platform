@@ -27,6 +27,17 @@ export class InventoryService {
       .then(list => list.map(p => ({ ...p, belowMinStock: p.currentStock < p.minStock })));
   }
 
+  async findByBarcode(tenantId: string, barcode: string) {
+    const results = await this.products.find({
+      where: { tenantId, barcode, deletedAt: IsNull() } as any,
+      relations: ['category', 'brand', 'quality'],
+      take: 1,
+    });
+    if (!results.length) throw new NotFoundException(`Produto com código '${barcode}' não encontrado`);
+    const p = results[0];
+    return { ...p, belowMinStock: p.currentStock < p.minStock };
+  }
+
   async findOneProduct(tenantId: string, id: string) {
     const p = await this.products.findOne({
       where: { tenantId, id, deletedAt: IsNull() },

@@ -1,0 +1,95 @@
+<div class="nx-page">
+
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Vendas por Forma de Pagamento</h1>
+      <p class="nx-page-subtitle">Distribuição dos recebimentos por método</p>
+    </div>
+    <a routerLink="../dre">
+      <p-button label="DRE" icon="pi pi-chart-bar" severity="secondary" [outlined]="true" styleClass="p-button-sm"/>
+    </a>
+  </div>
+
+  <p-card styleClass="mb-6">
+    <form [formGroup]="form" (ngSubmit)="search()" class="flex gap-3 items-end flex-wrap">
+      <div class="nx-form-group flex-1 min-w-40 mb-0">
+        <label class="nx-form-label">De</label>
+        <p-datepicker formControlName="from" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Data inicial" styleClass="w-full" inputStyleClass="w-full"/>
+      </div>
+      <div class="nx-form-group flex-1 min-w-40 mb-0">
+        <label class="nx-form-label">Até</label>
+        <p-datepicker formControlName="to" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Data final" styleClass="w-full" inputStyleClass="w-full"/>
+      </div>
+      <p-button type="submit" label="Buscar" icon="pi pi-search" [loading]="loading" [disabled]="form.invalid" styleClass="p-button-sm"/>
+    </form>
+  </p-card>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4"/>
+  }
+
+  @if (entries.length > 0) {
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="nx-stat">
+        <i class="pi pi-credit-card" style="color:var(--nx-primary);"></i>
+        <div class="nx-stat-value">{{ totalCount }}</div>
+        <div class="nx-stat-label">Total de Transações</div>
+      </div>
+      <div class="nx-stat">
+        <i class="pi pi-dollar" style="color:var(--nx-primary);"></i>
+        <div class="nx-stat-value">{{ totalAmount | currency:'BRL' }}</div>
+        <div class="nx-stat-label">Valor Recebido</div>
+      </div>
+    </div>
+
+    <p-table [value]="entries" [rowHover]="true" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Forma de Pagamento</th>
+          <th style="text-align:right;">Transações</th>
+          <th style="text-align:right;">Total</th>
+          <th>Participação</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-e>
+        <tr>
+          <td>
+            <span class="inline-flex items-center gap-2 font-medium">
+              <span class="w-3 h-3 rounded-full inline-block" [style.background]="methodColor(e.method)"></span>
+              {{ e.methodLabel }}
+            </span>
+          </td>
+          <td style="text-align:right;">{{ e.count }}</td>
+          <td style="text-align:right; font-weight:600;">{{ e.totalAmount | currency:'BRL' }}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <div class="flex-1 bg-surface-200 dark:bg-surface-700 rounded-full h-2 overflow-hidden">
+                <div class="h-2 rounded-full transition-all duration-300"
+                     [style.width]="(e.percentage * 100).toFixed(1) + '%'"
+                     [style.background]="methodColor(e.method)">
+                </div>
+              </div>
+              <span class="text-sm font-medium w-12 text-right">{{ e.percentage | percent:'1.1-1' }}</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr class="font-bold">
+          <td>Total</td>
+          <td style="text-align:right;">{{ totalCount }}</td>
+          <td style="text-align:right;">{{ totalAmount | currency:'BRL' }}</td>
+          <td>100%</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  } @else if (!loading) {
+    <div class="text-center py-12 text-surface-400">
+      <i class="pi pi-credit-card text-5xl block mb-3 text-surface-300"></i>
+      Selecione um período e clique em Buscar.
+    </div>
+  }
+
+</div>

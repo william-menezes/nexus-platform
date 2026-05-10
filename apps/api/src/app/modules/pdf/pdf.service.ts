@@ -41,18 +41,20 @@ function fmtDate(date: Date | string): string {
 }
 
 function header(tenant: TenantBranding, docTitle: string, docCode: string): Content {
+  const leftStack: Content[] = [];
+  if (tenant.logoUrl) {
+    leftStack.push({ image: tenant.logoUrl, width: 80, margin: [0, 0, 0, 6] });
+  }
+  leftStack.push(
+    { text: tenant.companyName, style: 'companyName' },
+    ...(tenant.phone ? [{ text: `Tel: ${tenant.phone}`, style: 'companyInfo' }] : []),
+    ...(tenant.cnpj  ? [{ text: `CNPJ: ${tenant.cnpj}`,  style: 'companyInfo' }] : []),
+  );
   return {
     table: {
       widths: ['*', 'auto'],
       body: [[
-        {
-          stack: [
-            { text: tenant.companyName, style: 'companyName' },
-            tenant.phone ? { text: `Tel: ${tenant.phone}`, style: 'companyInfo' } : '',
-            tenant.cnpj  ? { text: `CNPJ: ${tenant.cnpj}`,  style: 'companyInfo' } : '',
-          ],
-          border: [false, false, false, false],
-        },
+        { stack: leftStack, border: [false, false, false, false] },
         {
           stack: [
             { text: docTitle, style: 'docTitle' },

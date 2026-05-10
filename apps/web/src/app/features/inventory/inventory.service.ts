@@ -17,6 +17,7 @@ export class InventoryService {
   }
 
   getProduct(id: string)                     { return this.http.get<Product>(`${this.base}/products/${id}`); }
+  getProductByBarcode(barcode: string)       { return this.http.get<Product>(`${this.base}/products/barcode/${encodeURIComponent(barcode)}`); }
   createProduct(dto: Partial<Product>)       { return this.http.post<Product>(`${this.base}/products`, dto); }
   updateProduct(id: string, dto: Partial<Product>) { return this.http.patch<Product>(`${this.base}/products/${id}`, dto); }
   removeProduct(id: string)                  { return this.http.delete(`${this.base}/products/${id}`); }

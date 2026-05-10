@@ -82,6 +82,37 @@ export class FinanceController {
     res.end(buffer);
   }
 
+  // Relatórios — GET /finance/reports/by-*
+  @Get('reports/by-product')
+  @RequirePermission('reports:read')
+  getReportByProduct(
+    @CurrentTenant() tenantId: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.svc.getReportByProduct(tenantId, from, to);
+  }
+
+  @Get('reports/by-employee')
+  @RequirePermission('reports:read')
+  getReportByEmployee(
+    @CurrentTenant() tenantId: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.svc.getReportByEmployee(tenantId, from, to);
+  }
+
+  @Get('reports/by-payment-method')
+  @RequirePermission('reports:read')
+  getReportByPaymentMethod(
+    @CurrentTenant() tenantId: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.svc.getReportByPaymentMethod(tenantId, from, to);
+  }
+
   // WhatsApp manual — POST /finance/whatsapp/send
   @Post('whatsapp/send')
   @HttpCode(HttpStatus.OK)

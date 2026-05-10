@@ -15,6 +15,36 @@
     <p-message severity="error" [text]="error" styleClass="w-full mb-4" />
   }
 
+  <!-- Leitor de código de barras -->
+  <div class="mb-6 p-4 rounded-xl border border-dashed border-surface-300 bg-surface-50 dark:bg-surface-800 dark:border-surface-600">
+    <p class="text-sm font-semibold text-surface-600 dark:text-surface-300 mb-2">
+      <i class="pi pi-barcode mr-1"></i> Código de barras
+    </p>
+    <div class="flex gap-2 items-center flex-wrap">
+      <input
+        pInputText
+        [(ngModel)]="barcodeInput"
+        [ngModelOptions]="{ standalone: true }"
+        (keydown)="onBarcodeKeydown($event)"
+        placeholder="Digite ou escaneie o código e pressione Enter..."
+        class="flex-1 min-w-48"
+        [disabled]="barcodeLoading"
+      />
+      <p-button
+        type="button"
+        label="Buscar"
+        icon="pi pi-search"
+        [loading]="barcodeLoading"
+        [disabled]="!barcodeInput.trim()"
+        (click)="onBarcodeSearch()"
+        styleClass="p-button-sm"
+      />
+    </div>
+    @if (barcodeError) {
+      <p class="text-red-500 text-xs mt-2"><i class="pi pi-exclamation-circle mr-1"></i>{{ barcodeError }}</p>
+    }
+  </div>
+
   <form [formGroup]="form" (ngSubmit)="submit()" class="nx-form">
 
     <!-- Cliente -->

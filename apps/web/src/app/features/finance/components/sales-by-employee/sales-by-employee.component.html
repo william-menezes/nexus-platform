@@ -1,0 +1,89 @@
+<div class="nx-page">
+
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Vendas por Funcionário</h1>
+      <p class="nx-page-subtitle">Desempenho de vendas por colaborador</p>
+    </div>
+    <a routerLink="../dre">
+      <p-button label="DRE" icon="pi pi-chart-bar" severity="secondary" [outlined]="true" styleClass="p-button-sm"/>
+    </a>
+  </div>
+
+  <p-card styleClass="mb-6">
+    <form [formGroup]="form" (ngSubmit)="search()" class="flex gap-3 items-end flex-wrap">
+      <div class="nx-form-group flex-1 min-w-40 mb-0">
+        <label class="nx-form-label">De</label>
+        <p-datepicker formControlName="from" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Data inicial" styleClass="w-full" inputStyleClass="w-full"/>
+      </div>
+      <div class="nx-form-group flex-1 min-w-40 mb-0">
+        <label class="nx-form-label">Até</label>
+        <p-datepicker formControlName="to" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Data final" styleClass="w-full" inputStyleClass="w-full"/>
+      </div>
+      <p-button type="submit" label="Buscar" icon="pi pi-search" [loading]="loading" [disabled]="form.invalid" styleClass="p-button-sm"/>
+    </form>
+  </p-card>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4"/>
+  }
+
+  @if (entries.length > 0) {
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="nx-stat">
+        <i class="pi pi-shopping-cart" style="color:var(--nx-primary);"></i>
+        <div class="nx-stat-value">{{ totalSales }}</div>
+        <div class="nx-stat-label">Total de Vendas</div>
+      </div>
+      <div class="nx-stat">
+        <i class="pi pi-dollar" style="color:var(--nx-primary);"></i>
+        <div class="nx-stat-value">{{ totalRevenue | currency:'BRL' }}</div>
+        <div class="nx-stat-label">Receita Total</div>
+      </div>
+    </div>
+
+    <p-table [value]="entries" [rowHover]="true" styleClass="p-datatable-sm" [sortField]="'totalRevenue'" [sortOrder]="-1">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="employeeName">Funcionário <p-sortIcon field="employeeName"/></th>
+          <th pSortableColumn="salesCount" style="text-align:right;">Nº Vendas <p-sortIcon field="salesCount"/></th>
+          <th pSortableColumn="totalRevenue" style="text-align:right;">Receita <p-sortIcon field="totalRevenue"/></th>
+          <th style="text-align:right;">% do Total</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-e>
+        <tr>
+          <td class="font-medium">
+            <span class="inline-flex items-center gap-2">
+              <i class="pi pi-user text-surface-400"></i>
+              {{ e.employeeName }}
+            </span>
+          </td>
+          <td style="text-align:right;">{{ e.salesCount }}</td>
+          <td style="text-align:right; font-weight:600;">{{ e.totalRevenue | currency:'BRL' }}</td>
+          <td style="text-align:right;">
+            <span class="text-sm text-surface-500">
+              {{ totalRevenue > 0 ? (e.totalRevenue / totalRevenue * 100).toFixed(1) + '%' : '—' }}
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr class="font-bold">
+          <td>Total</td>
+          <td style="text-align:right;">{{ totalSales }}</td>
+          <td style="text-align:right;">{{ totalRevenue | currency:'BRL' }}</td>
+          <td style="text-align:right;">100%</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  } @else if (!loading) {
+    <div class="text-center py-12 text-surface-400">
+      <i class="pi pi-users text-5xl block mb-3 text-surface-300"></i>
+      Selecione um período e clique em Buscar.
+    </div>
+  }
+
+</div>

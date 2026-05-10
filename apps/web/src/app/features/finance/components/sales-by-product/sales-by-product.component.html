@@ -1,0 +1,96 @@
+<div class="nx-page">
+
+  <div class="nx-page-header">
+    <div>
+      <h1 class="nx-page-title">Vendas por Produto</h1>
+      <p class="nx-page-subtitle">Produtos mais vendidos no período</p>
+    </div>
+    <a routerLink="../dre">
+      <p-button label="DRE" icon="pi pi-chart-bar" severity="secondary" [outlined]="true" styleClass="p-button-sm"/>
+    </a>
+  </div>
+
+  <p-card styleClass="mb-6">
+    <form [formGroup]="form" (ngSubmit)="search()" class="flex gap-3 items-end flex-wrap">
+      <div class="nx-form-group flex-1 min-w-40 mb-0">
+        <label class="nx-form-label">De</label>
+        <p-datepicker formControlName="from" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Data inicial" styleClass="w-full" inputStyleClass="w-full"/>
+      </div>
+      <div class="nx-form-group flex-1 min-w-40 mb-0">
+        <label class="nx-form-label">Até</label>
+        <p-datepicker formControlName="to" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Data final" styleClass="w-full" inputStyleClass="w-full"/>
+      </div>
+      <p-button type="submit" label="Buscar" icon="pi pi-search" [loading]="loading" [disabled]="form.invalid" styleClass="p-button-sm"/>
+    </form>
+  </p-card>
+
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-4"/>
+  }
+
+  @if (entries.length > 0) {
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="nx-stat">
+        <i class="pi pi-box" style="color:var(--nx-primary);"></i>
+        <div class="nx-stat-value">{{ totalQuantity }}</div>
+        <div class="nx-stat-label">Itens Vendidos</div>
+      </div>
+      <div class="nx-stat">
+        <i class="pi pi-dollar" style="color:var(--nx-primary);"></i>
+        <div class="nx-stat-value">{{ totalRevenue | currency:'BRL' }}</div>
+        <div class="nx-stat-label">Receita Total</div>
+      </div>
+      <div class="nx-stat">
+        <i class="pi pi-minus-circle" style="color:#ef4444;"></i>
+        <div class="nx-stat-value" style="color:#ef4444;">{{ totalCost | currency:'BRL' }}</div>
+        <div class="nx-stat-label">Custo Total</div>
+      </div>
+      <div class="nx-stat">
+        <i class="pi pi-chart-line" style="color:#22c55e;"></i>
+        <div class="nx-stat-value" [style.color]="totalProfit >= 0 ? '#22c55e' : '#ef4444'">{{ totalProfit | currency:'BRL' }}</div>
+        <div class="nx-stat-label">Lucro Bruto</div>
+      </div>
+    </div>
+
+    <p-table [value]="entries" [rowHover]="true" styleClass="p-datatable-sm" [sortField]="'totalRevenue'" [sortOrder]="-1">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="productName">Produto <p-sortIcon field="productName"/></th>
+          <th pSortableColumn="totalQuantity" style="text-align:right;">Qtd <p-sortIcon field="totalQuantity"/></th>
+          <th pSortableColumn="totalRevenue" style="text-align:right;">Receita <p-sortIcon field="totalRevenue"/></th>
+          <th pSortableColumn="totalCost" style="text-align:right;">CMV <p-sortIcon field="totalCost"/></th>
+          <th pSortableColumn="grossProfit" style="text-align:right;">Lucro <p-sortIcon field="grossProfit"/></th>
+          <th pSortableColumn="grossMargin" style="text-align:right;">Margem <p-sortIcon field="grossMargin"/></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-e>
+        <tr>
+          <td class="font-medium">{{ e.productName }}</td>
+          <td style="text-align:right;">{{ e.totalQuantity }}</td>
+          <td style="text-align:right;">{{ e.totalRevenue | currency:'BRL' }}</td>
+          <td style="text-align:right; color:#ef4444;">{{ e.totalCost | currency:'BRL' }}</td>
+          <td style="text-align:right; font-weight:600;" [style.color]="e.grossProfit >= 0 ? '#22c55e' : '#ef4444'">{{ e.grossProfit | currency:'BRL' }}</td>
+          <td style="text-align:right;">{{ e.grossMargin | percent:'1.1-1' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr class="font-bold">
+          <td>Total</td>
+          <td style="text-align:right;">{{ totalQuantity }}</td>
+          <td style="text-align:right;">{{ totalRevenue | currency:'BRL' }}</td>
+          <td style="text-align:right; color:#ef4444;">{{ totalCost | currency:'BRL' }}</td>
+          <td style="text-align:right;" [style.color]="totalProfit >= 0 ? '#22c55e' : '#ef4444'">{{ totalProfit | currency:'BRL' }}</td>
+          <td></td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  } @else if (!loading) {
+    <div class="text-center py-12 text-surface-400">
+      <i class="pi pi-box text-5xl block mb-3 text-surface-300"></i>
+      Selecione um período e clique em Buscar.
+    </div>
+  }
+
+</div>

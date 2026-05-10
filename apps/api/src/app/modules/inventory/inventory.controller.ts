@@ -42,6 +42,11 @@ export class InventoryController {
     return this.svc.findAllProducts(tenantId, type, active === 'true');
   }
 
+  @Get('products/barcode/:code')
+  findByBarcode(@CurrentTenant() tenantId: string, @Param('code') code: string) {
+    return this.svc.findByBarcode(tenantId, code);
+  }
+
   @Get('products/:id')
   findOneProduct(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.svc.findOneProduct(tenantId, id);

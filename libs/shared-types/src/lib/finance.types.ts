@@ -41,3 +41,28 @@ export interface DreEntry {
   grossProfit: number;
   grossMargin: number; // percentual 0–1
 }
+
+export interface SalesByProductEntry {
+  productId: string;
+  productName: string;
+  totalQuantity: number;
+  totalRevenue: number;
+  totalCost: number;
+  grossProfit: number;
+  grossMargin: number;
+}
+
+export interface SalesByEmployeeEntry {
+  employeeId: string | null;
+  employeeName: string;
+  salesCount: number;
+  totalRevenue: number;
+}
+
+export interface SalesByPaymentEntry {
+  method: string;
+  methodLabel: string;
+  count: number;
+  totalAmount: number;
+  percentage: number; // 0–1
+}

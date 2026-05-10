@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Sale, DreEntry } from '@nexus-platform/shared-types';
+import { Sale, DreEntry, SalesByProductEntry, SalesByEmployeeEntry, SalesByPaymentEntry } from '@nexus-platform/shared-types';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +18,21 @@ export class FinanceService {
   getDre(from: string, to: string) {
     const params = new HttpParams().set('from', from).set('to', to);
     return this.http.get<DreEntry[]>(`${this.base}/dre`, { params });
+  }
+
+  getReportByProduct(from: string, to: string) {
+    const params = new HttpParams().set('from', from).set('to', to);
+    return this.http.get<SalesByProductEntry[]>(`${this.base}/reports/by-product`, { params });
+  }
+
+  getReportByEmployee(from: string, to: string) {
+    const params = new HttpParams().set('from', from).set('to', to);
+    return this.http.get<SalesByEmployeeEntry[]>(`${this.base}/reports/by-employee`, { params });
+  }
+
+  getReportByPayment(from: string, to: string) {
+    const params = new HttpParams().set('from', from).set('to', to);
+    return this.http.get<SalesByPaymentEntry[]>(`${this.base}/reports/by-payment-method`, { params });
   }
 
   sendWhatsapp(phone: string, message: string) {

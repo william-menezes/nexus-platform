@@ -60,8 +60,11 @@ export class PdvComponent implements OnInit {
 
   products: Product[] = [];
   productOptions: { label: string; value: string }[] = [];
-  loading  = false;
-  error    = '';
+  loading        = false;
+  error          = '';
+  barcodeInput   = '';
+  barcodeLoading = false;
+  barcodeError   = '';
   readonly methodOptions = METHOD_OPTIONS;
 
   selectedClient: Client | null = null;
@@ -115,6 +118,47 @@ export class PdvComponent implements OnInit {
     const product = this.products.find(p => p.id === productId);
     if (product) {
       this.items.at(index).patchValue({ description: product.name, unitPrice: product.salePrice });
+    }
+  }
+
+  onBarcodeSearch() {
+    const code = this.barcodeInput.trim();
+    if (!code) return;
+    this.barcodeLoading = true;
+    this.barcodeError   = '';
+    this.invSvc.getProductByBarcode(code).subscribe({
+      next: (product) => {
+        this.addItemFromProduct(product);
+        this.barcodeInput   = '';
+        this.barcodeLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.barcodeError   = `Código "${code}" não encontrado no estoque.`;
+        this.barcodeLoading = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  onBarcodeKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.onBarcodeSearch();
+    }
+  }
+
+  private addItemFromProduct(product: Product) {
+    const existingIdx = this.items.controls.findIndex(
+      c => c.get('productId')?.value === product.id,
+    );
+    if (existingIdx >= 0) {
+      const qtyCtrl = this.items.at(existingIdx).get('quantity');
+      qtyCtrl?.setValue((qtyCtrl.value ?? 1) + 1);
+    } else {
+      const item = this.buildItem();
+      item.patchValue({ productId: product.id, description: product.name, unitPrice: product.salePrice });
+      this.items.push(item);
     }
   }
 

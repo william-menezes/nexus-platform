@@ -21,4 +21,19 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/dre/dre.component').then(m => m.DreComponent),
   },
+  {
+    path: 'relatorios/por-produto',
+    loadComponent: () =>
+      import('./components/sales-by-product/sales-by-product.component').then(m => m.SalesByProductComponent),
+  },
+  {
+    path: 'relatorios/por-funcionario',
+    loadComponent: () =>
+      import('./components/sales-by-employee/sales-by-employee.component').then(m => m.SalesByEmployeeComponent),
+  },
+  {
+    path: 'relatorios/por-pagamento',
+    loadComponent: () =>
+      import('./components/sales-by-payment/sales-by-payment.component').then(m => m.SalesByPaymentComponent),
+  },
 ];

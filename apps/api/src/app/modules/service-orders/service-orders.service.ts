@@ -89,10 +89,22 @@ export class ServiceOrdersService {
   async buildPdfData(tenantId: string, id: string): Promise<OsPdfData> {
     const os = await this.findOne(tenantId, id);
 
-    const [tenant] = await this.dataSource.query<{ name: string; phone?: string; cnpj?: string }[]>(
-      `SELECT name, phone, cnpj FROM public.tenants WHERE id = $1 LIMIT 1`,
+    const [tenant] = await this.dataSource.query<{ name: string; phone?: string; cnpj?: string; logo_url?: string }[]>(
+      `SELECT name, phone, cnpj, logo_url FROM public.tenants WHERE id = $1 LIMIT 1`,
       [tenantId],
     );
+
+    let logoUrl: string | undefined;
+    if (tenant?.logo_url) {
+      try {
+        const res = await fetch(tenant.logo_url);
+        if (res.ok) {
+          const buf = Buffer.from(await res.arrayBuffer());
+          const mime = res.headers.get('content-type') ?? 'image/png';
+          logoUrl = `data:${mime};base64,${buf.toString('base64')}`;
+        }
+      } catch { /* logo falhou silenciosamente */ }
+    }
 
     const [client] = os.clientId
       ? await this.dataSource.query<{ name: string; phone?: string }[]>(
@@ -121,7 +133,7 @@ export class ServiceOrdersService {
     const total    = soItems.reduce((s, i) => s + Number(i.total_price), 0);
 
     return {
-      tenant: { companyName: tenant?.name ?? 'Empresa', phone: tenant?.phone, cnpj: tenant?.cnpj },
+      tenant: { companyName: tenant?.name ?? 'Empresa', phone: tenant?.phone, cnpj: tenant?.cnpj, logoUrl },
       code: os.code,
       createdAt: os.createdAt,
       clientName: client?.name ?? 'Cliente',
